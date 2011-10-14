@@ -6,6 +6,9 @@ import org.apache.solr.response.{SolrQueryResponse, QueryResponseWriter}
 import java.io.Writer
 import org.apache.solr.search.DocList
 import collection.JavaConversions._
+import javax.annotation.Nonnull
+import org.apache.solr.common.SolrException
+import sellstome.search.solr.common.SellstomeSolrComponent
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,30 +17,48 @@ import collection.JavaConversions._
  * Time: 0:50
  * Generates a json search response.
  */
-class AdResponseWriter extends QueryResponseWriter {
+class AdResponseWriter extends QueryResponseWriter with SellstomeSolrComponent {
 
+  /**
+   * Write a SolrQueryResponse, this method must be thread save.
+   */
   def write(writer: Writer, request: SolrQueryRequest, response: SolrQueryResponse) {
-    val nl = response.getValues
+    writer.write(AdsSerializer(extractSearchResults(response.getValues),
+                 request.getSearcher).toString)
   }
 
+  /**
+   * Return the applicable Content Type for a request, this method
+   * must be thread safe.
+   */
   def getContentType(request: SolrQueryRequest, response: SolrQueryResponse) = QueryResponseWriter.CONTENT_TYPE_XML_UTF8
 
+  /**<code>init</code> will be called just once, immediately after creation.
+   * <p>The args are user-level initialization parameters that
+   * may be specified when declaring a response writer in
+   * solrconfig.xml
+   */
   def init(args: NamedList[_]) {
-
+    //do nothing right now
   }
 
-  /** Extract a search result list. */
-  protected def extractSearchResults(nl: NamedList[_]): Option[DocList] = {
-    var result: Option[DocList] = None
-    nl.find( (entry) => entry.getValue match {
+  /** Extract a search result list.
+   *  @param responseData data to be returned in solr response
+   *  @throws org.apache.solr.common.SolrException could not parse responseData
+   */
+  @Nonnull
+  protected def extractSearchResults(responseData: NamedList[_]): DocList = {
+    var result: DocList = null
+    responseData.find( (entry) => entry.getValue match {
       case docs: DocList => {
-        result = Some(docs)
+        result = docs
         true
       }
       case _ => {
         false
       }
     })
+    ensuring( result != null , "Could not find a DocList collection")
     return result
   }
 

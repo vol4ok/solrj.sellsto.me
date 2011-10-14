@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: scala-library.jar scala-swing.jar scala-dbc.jar json-20090
+ 211.jar jsr305.jar
+
