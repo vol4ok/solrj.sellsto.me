@@ -1,0 +1,35 @@
+apply plugin: UtilitiesPlugin
+
+/**
+ * Contain utility functions for our build project.
+ */
+class UtilitiesPlugin implements Plugin<Project> {
+
+  def void apply(Project project) {
+   project.convention.plugins.utilities =
+     new UtilitiesPluginConvention(project)
+  }
+
+}
+
+class UtilitiesPluginConvention {
+  /** reference to a gradle project */
+  private Project project
+
+  public UtilitiesConvention(Project project) {
+    this.project = project
+  }
+
+  /** Given base dependency set, strips all dependencies that the base inherit
+   * from the supplied dependency list.
+   * @return the list of dependency files that are not inherited from the supplied configuartion.
+   */
+  def filterExtendDependencies(ConfigurationContainer base, ConfigurationContainer... ancestors) {
+      def baseFiles = []
+      base.each() { artifact ->  }
+
+  }
+
+
+}
+
