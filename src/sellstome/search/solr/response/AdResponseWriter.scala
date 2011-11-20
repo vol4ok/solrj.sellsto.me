@@ -2,13 +2,13 @@ package sellstome.search.solr.response
 
 import org.apache.solr.common.util.NamedList
 import org.apache.solr.request.SolrQueryRequest
-import org.apache.solr.response.{SolrQueryResponse, QueryResponseWriter}
 import java.io.Writer
 import org.apache.solr.search.DocList
 import collection.JavaConversions._
 import javax.annotation.Nonnull
 import org.apache.solr.common.SolrException
 import sellstome.search.solr.common.SellstomeSolrComponent
+import org.apache.solr.response.{ResultContext, SolrQueryResponse, QueryResponseWriter}
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,6 +18,8 @@ import sellstome.search.solr.common.SellstomeSolrComponent
  * Generates a json search response.
  */
 class AdResponseWriter extends QueryResponseWriter with SellstomeSolrComponent {
+  /** content type */
+  val CONTENT_TYPE_JSON_UTF8: String = "text/x-json; charset=UTF-8"
 
   /**
    * Write a SolrQueryResponse, this method must be thread save.
@@ -31,7 +33,7 @@ class AdResponseWriter extends QueryResponseWriter with SellstomeSolrComponent {
    * Return the applicable Content Type for a request, this method
    * must be thread safe.
    */
-  def getContentType(request: SolrQueryRequest, response: SolrQueryResponse) = QueryResponseWriter.CONTENT_TYPE_XML_UTF8
+  def getContentType(request: SolrQueryRequest, response: SolrQueryResponse) = QueryResponseWriter.CONTENT_TYPE_TEXT_UTF8
 
   /**<code>init</code> will be called just once, immediately after creation.
    * <p>The args are user-level initialization parameters that
@@ -50,8 +52,8 @@ class AdResponseWriter extends QueryResponseWriter with SellstomeSolrComponent {
   protected def extractSearchResults(responseData: NamedList[_]): DocList = {
     var result: DocList = null
     responseData.find( (entry) => entry.getValue match {
-      case docs: DocList => {
-        result = docs
+      case resultContext: ResultContext => {
+        result = resultContext.docs
         true
       }
       case _ => {

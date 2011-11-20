@@ -17,3 +17,4 @@ cp ./dist/apache-solr-solrj-4.0-SNAPSHOT.jar   ./../../../solrj.sellsto.me/lib/m
 
 #update solr distribution for tomcat instance
 cp ./dist/apache-solr-4.0-SNAPSHOT.war /usr/local/tomcat7/webapps/solr.war -f
+cp ./dist/apache-solr-4.0-SNAPSHOT.war ./../../../solrj.sellsto.me/server/solr.war -f

@@ -11,6 +11,8 @@ package sellstome.search.solr.response;
 public enum AdSchema {
     /** doc id */
     ID("id"),
+    /** title */
+    TITLE("title"),
     /** User supplied ad description. */
     BODY("body"),
     /** Item price. */

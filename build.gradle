@@ -89,7 +89,11 @@ task syncMainDependencies(type: Sync) {
 }
 
 /** Allows to rebuild a solr configuration */
-task rebuildSolrConfiguration(type: Copy) {
-
+task configSolr(type: Copy) {
+    copy {
+        from    'conf/solr'
+        //todo zhugrov a - remove the hardcoded configuration
+        into    '/var/solr/sellstome'
+    }
 
 }

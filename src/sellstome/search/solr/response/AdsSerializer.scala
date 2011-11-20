@@ -33,7 +33,8 @@ object AdsSerializer {
     return json
   }
 
-  /** Transforms a single entry to a json string
+  /**
+   *  Transforms a single entry to a json string
    *  @param doc A search result unit
    *  @return
    */
