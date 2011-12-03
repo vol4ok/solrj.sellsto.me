@@ -25,6 +25,9 @@ dependencies {
     compile 'org.scala-lang:scala-library:2.9.1'
     //provided dependencies
     provided 'org.slf4j:slf4j-api:1.6.1'
+    provided files('lib/main/provided/lucene-core-4.0.jar')
+    provided files('lib/main/provided/solr-core-4.0.jar')
+    provided files('lib/main/provided/solr-solrj-4.0.jar')
     //test dependencies
     testCompile 'org.easymock:easymock:3.0'
     testCompile 'org.powermock:powermock-api-easymock:1.4.10'
@@ -45,55 +48,53 @@ sourceSets {
     }
 }
 
-/** build and copy project jar to a solr classpath. */
-task deployJar() {
-
-}
+archivesBaseName = "sellstome-solr"
 
 /** cleanup all old lib from project */
-task cleanupLib(type: Delete) {
-    delete fileTree(dir: 'lib/main/compile',    include: '*.jar')
-    delete fileTree(dir: 'lib/main/provided',   include: '*.jar')
-    delete fileTree(dir: 'lib/main/runtime',    include: '*.jar')
-    delete fileTree(dir: 'lib/test/compile',    include: '*.jar')
-    delete fileTree(dir: 'lib/test/runtime',    include: '*.jar')
-}
+//I don't completely grasp the dependencies between the gradle tasks
+//task cleanupLib(type: Delete) {
+//    delete fileTree(dir: 'lib/main/compile',    include: '*.jar')
+//    delete fileTree(dir: 'lib/main/provided',   include: '*.jar')
+//    delete fileTree(dir: 'lib/main/runtime',    include: '*.jar')
+//    delete fileTree(dir: 'lib/test/compile',    include: '*.jar')
+//    delete fileTree(dir: 'lib/test/runtime',    include: '*.jar')
+//}
 
 /** Resolves the project dependency graph and uploads all lib to the local directory  */
-task syncMainDependencies(type: Sync) {
-    /** copy compiled configuration */
-    copy {
-        from  configurations.compile
-        into 'lib/main/compile'
-    }
-    /** copy provided configuration */
-    copy {
-        from configurations.provided
-        into 'lib/main/provided'
-    }
-    /** copy runtime configuration */
-    copy {
-        from filterExtendDependencies(configurations.runtime, configurations.compile)
-        into 'lib/main/runtime'
-    }
-    /** copy test compile configuration */
-    copy {
-        from filterExtendDependencies(configurations.testCompile, configurations.compile)
-        into 'lib/test/compile'
-    }
-    /** copy test runtime configuration */
-    copy {
-        from filterExtendDependencies(configurations.testRuntime, configurations.testCompile, configurations.compile )
-        into 'lib/test/runtime'
-    }
-}
+//task syncMainDependencies(type: Sync) {
+//    /** copy compiled configuration */
+//    copy {
+//        from  configurations.compile
+//        into 'lib/main/compile'
+//    }
+//    /** copy provided configuration */
+//    copy {
+//        from configurations.provided
+//        into 'lib/main/provided'
+//    }
+//    /** copy runtime configuration */
+//    copy {
+//        from filterExtendDependencies(configurations.runtime, configurations.compile)
+//        into 'lib/main/runtime'
+//    }
+//    /** copy test compile configuration */
+//    copy {
+//        from filterExtendDependencies(configurations.testCompile, configurations.compile)
+//        into 'lib/test/compile'
+//    }
+//    /** copy test runtime configuration */
+//    copy {
+//        from filterExtendDependencies(configurations.testRuntime, configurations.testCompile, configurations.compile )
+//        into 'lib/test/runtime'
+//    }
+//}
 
 /** Allows to rebuild a solr configuration */
-task configSolr(type: Copy) {
-    copy {
-        from    'conf/solr'
-        //todo zhugrov a - remove the hardcoded configuration
-        into    '/var/solr/sellstome'
-    }
-
-}
+//task configSolr(type: Copy) {
+//    copy {
+//        from    'conf/solr'
+//        //todo zhugrov a - remove the hardcoded configuration
+//        into    '/var/solr/sellstome'
+//    }
+//
+//}
