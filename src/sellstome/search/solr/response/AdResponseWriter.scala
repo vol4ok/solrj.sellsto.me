@@ -6,7 +6,6 @@ import java.io.Writer
 import org.apache.solr.search.DocList
 import collection.JavaConversions._
 import javax.annotation.Nonnull
-import org.apache.solr.common.SolrException
 import sellstome.search.solr.common.SellstomeSolrComponent
 import org.apache.solr.response.{ResultContext, SolrQueryResponse, QueryResponseWriter}
 

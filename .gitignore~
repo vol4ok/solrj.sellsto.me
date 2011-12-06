@@ -1,0 +1,11 @@
+/.idea
+/source
+/solrj.sellsto.me.iml
+/.gradle
+/.build
+/lib/main/compile
+/lib/main/provided
+/lib/main/runtime
+/lib/test/compile
+/lib/test/runtime
+/out

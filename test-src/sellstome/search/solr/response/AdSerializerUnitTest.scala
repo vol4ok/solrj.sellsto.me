@@ -36,9 +36,6 @@ class AdSerializerUnitTest extends FunSuite with BeforeAndAfterAll {
     EasyMock.replay(docList, searcher, doc)
     val json = AdsSerializer( docList, searcher)
     assert( json != null )
-    assert( json.get("results") != null)
-    assert( json.get(CommonParams.ROWS) == 1)
-    assert( json.get(CommonParams.START) == 0)
   }
 
 }

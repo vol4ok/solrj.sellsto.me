@@ -3,7 +3,9 @@
 set -e
 
 #run build of the lucene project
-cd ./../../solr/trunk/lucene
+cd ./../../solr/trunk
+svn update #update working directory from trunk
+cd ./lucene
 ant jar-core
 #copy lucene core lib to a projects libs
 cp ./build/lucene-core-4.0-SNAPSHOT.jar ./../../../solrj.sellsto.me/lib/main/provided/lucene-core-4.0.jar -f

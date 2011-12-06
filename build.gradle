@@ -90,11 +90,20 @@ archivesBaseName = "sellstome-solr"
 //}
 
 /** Allows to rebuild a solr configuration */
-//task configSolr(type: Copy) {
-//    copy {
-//        from    'conf/solr'
-//        //todo zhugrov a - remove the hardcoded configuration
-//        into    '/var/solr/sellstome'
-//    }
-//
-//}
+task configSolr(type: Copy) {
+    copy {
+        from    'conf/solr'
+        //todo zhugrov a - remove the hardcoded configuration
+        into    '/var/solr/sellstome'
+    }
+    /** copy library dependencies */
+    copy {
+        from configurations.compile
+        into '/var/solr/sellstome/lib'
+    }
+
+    copy {
+        from configurations.runtime
+        into '/var/solr/sellstome/lib'
+    }
+}

@@ -10,23 +10,41 @@ package sellstome.search.solr.response;
  */
 public enum AdSchema {
     /** doc id */
-    ID("id"),
-    /** title */
-    TITLE("title"),
+    ID("id", "_id", StringSolrFieldConverter$.MODULE$),
     /** User supplied ad description. */
-    BODY("body"),
+    BODY("body", StringSolrFieldConverter$.MODULE$),
     /** Item price. */
-    PRICE("price"),
+    PRICE("price", PriceSolrFieldConverter$.MODULE$),
     /** Item location. */
-    LOCATION("location");
+    LOCATION("location", LocationSolrFieldConverter$.MODULE$);
 
     private final String fieldName;
+    
+    private final String responseFieldName;
 
-    AdSchema(String fieldName) {
+    private final SolrField2JsonConverter converter;
+
+    AdSchema(String fieldName, SolrField2JsonConverter converter) {
         this.fieldName = fieldName;
+        this.responseFieldName = fieldName;
+        this.converter = converter;
+    }
+
+    AdSchema(String fieldName, String responseFieldName, SolrField2JsonConverter converter) {
+        this.fieldName = fieldName;
+        this.responseFieldName = responseFieldName;
+        this.converter = converter;
     }
 
     public String getFieldName() {
         return fieldName;
+    }
+
+    public String getResponseFieldName() {
+        return responseFieldName;
+    }
+    
+    public Object toJson(String storedField) {
+        return converter.toJson(storedField);
     }
 }
