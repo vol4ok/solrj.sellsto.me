@@ -25,6 +25,7 @@ dependencies {
     compile 'org.scala-lang:scala-library:2.9.1'
     //provided dependencies
     provided 'org.slf4j:slf4j-api:1.6.1'
+    provided 'com.google.guava:guava:r05'
     provided files('lib/main/provided/lucene-core-4.0.jar')
     provided files('lib/main/provided/solr-core-4.0.jar')
     provided files('lib/main/provided/solr-solrj-4.0.jar')
@@ -61,7 +62,7 @@ archivesBaseName = "sellstome-solr"
 //}
 
 /** Resolves the project dependency graph and uploads all lib to the local directory  */
-//task syncMainDependencies(type: Sync) {
+//task updateLibs(type: Sync) {
 //    /** copy compiled configuration */
 //    copy {
 //        from  configurations.compile

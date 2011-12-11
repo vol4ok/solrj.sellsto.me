@@ -9,6 +9,9 @@ cd ./lucene
 ant jar-core
 #copy lucene core lib to a projects libs
 cp ./build/lucene-core-4.0-SNAPSHOT.jar ./../../../solrj.sellsto.me/lib/main/provided/lucene-core-4.0.jar -f
+cp ./../modules
+ant generate-maven-artifacts
+cp ./queryparser/build/lucene-queryparser-4.0-SNAPSHOT.jar ./../../../solrj.sellsto.me/lib/main/provided/lucene-queryparser-4.0.jar  -f
 
 #run build of the solr project
 cd ./../solr

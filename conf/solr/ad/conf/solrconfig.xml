@@ -697,6 +697,11 @@
        not be initialized until the first request that uses it.
 
     -->
+
+
+
+
+
   <!-- SearchHandler
 
        http://wiki.apache.org/solr/SearchHandler
@@ -706,14 +711,15 @@
        of SearchComponents (see below) and supports distributed
        queries across multiple shards
     -->
-  <requestHandler name="search" class="solr.SearchHandler" default="true">
+  <requestHandler name="search" class="sellstome.search.solr.request.AdRequestHandler" default="true">
     <!-- default values for query parameters can be specified, these
          will be overridden by parameters in the request
       -->
-     <lst name="defaults">
+    <lst name="defaults">
        <str name="echoParams">explicit</str>
        <int name="rows">10</int>
-     </lst>
+       <str name="wt">adjson</str>
+    </lst>
     <!-- In addition to defaults, "appends" params can be specified
          to identify values which should be appended to the list of
          multi-val params from the query (or the existing "defaults").
