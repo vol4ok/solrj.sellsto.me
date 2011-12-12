@@ -1,6 +1,10 @@
 apply plugin: 'scala'
 apply from: "gradle/utilities.gradle"
 
+//fix for scala-java cross compilation
+compileScala.taskDependencies.values = compileScala.taskDependencies.values - 'compileJava'
+compileJava.dependsOn compileScala
+
 configurations {
     provided {
         transitive = false
@@ -26,9 +30,7 @@ dependencies {
     //provided dependencies
     provided 'org.slf4j:slf4j-api:1.6.1'
     provided 'com.google.guava:guava:r05'
-    provided files('lib/main/provided/lucene-core-4.0.jar')
-    provided files('lib/main/provided/solr-core-4.0.jar')
-    provided files('lib/main/provided/solr-solrj-4.0.jar')
+    provided fileTree(dir:'build-solr', include: '*.jar')
     //test dependencies
     testCompile 'org.easymock:easymock:3.0'
     testCompile 'org.powermock:powermock-api-easymock:1.4.10'
@@ -52,51 +54,53 @@ sourceSets {
 archivesBaseName = "sellstome-solr"
 
 /** cleanup all old lib from project */
-//I don't completely grasp the dependencies between the gradle tasks
-//task cleanupLib(type: Delete) {
-//    delete fileTree(dir: 'lib/main/compile',    include: '*.jar')
-//    delete fileTree(dir: 'lib/main/provided',   include: '*.jar')
-//    delete fileTree(dir: 'lib/main/runtime',    include: '*.jar')
-//    delete fileTree(dir: 'lib/test/compile',    include: '*.jar')
-//    delete fileTree(dir: 'lib/test/runtime',    include: '*.jar')
-//}
+task cleanupLib(type: Delete) {
+    delete fileTree(dir: 'lib/main/compile',    include: '*.jar')
+    delete fileTree(dir: 'lib/main/provided',   include: '*.jar')
+    delete fileTree(dir: 'lib/main/runtime',    include: '*.jar')
+    delete fileTree(dir: 'lib/test/compile',    include: '*.jar')
+    delete fileTree(dir: 'lib/test/runtime',    include: '*.jar')
+}
 
 /** Resolves the project dependency graph and uploads all lib to the local directory  */
-//task updateLibs(type: Sync) {
-//    /** copy compiled configuration */
-//    copy {
-//        from  configurations.compile
-//        into 'lib/main/compile'
-//    }
-//    /** copy provided configuration */
-//    copy {
-//        from configurations.provided
-//        into 'lib/main/provided'
-//    }
-//    /** copy runtime configuration */
-//    copy {
-//        from filterExtendDependencies(configurations.runtime, configurations.compile)
-//        into 'lib/main/runtime'
-//    }
-//    /** copy test compile configuration */
-//    copy {
-//        from filterExtendDependencies(configurations.testCompile, configurations.compile)
-//        into 'lib/test/compile'
-//    }
-//    /** copy test runtime configuration */
-//    copy {
-//        from filterExtendDependencies(configurations.testRuntime, configurations.testCompile, configurations.compile )
-//        into 'lib/test/runtime'
-//    }
-//}
+task updateLibs(type: Sync) {
+    /** copy compiled configuration */
+    copy {
+        from  configurations.compile
+        into 'lib/main/compile'
+    }
+    /** copy provided configuration */
+    copy {
+        from configurations.provided
+        into 'lib/main/provided'
+    }
+    /** copy runtime configuration */
+    copy {
+        from filterExtendDependencies(configurations.runtime, configurations.compile)
+        into 'lib/main/runtime'
+    }
+    /** copy test compile configuration */
+    copy {
+        from filterExtendDependencies(configurations.testCompile, configurations.compile)
+        into 'lib/test/compile'
+    }
+    /** copy test runtime configuration */
+    copy {
+        from filterExtendDependencies(configurations.testRuntime, configurations.testCompile, configurations.compile )
+        into 'lib/test/runtime'
+    }
+}
 
 /** Allows to rebuild a solr configuration */
-task configSolr(type: Copy) {
+task configSolr(type: Copy,dependsOn: 'jar') {
+
+    description = 'Updates the solr confguration on server'
+
     copy {
         from    'conf/solr'
-        //todo zhugrov a - remove the hardcoded configuration
         into    '/var/solr/sellstome'
     }
+
     /** copy library dependencies */
     copy {
         from configurations.compile
@@ -107,4 +111,11 @@ task configSolr(type: Copy) {
         from configurations.runtime
         into '/var/solr/sellstome/lib'
     }
+
+    /** publish compiled artifacts */
+    copy {
+        from configurations.archives.allArtifacts.files
+        into '/var/solr/sellstome/lib'
+    }
+
 }

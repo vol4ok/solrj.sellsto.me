@@ -3,6 +3,8 @@
 /solrj.sellsto.me.iml
 /.gradle
 /build
+/build-solr
+/gradle-app.setting
 /lib/main/compile
 /lib/main/provided
 /lib/main/runtime
