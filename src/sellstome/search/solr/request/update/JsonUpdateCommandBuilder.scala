@@ -8,6 +8,7 @@ import java.io.StringReader
 import collection.mutable.Stack
 import org.apache.solr.common.SolrInputDocument
 import java.lang.{IllegalStateException, StackOverflowError}
+import org.slf4j.LoggerFactory
 
 
 /**
@@ -17,6 +18,9 @@ import java.lang.{IllegalStateException, StackOverflowError}
  * Time: 4:02 PM
  */
 object JsonUpdateCommandBuilder {
+
+  /** logger instance */
+  val Logger = LoggerFactory.getLogger(JsonUpdateCommandBuilder.getClass())
 
   /** pass the actual json body that contain a command operand */
   val DocumentParamName = "doc"
@@ -46,23 +50,23 @@ object JsonUpdateCommandBuilder {
           if (parser.wasKey()) {
             fieldStack.push(parser.getString)
           } else {
-            docStack.pop().addField(fieldStack.pop(), parser.getString())
+            docStack.head.addField(fieldStack.pop(), parser.getString())
           }
         }
         case JSONParser.BIGNUMBER    => {
-          docStack.pop().addField(fieldStack.pop(), parser.getLong())
+          docStack.head.addField(fieldStack.pop(), parser.getLong())
         }
         case JSONParser.BOOLEAN      => {
-          docStack.pop().addField(fieldStack.pop(), parser.getBoolean())
+          docStack.head.addField(fieldStack.pop(), parser.getBoolean())
         }
         case JSONParser.LONG         => {
-          docStack.pop().addField(fieldStack.pop(), parser.getLong())
+          docStack.head.addField(fieldStack.pop(), parser.getLong())
         }
         case JSONParser.NULL         => {
           fieldStack.pop() //just ignore for now and clean up a field stack
         }
         case JSONParser.NUMBER       => {
-          docStack.pop().addField(fieldStack.pop(), parser.getDouble())
+          docStack.head.addField(fieldStack.pop(), parser.getDouble())
         }
         case JSONParser.OBJECT_END   => //do nothing for now
         case JSONParser.EOF          => {
