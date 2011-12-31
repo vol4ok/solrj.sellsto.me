@@ -2,13 +2,14 @@ package sellstome.search.solr.request.update
 
 import org.apache.solr.request.SolrQueryRequest
 import org.apache.solr.response.SolrQueryResponse
-import org.apache.solr.update._
 import org.apache.noggit.JSONParser
 import java.io.StringReader
 import collection.mutable.Stack
 import org.apache.solr.common.SolrInputDocument
 import java.lang.{IllegalStateException, StackOverflowError}
 import org.slf4j.LoggerFactory
+import org.apache.solr.update._
+import sellstome.search.solr.FeatureNotImplementedException
 
 
 /**
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory
  * User: zhygr
  * Date: 12/28/11
  * Time: 4:02 PM
+ * Factory for creating a corresponding org.apache.solr.update.UpdateCommand
  */
 object JsonUpdateCommandBuilder {
 
@@ -83,22 +85,24 @@ object JsonUpdateCommandBuilder {
 
   /** Builds delete from index command */
   def buildDelete(req: SolrQueryRequest, rsp: SolrQueryResponse): DeleteUpdateCommand = {
-    null
+    throw new FeatureNotImplementedException()
   }
 
   /** Builds merge indexes command */
   def buildMergeIndexes(req: SolrQueryRequest, rsp: SolrQueryResponse): MergeIndexesCommand = {
-    null
+    throw new FeatureNotImplementedException()
   }
 
   /** Builds commit indexes command */
   def buildCommit(req: SolrQueryRequest, rsp: SolrQueryResponse): CommitUpdateCommand = {
-    null
+    val commitCMD = new CommitUpdateCommand(req, false)
+    commitCMD.waitSearcher = true
+    return commitCMD
   }
 
   /** Builds rollback from index command */
   def buildRollback(req: SolrQueryRequest, rsp: SolrQueryResponse): RollbackUpdateCommand = {
-    null
+    throw new FeatureNotImplementedException()
   }
   
 
