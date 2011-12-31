@@ -22,8 +22,9 @@ object AdsSerializer {
    */
   def apply(@Nonnull docs: DocList,@Nonnull searcher: SolrIndexSearcher): JSONArray = {
     val jsonDocs = new JSONArray()
+    val docIterator = docs.iterator()
     for (i <- 1 to docs.size()) {
-      val docId = docs.iterator().next()
+      val docId = docIterator.next()
       jsonDocs.put(adDocToJson(searcher.doc(docId)))
     }
     return jsonDocs

@@ -882,11 +882,9 @@
                   class="solr.CSVRequestHandler" 
                   startup="lazy" />
 
-  <!-- JSON Update Request Handler
-       http://wiki.apache.org/solr/UpdateJSON
-    -->
+  <!-- A custom json update handler -->
   <requestHandler name="/update/json" 
-                  class="solr.JsonUpdateRequestHandler" 
+                  class="sellstome.search.solr.request.JsonUpdateHandler"
                   startup="lazy" />
 
   <!-- Solr Cell Update Request Handler

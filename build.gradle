@@ -21,22 +21,27 @@ repositories {
 }
 
 dependencies {
-    scalaTools 'org.scala-lang:scala-compiler:2.9.1'
-    scalaTools 'org.scala-lang:scala-library:2.9.1'
+    //scala plugin dependencies
+    scalaTools      'org.scala-lang:scala-compiler:2.9.1'
+    scalaTools      'org.scala-lang:scala-library:2.9.1'
+
     //compile dependencies
-    compile 'org.json:json:20090211'
-    compile 'net.sourceforge.findbugs:jsr305:1.3.7'
-    compile 'org.scala-lang:scala-library:2.9.1'
+    compile         'org.json:json:20090211'
+    compile         'net.sourceforge.findbugs:jsr305:1.3.7'
+    compile         'org.scala-lang:scala-library:2.9.1'
+
     //provided dependencies
-    provided 'org.slf4j:slf4j-api:1.6.1'
-    provided 'com.google.guava:guava:r05'
-    provided fileTree(dir:'build-solr', include: '*.jar')
+    provided        'org.slf4j:slf4j-api:1.6.1'
+    provided        'com.google.guava:guava:r05'
+    provided        'org.apache.solr:solr-noggit:3.5.0'
+    provided        fileTree(dir:'build-solr', include: '*.jar')
+
     //test dependencies
-    testCompile 'org.easymock:easymock:3.0'
-    testCompile 'org.powermock:powermock-api-easymock:1.4.10'
-    testCompile 'org.powermock:powermock-module-javaagent:1.4.10'
-    testCompile 'org.powermock:powermock-api-support:1.4.10'
-    testCompile 'org.scalatest:scalatest_2.9.0:1.6.1'
+    testCompile     'org.easymock:easymock:3.0'
+    testCompile     'org.powermock:powermock-api-easymock:1.4.10'
+    testCompile     'org.powermock:powermock-module-javaagent:1.4.10'
+    testCompile     'org.powermock:powermock-api-support:1.4.10'
+    testCompile     'org.scalatest:scalatest_2.9.0:1.6.1'
 }
 
 sourceSets {
