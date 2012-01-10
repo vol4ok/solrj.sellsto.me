@@ -1,6 +1,7 @@
 /.idea
 /source
 /solrj.sellsto.me.iml
+/server/*
 /.gradle
 /build
 /build-solr
@@ -11,3 +12,6 @@
 /lib/test/compile
 /lib/test/runtime
 /out
+
+/server
+/lib
