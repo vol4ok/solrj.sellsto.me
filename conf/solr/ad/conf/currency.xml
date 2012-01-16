@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<currencyConfig version="1.0">
+    <rates>
+        <!-- todo zhugrov a - this is for test purposes only -->
+        <rate from="USD" to="JPY" rate="81.29"/>
+        <rate from="USD" to="EUR" rate="2.5"/>
+        <rate from="USD" to="GBP" rate="0.5"/>
+        <rate from="EUR" to="GBP" rate="0.5"/>
+        <rate from="EUR" to="USD" rate="0.5"/>
+    </rates>
+</currencyConfig>

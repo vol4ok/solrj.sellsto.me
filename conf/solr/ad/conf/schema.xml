@@ -2,35 +2,35 @@
 
 <schema name="ad" version="1.4">
   <types>
-    <fieldType name="string"    class="solr.StrField"           sortMissingLast="true" omitNorms="true"/>
-    <fieldType name="boolean"   class="solr.BoolField"          sortMissingLast="true" omitNorms="true"/>
-    <fieldtype name="binary"    class="solr.BinaryField"                                               />
-    <fieldType name="int"       class="solr.TrieIntField"       precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
-    <fieldType name="float"     class="solr.TrieFloatField"     precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
-    <fieldType name="long"      class="solr.TrieLongField"      precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
-    <fieldType name="double"    class="solr.TrieDoubleField"    precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
-    <fieldType name="tint"      class="solr.TrieIntField"       precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
-    <fieldType name="tfloat"    class="solr.TrieFloatField"     precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
-    <fieldType name="tlong"     class="solr.TrieLongField"      precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
-    <fieldType name="tdouble"   class="solr.TrieDoubleField"    precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
-    <fieldType name="date"      class="solr.TrieDateField"      precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
-    <fieldType name="tdate"     class="solr.TrieDateField"      precisionStep="6" omitNorms="true" positionIncrementGap="0"/>
-    <fieldType name="pint"      class="solr.IntField"           omitNorms="true"/>
-    <fieldType name="plong"     class="solr.LongField"          omitNorms="true"/>
-    <fieldType name="pfloat"    class="solr.FloatField"         omitNorms="true"/>
-    <fieldType name="pdouble"   class="solr.DoubleField"        omitNorms="true"/>
-    <fieldType name="pdate"     class="solr.DateField"          sortMissingLast="true" omitNorms="true"/>
-    <fieldType name="sint"      class="solr.SortableIntField"   sortMissingLast="true" omitNorms="true"/>
-    <fieldType name="slong"     class="solr.SortableLongField"  sortMissingLast="true" omitNorms="true"/>
-    <fieldType name="sfloat"    class="solr.SortableFloatField" sortMissingLast="true" omitNorms="true"/>
-    <fieldType name="sdouble"   class="solr.SortableDoubleField" sortMissingLast="true" omitNorms="true"/>
-    <fieldType name="random"    class="solr.RandomSortField"    indexed="true" />
-    <fieldType name="text_ws"   class="solr.TextField"          positionIncrementGap="100">
+    <fieldType name="string"                    class="solr.StrField"           sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="boolean"                   class="solr.BoolField"          sortMissingLast="true" omitNorms="true"/>
+    <fieldtype name="binary"                    class="solr.BinaryField"                                               />
+    <fieldType name="int"                       class="solr.TrieIntField"       precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="float"                     class="solr.TrieFloatField"     precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="long"                      class="solr.TrieLongField"      precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="double"                    class="solr.TrieDoubleField"    precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="tint"                      class="solr.TrieIntField"       precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="tfloat"                    class="solr.TrieFloatField"     precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="tlong"                     class="solr.TrieLongField"      precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="tdouble"                   class="solr.TrieDoubleField"    precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="date"                      class="solr.TrieDateField"      precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="tdate"                     class="solr.TrieDateField"      precisionStep="6" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="pint"                      class="solr.IntField"           omitNorms="true"/>
+    <fieldType name="plong"                     class="solr.LongField"          omitNorms="true"/>
+    <fieldType name="pfloat"                    class="solr.FloatField"         omitNorms="true"/>
+    <fieldType name="pdouble"                   class="solr.DoubleField"        omitNorms="true"/>
+    <fieldType name="pdate"                     class="solr.DateField"          sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="sint"                      class="solr.SortableIntField"   sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="slong"                     class="solr.SortableLongField"  sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="sfloat"                    class="solr.SortableFloatField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="sdouble"                   class="solr.SortableDoubleField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="random"                    class="solr.RandomSortField"    indexed="true" />
+    <fieldType name="text_ws"                   class="solr.TextField"          positionIncrementGap="100">
       <analyzer>
         <tokenizer class="solr.WhitespaceTokenizerFactory"/>
       </analyzer>
     </fieldType>
-    <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="text_general"              class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
@@ -43,7 +43,7 @@
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>
-    <fieldType name="text_en" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="text_en"                   class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords_en.txt" enablePositionIncrements="true" />
@@ -66,7 +66,7 @@
 	    <filter class="solr.PorterStemFilterFactory"/>
       </analyzer>
     </fieldType>
-    <fieldType name="text_en_splitting" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
+    <fieldType name="text_en_splitting"         class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
       <analyzer type="index">
         <tokenizer class="solr.WhitespaceTokenizerFactory"/>
         <filter class="solr.StopFilterFactory"
@@ -93,7 +93,7 @@
         <filter class="solr.PorterStemFilterFactory"/>
       </analyzer>
     </fieldType>
-    <fieldType name="text_en_splitting_tight" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
+    <fieldType name="text_en_splitting_tight"   class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
       <analyzer>
         <tokenizer class="solr.WhitespaceTokenizerFactory"/>
         <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="false"/>
@@ -105,7 +105,7 @@
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
-    <fieldType name="text_general_rev" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="text_general_rev"          class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
@@ -120,7 +120,7 @@
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>
-    <fieldType name="alphaOnlySort" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+    <fieldType name="alphaOnlySort"             class="solr.TextField" sortMissingLast="true" omitNorms="true">
       <analyzer>
         <tokenizer class="solr.KeywordTokenizerFactory"/>
         <filter class="solr.LowerCaseFilterFactory" />
@@ -130,40 +130,40 @@
         />
       </analyzer>
     </fieldType>
-    <fieldtype name="phonetic" stored="false" indexed="true" class="solr.TextField" >
+    <fieldtype name="phonetic"                  class="solr.TextField" stored="false" indexed="true"  >
       <analyzer>
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.DoubleMetaphoneFilterFactory" inject="false"/>
       </analyzer>
     </fieldtype>
-    <fieldtype name="payloads" stored="false" indexed="true" class="solr.TextField" >
+    <fieldtype name="payloads"                  class="solr.TextField" stored="false" indexed="true"  >
       <analyzer>
         <tokenizer class="solr.WhitespaceTokenizerFactory"/>
         <filter class="solr.DelimitedPayloadTokenFilterFactory" encoder="float"/>
       </analyzer>
     </fieldtype>
-    <fieldType name="lowercase" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="lowercase"                 class="solr.TextField" positionIncrementGap="100">
       <analyzer>
         <tokenizer class="solr.KeywordTokenizerFactory"/>
         <filter class="solr.LowerCaseFilterFactory" />
       </analyzer>
     </fieldType>
-    <fieldType name="text_path" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="text_path"                 class="solr.TextField" positionIncrementGap="100">
       <analyzer>
         <tokenizer class="solr.PathHierarchyTokenizerFactory"/>
       </analyzer>
     </fieldType>
-    <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
-    <fieldType name="point" class="solr.PointType" dimension="2" subFieldSuffix="_d"/>
-    <fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"/>
-    <fieldtype name="geohash" class="solr.GeoHashField"/>
+    <fieldtype name="ignored"                   class="solr.StrField" stored="false" indexed="false" multiValued="true" />
+    <fieldType name="point"                     class="solr.PointType" dimension="2" subFieldSuffix="_d"/>
+    <fieldType name="location"                  class="solr.LatLonType" subFieldSuffix="_coordinate"/>
+    <fieldtype name="geohash"                   class="solr.GeoHashField"/>
+    <fieldType name="money"                     class="solr.MoneyType" currencyConfig="currency.xml"/>
  </types>
 
  <fields>
    <field name="id" 		type="string" 		indexed="true" 	stored="true" 	required="true" 			/>
-   <field name="title"      type="text_general" indexed="true"  stored="true"   required="true"             />
    <field name="body"		type="text_general"	indexed="true"	stored="true"	required="true"				/>
-   <field name="price" 		type="double" 		indexed="true" 	stored="true" 	required="true" 			/>
+   <field name="price" 		type="money" 		indexed="true" 	stored="true" 	required="true" defaultCurrency="USD"/>
    <field name="location"	type="location" 	indexed="true"	stored="true"	required="true" multiValued="false" 	/>
    <dynamicField            name="*_coordinate" type="tdouble"  indexed="true"  stored="false"/>
  </fields>
