@@ -1,4 +1,4 @@
-package org.apache.solr.schema;
+package sellstome.search.solr.schema;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,7 +20,6 @@ package org.apache.solr.schema;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.index.DocValues;
 import org.apache.lucene.queries.function.FunctionValues;
 import org.apache.lucene.queries.function.ValueSource;
 import org.apache.lucene.search.Query;
@@ -29,6 +28,7 @@ import org.apache.solr.common.ResourceLoader;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.response.TextResponseWriter;
 import org.apache.solr.response.XMLWriter;
+import org.apache.solr.schema.AbstractSubTypeFieldType;
 import org.apache.solr.schema.IndexSchema;
 import org.apache.solr.schema.SchemaField;
 import org.apache.solr.search.QParser;
@@ -61,12 +61,11 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>
  * See <a href="http://wiki.apache.org/solr/MoneyFieldType">http://wiki.apache.org/solr/MoneyFieldType</a>
  */
-public class MoneyType extends org.apache.solr.schema.FieldType implements org.apache.solr.schema.SchemaAware, ResourceLoaderAware {
-    private IndexSchema schema;
+public class MoneyType extends AbstractSubTypeFieldType implements ResourceLoaderAware {
+    public static Logger log = LoggerFactory.getLogger(MoneyType.class);
     private String currencyConfigPath;
     private String defaultCurrency;
     private AtomicReference<CurrencyConfig> currencyConfigRef = new AtomicReference<CurrencyConfig>();
-    public static Logger log = LoggerFactory.getLogger(MoneyType.class);
 
     private CurrencyConfig currencyConfig() {
         return currencyConfigRef.get();
@@ -74,20 +73,18 @@ public class MoneyType extends org.apache.solr.schema.FieldType implements org.a
 
     @Override
     protected void init(IndexSchema schema, Map<String, String> args) {
-        this.schema = schema;
+        super.init(schema, args);
+
         this.currencyConfigPath = args.get("currencyConfig");
         this.defaultCurrency = args.get("defaultCurrency");
-
         if (this.defaultCurrency == null) {
             this.defaultCurrency = "USD";
         }
-
         if (java.util.Currency.getInstance(this.defaultCurrency) == null) {
             throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, "Invalid currency code " + this.defaultCurrency);
         }
-
         args.remove("currencyConfig");
-        super.init(schema, args);
+        createSuffixCache(3);
     }
 
     /**
@@ -128,48 +125,22 @@ public class MoneyType extends org.apache.solr.schema.FieldType implements org.a
 
     @Override
     public IndexableField[] createFields(SchemaField field, Object externalVal, float boost) {
-        MoneyValue value = MoneyValue.parse(externalVal.toString(), defaultCurrency);
+        IndexableField[] f = new IndexableField[(field.indexed() ? 2 : 0) + (field.stored() ? 1 : 0)];
 
-        IndexableField[] f = new IndexableField[field.stored() ? 3 : 2];
-        f[0] = getAmountField(field).createField(String.valueOf(value.getAmount()), boost);
-        f[1] = getCurrencyField(field).createField(value.getCurrencyCode(), boost);
+        if (field.indexed()) {
+            MoneyValue value = MoneyValue.parse(externalVal.toString(), defaultCurrency);
+            //money amount
+            f[0] = subField(field, 0).createField(String.valueOf(value.getAmount()), boost);
+            //money currency
+            f[1] = subField(field, 1).createField(value.getCurrencyCode(), boost);
+        }
 
         if (field.stored()) {
             FieldType customType = new FieldType();
             customType.setStored(true);
-            f[2] = createField(field.getName(), externalVal.toString(), customType, boost);
+            f[f.length - 1] = createField(field.getName(), externalVal.toString(), customType, boost);
         }
-
         return f;
-    }
-
-    private SchemaField getAmountField(SchemaField field) {
-        return schema.getField(field.getName() + POLY_FIELD_SEPARATOR + "_amount_raw");
-    }
-
-    private SchemaField getCurrencyField(SchemaField field) {
-        return schema.getField(field.getName() + POLY_FIELD_SEPARATOR + "_currency");
-    }
-
-    private void createDynamicMoneyField(String suffix, String fieldType) {
-        String name = "*" + POLY_FIELD_SEPARATOR + suffix;
-        Map<String, String> props = new HashMap<String, String>();
-        props.put("indexed", "true");
-        props.put("stored", "false");
-        props.put("multiValued", "false");
-        org.apache.solr.schema.FieldType type = schema.getFieldTypeByName(fieldType);
-        int p = SchemaField.calcProps(name, type, props);
-        schema.registerDynamicField(SchemaField.create(name, type, p, null));
-    }
-
-    /**
-     * When index schema is informed, add dynamic fields.
-     *
-     * @param indexSchema The index schema.
-     */
-    public void inform(IndexSchema indexSchema) {
-        createDynamicMoneyField("_currency", "string");
-        createDynamicMoneyField("_amount_raw", "long");
     }
 
     /**
@@ -234,8 +205,8 @@ public class MoneyType extends org.apache.solr.schema.FieldType implements org.a
         public MoneyValueSource(SchemaField sf, String targetCurrencyCode, QParser parser) {
             this.targetCurrencyCode = targetCurrencyCode;
 
-            SchemaField amountField = schema.getField(sf.getName() + POLY_FIELD_SEPARATOR + "_amount_raw");
-            SchemaField currencyField = schema.getField(sf.getName() + POLY_FIELD_SEPARATOR + "_currency");
+            SchemaField amountField =   subField(sf, 0);
+            SchemaField currencyField = subField(sf, 1);
 
             currencyValues = currencyField.getType().getValueSource(currencyField, parser);
             amountValues = amountField.getType().getValueSource(amountField, parser);
