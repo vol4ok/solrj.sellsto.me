@@ -7,14 +7,15 @@ package sellstome.search.solr.response;
  * Time: 0:31
  * Definition of the ad solr index schema in code.
  * Note: ideally this file should be in sync with the ad/schema.xml
+ * todo zhugrov a - make schema.xml the only source of schema information
  */
 public enum AdSchema {
     /** doc id */
     ID("id", "_id", StringSolrFieldConverter$.MODULE$),
-    /** User supplied ad description. */
-    BODY("body", StringSolrFieldConverter$.MODULE$),
-    /** Item price. */
-    PRICE("price", PriceSolrFieldConverter$.MODULE$),
+    /** A short ad description. */
+    MESSAGE("message", StringSolrFieldConverter$.MODULE$),
+    /** Item price. todo zhugrov a - add a more precise logic for converting price data. */
+    PRICE("price", StringSolrFieldConverter$.MODULE$),
     /** Item location. */
     LOCATION("location", LocationSolrFieldConverter$.MODULE$);
 
