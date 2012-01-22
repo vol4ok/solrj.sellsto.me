@@ -75,9 +75,11 @@
       </lst>
   </requestHandler>
 
-  <requestHandler name="/admin/"     class="solr.admin.AdminHandlers" />
+  <requestHandler name="/update"        class="solr.XmlUpdateRequestHandler" />
 
-  <requestHandler name="/admin/ping" class="solr.PingRequestHandler">
+  <requestHandler name="/admin/"        class="solr.admin.AdminHandlers" />
+
+  <requestHandler name="/admin/ping"    class="solr.PingRequestHandler">
     <lst name="invariants">
       <str name="qt">search</str>
       <str name="q">solrpingquery</str>

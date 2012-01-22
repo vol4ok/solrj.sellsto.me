@@ -13,7 +13,7 @@ object LocationSolrFieldConverter extends SolrField2JsonConverter {
   def toJson(storedField: String) = {
     val latLongPair = storedField.split(",")
     new JSONObject()
-      .put("latitude",  latLongPair(0).toDouble)
-      .put("longitude", latLongPair(1).toDouble)
+      .put("lat",  latLongPair(0).toDouble)
+      .put("lng",  latLongPair(1).toDouble)
   }
 }
