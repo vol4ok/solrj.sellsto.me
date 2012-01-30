@@ -1,13 +1,11 @@
 package sellstome.search.solr.response
 
 import org.easymock.EasyMock
-import collection.JavaConversions._
-import org.apache.solr.search.{SolrIndexSearcher, DocIterator, DocSet, DocList}
+import org.apache.solr.search.{SolrIndexSearcher, DocIterator, DocList}
 import org.apache.lucene.document.Document
 import org.powermock.api.easymock.PowerMock
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
 import org.powermock.modules.agent.PowerMockAgent
-import org.apache.solr.common.params.{CommonParams, SolrParams}
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,6 +13,8 @@ import org.apache.solr.common.params.{CommonParams, SolrParams}
  * Date: 13.10.11
  * Time: 0:35
  * Test json ad search result serializer.
+ *
+ * todo zhugrov a - fix underlying test
  */
 class AdSerializerUnitTest extends FunSuite with BeforeAndAfterAll {
 
@@ -22,7 +22,6 @@ class AdSerializerUnitTest extends FunSuite with BeforeAndAfterAll {
   protected override def beforeAll() {
     PowerMockAgent.initializeIfNeeded()
   }
-
 
   test("check json generated") {
     val docList = EasyMock.createMock(classOf[DocList])

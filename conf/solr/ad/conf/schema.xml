@@ -157,14 +157,14 @@
     <fieldType name="point"                     class="solr.PointType"          dimension="2" subFieldSuffix="_d"/>
     <fieldType name="location"                  class="solr.LatLonType"         subFieldSuffix="_coordinate"/>
     <fieldtype name="geohash"                   class="solr.GeoHashField"                                       />
-    <fieldType name="money"                     class="sellstome.search.solr.schema.MoneyType" subFieldSuffix="_money" currencyConfig="currency.xml"/>
+    <fieldType name="money"                     class="sellstome.search.solr.schema.MoneyType" subFieldSuffix="_money" />
  </types>
 
  <fields>
    <field name="id"             type="string"       indexed="true"  stored="true"   required="true"                         />
    <field name="message"        type="text_general" indexed="true"  stored="true"   required="true"                         />
    <field name="description"    type="text_general" indexed="true"  stored="true"   required="false"                        />
-   <field name="price"          type="money"        indexed="true"  stored="true"   required="true" defaultCurrency="USD"   />
+   <field name="price"          type="money"        indexed="true"  stored="true"   required="true"                         />
    <field name="price_0_money"  type="long"         indexed="true"  stored="false"  required="false"                        />
    <field name="price_1_money"  type="string"       indexed="true"  stored="false"  required="false"                        />
    <field name="location"       type="location"     indexed="true"  stored="true"   required="true" multiValued="false"     />

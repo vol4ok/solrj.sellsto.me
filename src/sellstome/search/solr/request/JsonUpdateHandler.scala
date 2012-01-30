@@ -37,7 +37,7 @@ class JsonUpdateHandler extends RequestHandlerBase {
    */
   def handleRequestBody(req: SolrQueryRequest, rsp: SolrQueryResponse) {
     val params = req.getParams
-    val updateChainName = if (params.get(UpdateParams.UPDATE_CHAIN_DEPRECATED) != null) params.get(UpdateParams.UPDATE_CHAIN_DEPRECATED) else params.get(UpdateParams.UPDATE_CHAIN)
+    val updateChainName = params.get(UpdateParams.UPDATE_CHAIN)
     val updateProcessor = req.getCore.getUpdateProcessingChain(updateChainName).createProcessor(req, rsp)
     try {
       val cmd = params.get(Command.RequestParamName)

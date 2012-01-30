@@ -6,12 +6,8 @@
 /build
 /build-solr
 /gradle-app.setting
-/lib/main/compile
-/lib/main/provided
-/lib/main/runtime
-/lib/test/compile
-/lib/test/runtime
+/lib/main
+/lib/test
 /out
-
 /server
-/lib
+/sources
