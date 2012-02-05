@@ -2,7 +2,6 @@ package sellstome.search.solr.schema
 
 import finance.{MoneyValue, MoneyValueSource}
 import org.slf4j.{LoggerFactory, Logger}
-import java.util.Currency
 import org.apache.lucene.document.FieldType
 import org.apache.solr.search.function.ValueSourceRangeFilter
 import org.apache.lucene.search.{SortField, Query}
@@ -14,23 +13,26 @@ import org.apache.solr.search.{QParser, SolrConstantScoreQuery}
 import org.apache.lucene.index.IndexableField
 import com.google.common.collect.Lists
 import org.apache.lucene.queries.function.ValueSource
+import sellstome.search.solr.service.finance.CurrencyExchangeRatesService
+import sellstome.search.solr.util.Currencies
+import sellstome.search.solr.common.trysolr
 
 
 object MoneyType {
   /** logger instance */
-  private val log: Logger = LoggerFactory.getLogger(classOf[MoneyType])
+  private[schema] val log: Logger = LoggerFactory.getLogger(classOf[MoneyType])
+  /** todo zhugrov a - think how to refactor it via dependency injection pattern */
+  private[schema] val exchangeRatesService = new CurrencyExchangeRatesService()
+  /** base currency */
+  private[schema] val BaseCurrency = Currencies("EUR")
 }
 
-/**
- * Field type for support of monetary values.
- * <p>
- * See <a href="http://wiki.apache.org/solr/MoneyFieldType">http://wiki.apache.org/solr/MoneyFieldType</a>
- */
+/** Field type for support of monetary values. */
 class MoneyType extends AbstractSubTypeFieldType {
 
   protected override def init(schema: IndexSchema, args: java.util.Map[String, String]) {
     super.init(schema, args)
-    createSuffixCache(3)
+    createSuffixCache(1)
   }
 
   override def isPolyField: Boolean = true
@@ -38,9 +40,8 @@ class MoneyType extends AbstractSubTypeFieldType {
   override def createFields(field: SchemaField, externalVal: AnyRef, boost: Float): Array[IndexableField] = {
     val f: Array[IndexableField] = new Array[IndexableField]((if (field.indexed) 2 else 0) + (if (field.stored) 1 else 0))
     if (field.indexed) {
-      val value = MoneyValue.parse(externalVal.toString)
+      val value = MoneyType.exchangeRatesService.convertCurrency(MoneyValue.parse(externalVal.toString), MoneyType.BaseCurrency)
       f(0) = subField(field, 0).createField(String.valueOf(value.getAmount), boost)
-      f(1) = subField(field, 1).createField(value.getCurrency.getCurrencyCode, boost)
     }
     if (field.stored) {
       val customType = new FieldType()
@@ -55,6 +56,7 @@ class MoneyType extends AbstractSubTypeFieldType {
   }
 
   override def getRangeQuery(parser: QParser, field: SchemaField, lowerBoundValue: String, upperBoundValue: String, minInclusive: Boolean, maxInclusive: Boolean): Query = {
+    //todo zhugrov a - reimplement this method
     val lower: MoneyValue = MoneyValue.parse(lowerBoundValue)
     val upper: MoneyValue = MoneyValue.parse(upperBoundValue)
     if (!(lower.getCurrency  == upper.getCurrency)) {
@@ -64,24 +66,12 @@ class MoneyType extends AbstractSubTypeFieldType {
   }
 
   override def getValueSource(field: SchemaField, parser: QParser): ValueSource = {
-      val vs = Lists.newArrayList[ValueSource]
-      for ( i <- 0 until 2) {
-        val sub = subField(field, i)
-        vs.add(sub.getType().getValueSource(sub, parser))
-      }
-      return new MoneyValueSource(field, vs)
+    //todo zhugrov a - study hard the implementation of this method
+    val indexField = subField(field, 0)
+    return new MoneyValueSource(field, Lists.newArrayList(indexField.getType().getValueSource(indexField, parser)))
   }
 
-  def getSortField(field: SchemaField, reverse: Boolean): SortField = {
-    try {
-      return (getValueSource(field, null)).getSortField(reverse)
-    }
-    catch {
-      case e: IOException => {
-        throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, e)
-      }
-    }
-  }
+  def getSortField(field: SchemaField, reverse: Boolean): SortField = subField(field, 0).getSortField(reverse)
 
   /**
    * It never makes sense to create a single field, so make it impossible to happen
@@ -90,6 +80,7 @@ class MoneyType extends AbstractSubTypeFieldType {
     throw new UnsupportedOperationException("LatLonType uses multiple fields.  field=" + field.getName)
   }
 
+  /** How to use this method to deserialize the corresponding indexable field */
   def write(writer: TextResponseWriter, name: String, field: IndexableField) = {
     writer.writeStr(name, field.stringValue, false)
   }

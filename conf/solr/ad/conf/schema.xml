@@ -166,7 +166,6 @@
    <field name="description"    type="text_general" indexed="true"  stored="true"   required="false"                        />
    <field name="price"          type="money"        indexed="true"  stored="true"   required="true"                         />
    <field name="price_0_money"  type="long"         indexed="true"  stored="false"  required="false"                        />
-   <field name="price_1_money"  type="string"       indexed="true"  stored="false"  required="false"                        />
    <field name="location"       type="location"     indexed="true"  stored="true"   required="true" multiValued="false"     />
    <field name="state"          type="string"       indexed="true"  stored="true"   required="true"                         />
    <field name="searchable"     type="boolean"      indexed="true"  stored="true"   required="true"                         />

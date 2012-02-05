@@ -10,7 +10,7 @@ import org.apache.solr.common.SolrException
  * Time: 2:35
  * Tests functionality of solr component exceptional wrapper
  */
-class SolrExceptionalWrapperClauseTest extends FunSuite {
+class TrySolrUnitTest extends FunSuite {
 
   test("test normal case") {
 
@@ -28,10 +28,29 @@ class SolrExceptionalWrapperClauseTest extends FunSuite {
       fail()
     } catch {
       case e: SolrException => {
-
+        Console.println("Succesfully catched expeption.")
       }
     }
 
+  }
+
+  test("test local return") {
+      val result = trysolr {
+        10
+      }
+      expect(10) (result)
+  }
+  
+  test("test non local return") {
+     val result = calculate()
+     expect(1000) (result)
+  }
+  
+  def calculate(): Int = {
+    trysolr {
+      return 1000
+    }
+    fail()
   }
 
 }

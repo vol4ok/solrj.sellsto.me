@@ -1,10 +1,8 @@
 /.idea
 /source
 /solrj.sellsto.me.iml
-/server/*
 /.gradle
 /build
-/build-solr
 /gradle-app.setting
 /lib/main
 /lib/test

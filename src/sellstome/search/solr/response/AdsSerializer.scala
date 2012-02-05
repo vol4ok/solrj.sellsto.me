@@ -20,11 +20,12 @@ object AdsSerializer {
    *  @param docs An ordered list of document ids
    *  @param searcher Implements search functionality over single index reader
    */
-  def apply(@Nonnull docs: DocList,@Nonnull searcher: SolrIndexSearcher): JSONArray = {
+  def apply(@Nonnull docs: DocList, @Nonnull searcher: SolrIndexSearcher): JSONArray = {
     val jsonDocs = new JSONArray()
     val docIterator = docs.iterator()
     for (i <- 1 to docs.size()) {
       val docId = docIterator.next()
+      //todo zhugrov a - investigate how expensive this call?
       jsonDocs.put(adDocToJson(searcher.doc(docId)))
     }
     return jsonDocs

@@ -33,12 +33,10 @@ dependencies {
     provided        'org.slf4j:slf4j-api:1.6.1'
     provided        'org.slf4j:slf4j-jdk14:1.6.1'
     provided        'com.google.guava:guava:r05'
-    provided        'org.apache.solr:solr-noggit:3.5.0'
     provided        'commons-lang:commons-lang:2.6'
     provided        'commons-httpclient:commons-httpclient:3.1'
     provided        'commons-io:commons-io:2.1'
     provided        'commons-codec:commons-codec:1.6'
-    provided        fileTree(dir:'build-solr', include: '*.jar')
 
     //test dependencies
     testCompile     'org.easymock:easymock:3.0'

@@ -36,6 +36,7 @@ object trylog {
     } catch {
       case e: Throwable => {
         SolrException.log(log, e)
+        throw e
       }
     }
   }

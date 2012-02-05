@@ -59,7 +59,7 @@ class AdResponseWriter extends QueryResponseWriter with SellstomeSolrComponent {
         false
       }
     })
-    ensuring( result != null , "Could not find a DocList collection")
+    ensure( result != null , "Could not find a DocList collection")
     return result
   }
 

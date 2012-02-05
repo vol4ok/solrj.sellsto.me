@@ -1,6 +1,7 @@
 package sellstome.search.solr.common
 
 import org.apache.solr.common.SolrException
+import runtime.NonLocalReturnControl
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,13 +26,13 @@ import org.apache.solr.common.SolrException
  */
 object trysolr {
 
-  def apply( f: => Unit ) {
+  def apply[T]( f: => T ): T = {
     try {
        f
     } catch {
-      case e: Throwable => {
-        throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, e)
-      }
+      case e: NonLocalReturnControl[_] => throw (e)
+      case e: SolrException =>            throw (e)
+      case e: Throwable =>                throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, e)
     }
   }
 
