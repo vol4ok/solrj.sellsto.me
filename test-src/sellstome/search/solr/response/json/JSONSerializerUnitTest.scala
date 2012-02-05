@@ -1,4 +1,4 @@
-package sellstome.search.solr.response
+package sellstome.search.solr.response.json
 
 import org.easymock.EasyMock
 import org.apache.solr.search.{SolrIndexSearcher, DocIterator, DocList}
@@ -16,9 +16,9 @@ import org.powermock.modules.agent.PowerMockAgent
  *
  * todo zhugrov a - fix underlying test
  */
-class AdSerializerUnitTest extends FunSuite with BeforeAndAfterAll {
+class JSONSerializerUnitTest extends FunSuite with BeforeAndAfterAll {
 
-  /** Initialize a power mock agent */
+  /**Initialize a power mock agent */
   protected override def beforeAll() {
     PowerMockAgent.initializeIfNeeded()
   }
@@ -33,13 +33,13 @@ class AdSerializerUnitTest extends FunSuite with BeforeAndAfterAll {
     EasyMock.expect(doc.get(EasyMock.anyObject[String]())).andReturn("test").anyTimes()
     EasyMock.expect(searcher.doc(0)).andReturn(doc).anyTimes()
     EasyMock.replay(docList, searcher, doc)
-    val json = AdsSerializer( docList, searcher)
-    assert( json != null )
+//    val json = AdsSerializer( docList, searcher)
+//    assert( json != null )
   }
 
 }
 
-/** Mock object for the {@link DocIterator} */
+/**Mock object for the {@link DocIterator}*/
 private class MockDocIterator(docIds: List[Int]) extends DocIterator {
 
   val internalIt: Iterator[Int] = docIds.iterator

@@ -1,4 +1,4 @@
-package sellstome.search.solr.response
+package sellstome.search.solr.response.json
 
 import org.apache.solr.common.util.NamedList
 import org.apache.solr.request.SolrQueryRequest
@@ -6,8 +6,8 @@ import java.io.Writer
 import org.apache.solr.search.DocList
 import collection.JavaConversions._
 import javax.annotation.Nonnull
-import sellstome.search.solr.common.SellstomeSolrComponent
 import org.apache.solr.response.{ResultContext, SolrQueryResponse, QueryResponseWriter}
+import sellstome.search.solr.common.{using, SellstomeSolrComponent}
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,16 +16,15 @@ import org.apache.solr.response.{ResultContext, SolrQueryResponse, QueryResponse
  * Time: 0:50
  * Generates a json search response.
  */
-class AdResponseWriter extends QueryResponseWriter with SellstomeSolrComponent {
-  /** content type */
+class JSONResponseWriter extends QueryResponseWriter {
+  /**content type */
   val CONTENT_TYPE_JSON_UTF8: String = "text/x-json; charset=UTF-8"
 
   /**
    * Write a SolrQueryResponse, this method must be thread save.
    */
   def write(writer: Writer, request: SolrQueryRequest, response: SolrQueryResponse) {
-    writer.write(AdsSerializer(extractSearchResults(response.getValues),
-                 request.getSearcher).toString)
+    JsonSerializer.writeResponse(writer, request, response)
   }
 
   /**
@@ -41,26 +40,6 @@ class AdResponseWriter extends QueryResponseWriter with SellstomeSolrComponent {
    */
   def init(args: NamedList[_]) {
     //do nothing right now
-  }
-
-  /** Extract a search result list.
-   *  @param responseData data to be returned in solr response
-   *  @throws org.apache.solr.common.SolrException could not parse responseData
-   */
-  @Nonnull
-  protected def extractSearchResults(responseData: NamedList[_]): DocList = {
-    var result: DocList = null
-    responseData.find( (entry) => entry.getValue match {
-      case resultContext: ResultContext => {
-        result = resultContext.docs
-        true
-      }
-      case _ => {
-        false
-      }
-    })
-    ensure( result != null , "Could not find a DocList collection")
-    return result
   }
 
 }
