@@ -4,29 +4,24 @@ import converters.FieldConverters
 import org.apache.lucene.document.Document
 import javax.annotation.Nonnull
 import scala.collection.JavaConversions._
-import org.apache.solr.common.params.{CommonParams, SolrParams}
 import org.json.{JSONObject, JSONArray}
-import org.apache.lucene.index.IndexableField
-import java.util.{Map, Iterator}
-import org.apache.solr.common.SolrDocument
-import org.apache.solr.search.{ReturnFields, SolrIndexSearcher, DocList}
-import java.lang.Float
+import java.util.Map
+import org.apache.solr.search.DocList
 import org.apache.solr.common.util.NamedList
 import java.io.Writer
 import org.apache.solr.request.SolrQueryRequest
-import sellstome.search.solr.common.NotImplementedException
 import scala.Predef._
-import org.apache.solr.response.{ResultContext, SolrQueryResponse, TextResponseWriter}
+import org.apache.solr.response.{ResultContext, SolrQueryResponse}
 import com.google.common.collect.Iterables
 import com.google.common.base.Predicate
-import org.apache.solr.schema.{FieldType, SchemaField, IndexSchema}
+import org.apache.solr.schema.{FieldType, IndexSchema}
 
 /**
  *  A more generified version of sellstome json serializer.
  *  @author Aliaksandr Zhuhrou
  *  @since 1.0
  */
-object JsonSerializer {
+object JSONSerializer {
 
   /**
    *  Transforms a single entry to a json string

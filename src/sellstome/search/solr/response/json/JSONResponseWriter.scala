@@ -24,7 +24,7 @@ class JSONResponseWriter extends QueryResponseWriter {
    * Write a SolrQueryResponse, this method must be thread save.
    */
   def write(writer: Writer, request: SolrQueryRequest, response: SolrQueryResponse) {
-    JsonSerializer.writeResponse(writer, request, response)
+    JSONSerializer.writeResponse(writer, request, response)
   }
 
   /**

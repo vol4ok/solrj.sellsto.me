@@ -39,10 +39,10 @@ dependencies {
     provided        'commons-codec:commons-codec:1.6'
 
     //test dependencies
-    testCompile     'org.easymock:easymock:3.0'
-    testCompile     'org.powermock:powermock-api-easymock:1.4.10'
-    testCompile     'org.powermock:powermock-module-javaagent:1.4.10'
-    testCompile     'org.powermock:powermock-api-support:1.4.10'
+    testCompile     'org.easymock:easymock:3.1'
+    testCompile     'org.powermock:powermock-api-easymock:1.4.11'
+    testCompile     'org.powermock:powermock-module-javaagent:1.4.11'
+    testCompile     'org.powermock:powermock-api-support:1.4.11'
     testCompile     'org.scalatest:scalatest_2.9.0:1.6.1'
 }
 
@@ -99,7 +99,7 @@ task updateLibs(type: Sync) {
 }
 
 /** Allows to rebuild a solr configuration */
-task configSolr(type: Copy,dependsOn: 'jar') {
+task configSolr(type: Copy, dependsOn: 'jar') {
 
     description = 'Updates the solr confguration on server'
 
