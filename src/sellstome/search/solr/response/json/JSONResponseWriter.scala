@@ -3,11 +3,16 @@ package sellstome.search.solr.response.json
 import org.apache.solr.common.util.NamedList
 import org.apache.solr.request.SolrQueryRequest
 import java.io.Writer
-import org.apache.solr.search.DocList
-import collection.JavaConversions._
-import javax.annotation.Nonnull
-import org.apache.solr.response.{ResultContext, SolrQueryResponse, QueryResponseWriter}
-import sellstome.search.solr.common.{using, SellstomeSolrComponent}
+import org.apache.solr.response.{SolrQueryResponse, QueryResponseWriter}
+
+
+
+object JSONResponseWriter {
+
+  /**content type */
+  val CONTENT_TYPE_JSON_UTF8: String = "text/x-json; charset=UTF-8"
+
+}
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,8 +22,6 @@ import sellstome.search.solr.common.{using, SellstomeSolrComponent}
  * Generates a json search response.
  */
 class JSONResponseWriter extends QueryResponseWriter {
-  /**content type */
-  val CONTENT_TYPE_JSON_UTF8: String = "text/x-json; charset=UTF-8"
 
   /**
    * Write a SolrQueryResponse, this method must be thread save.

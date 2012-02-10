@@ -1,6 +1,6 @@
 package sellstome.search.solr.schema
 
-import finance.{MoneyValue, MoneyValueSource}
+import finance.{MoneyFieldComparatorSource, MoneyValue, MoneyValueSource}
 import org.slf4j.{LoggerFactory, Logger}
 import org.apache.lucene.document.FieldType
 import org.apache.solr.search.function.ValueSourceRangeFilter
@@ -80,7 +80,10 @@ class MoneyType extends AbstractSubTypeFieldType {
     return new MoneyValueSource(field, Lists.newArrayList(indexField.getType().getValueSource(indexField, parser)))
   }
 
-  def getSortField(field: SchemaField, reverse: Boolean): SortField = subField(field, 0).getSortField(reverse)
+  def getSortField(field: SchemaField, reverse: Boolean): SortField = new SortField(   subField(field, 0).getName(),
+                                                                                       //todo zhugrov a - if field is not stored then secondary field should be None
+                                                                                       new MoneyFieldComparatorSource(MoneyType.ExchangeRatesService, Option(field.getName())),
+                                                                                       reverse)
 
   /**
    * It never makes sense to create a single field, so make it impossible to happen

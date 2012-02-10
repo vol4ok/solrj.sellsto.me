@@ -1,4 +1,4 @@
-package sellstome.search.solr
+package sellstome.search.solr.common
 
 /**
  * Created by IntelliJ IDEA.
@@ -9,10 +9,10 @@ package sellstome.search.solr
  */
 class FeatureNotImplementedException(message: String, cause: Throwable, enableSuppression: Boolean, writableStackTrace: Boolean) extends RuntimeException {
 
-  def this(message: String, cause: Throwable) = this(message, cause, false, true)
+  def this(message: String, cause: Throwable) = this (message, cause, false, true)
 
-  def this(message: String) = this(message, null)
+  def this(message: String) = this (message, null)
 
-  def this() = this("This feature is not implemented yet. Sorry.")
+  def this() = this ("This feature is not implemented yet. Sorry.")
 
 }

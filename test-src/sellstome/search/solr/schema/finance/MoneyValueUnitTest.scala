@@ -3,6 +3,8 @@ package sellstome.search.solr.schema.finance
 import org.scalatest.FunSuite
 import java.util.Currency
 import org.apache.solr.common.SolrException
+import org.apache.lucene.util.BytesRef
+import sellstome.search.solr.util.Currencies
 
 /**
  * Created by IntelliJ IDEA.
@@ -59,6 +61,12 @@ class MoneyValueUnitTest extends FunSuite {
     } catch {
       case e: SolrException => Console.println("Catch Exception")
     }
+  }
+  
+  test("Test normal case for low level parsing") {
+    val value = MoneyValue.parse(new BytesRef("1000,USD"))
+    expect( 100000 ) ( value._1 )
+    expect( Currencies("USD") ) ( value._2 )
   }
 
 }

@@ -5,6 +5,8 @@ import com.google.common.base.Joiner
 import org.apache.solr.common.SolrException
 import javax.annotation.Nonnull
 import sellstome.search.solr.common.{SellstomeSolrComponent, trysolr, NotImplementedException}
+import org.apache.lucene.search.FieldCache.Parser
+import org.apache.lucene.util.BytesRef
 
 /**
  * Represents a Money field value, which includes a long amount and ISO currency code.
@@ -22,7 +24,14 @@ class MoneyValue(amount: Long, currency: Currency) {
 
 }
 
-object MoneyValue extends SellstomeSolrComponent {
+/**An interface to parse doubles from document fields. */
+trait  MoneyParser extends Parser {
+  /** Returns a money value representation of this field's value. */
+  def parse(term: BytesRef): (Long, Currency)
+}
+
+/** Contains an utility methods for dealing with money in string representation. */
+object MoneyValue extends SellstomeSolrComponent with MoneyParser {
 
   /**
    * Constructs a new money value by parsing the specific input.
@@ -41,6 +50,20 @@ object MoneyValue extends SellstomeSolrComponent {
     val currencyStr = externalVal.split(",")(1)
     val currency    = trysolr { Currency.getInstance(currencyStr) }
     return new MoneyValue(convertToMinorCurrency(amountStr, currency), currency)
+  }
+
+  /**
+   * Returns a money value representation of this field's value.
+   * This method is implemented to be performance wise.
+   * todo zhugrov a - this implementation requires a performance testing
+   * @return a pair of values. the first value represent a amount in a given currency and the second
+   * represent a ISO currency
+   */
+  def parse(term: BytesRef): (Long, Currency) = {
+    val stored = term.utf8ToString()
+    val amountAndCurrency = stored.split(",")
+    val currency = Currency.getInstance(amountAndCurrency(1))
+    return (convertToMinorCurrency(amountAndCurrency(0), currency), currency)
   }
 
   /**

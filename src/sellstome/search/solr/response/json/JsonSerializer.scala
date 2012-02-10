@@ -22,6 +22,9 @@ import org.apache.solr.schema.{FieldType, IndexSchema}
  *  @since 1.0
  */
 object JSONSerializer {
+  
+  /** A list of fields that allowed to be serialized into response */
+  private val allowedFields = List("id","price")
 
   /**
    *  Transforms a single entry to a json string
@@ -31,7 +34,7 @@ object JSONSerializer {
   private def docToJson(doc: Document, schema: IndexSchema): JSONObject = {
     val docJson = new JSONObject()
     for ((fieldName, schemaField) <- schema.getFields()) {
-       if (schemaField.stored()) {
+       if (schemaField.stored() && allowedFields.contains(schemaField.getName())) { //todo zhugrov - remove filtering after finishing with debugging
          val indexableField = doc.getField(schemaField.getName())
          if (indexableField != null) {
           val fieldType      = schemaField.getType()
@@ -44,15 +47,15 @@ object JSONSerializer {
        }
     }
     //todo zhugrov a - add fake fields for now
-    docJson.put("updated_at", "2011-07-07T16:37:33.000Z")
-    docJson.put("author", "vol4ok")
-    docJson.put("avator", new JSONObject().put("name", "av-1").put("type", "png"))
-    docJson.put("count", 12)
-    docJson.put("created_at", "2011-07-07T16:37:33.000Z")
-    docJson.put("images", new JSONArray()
-      .put(new JSONObject()
-      .put("name", "item-1")
-      .put("type", "png")))
+//    docJson.put("updated_at", "2011-07-07T16:37:33.000Z")
+//    docJson.put("author", "vol4ok")
+//    docJson.put("avator", new JSONObject().put("name", "av-1").put("type", "png"))
+//    docJson.put("count", 12)
+//    docJson.put("created_at", "2011-07-07T16:37:33.000Z")
+//    docJson.put("images", new JSONArray()
+//      .put(new JSONObject()
+//      .put("name", "item-1")
+//      .put("type", "png")))
     return docJson
   }
 

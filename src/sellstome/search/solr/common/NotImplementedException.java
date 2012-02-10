@@ -1,11 +1,10 @@
 package sellstome.search.solr.common;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Asus
- * Date: 25.01.12
- * Time: 8:35
- * To change this template use File | Settings | File Templates.
+ * The exception is thrown when a requested feature or operation is not implemented.
+ * This class at some point very similar to a {@link FeatureNotImplemented}
+ * @author Aliaksandr Zhuhrou
+ * @since 1.0
  */
 public class NotImplementedException extends RuntimeException {
 

@@ -6,18 +6,16 @@ import org.apache.noggit.JSONParser
 import java.io.StringReader
 import collection.mutable.Stack
 import org.apache.solr.common.SolrInputDocument
-import java.lang.{IllegalStateException, StackOverflowError}
+import java.lang.IllegalStateException
 import org.slf4j.LoggerFactory
 import org.apache.solr.update._
-import sellstome.search.solr.FeatureNotImplementedException
+import sellstome.search.solr.common.FeatureNotImplementedException
 
 
 /**
- * Created by IntelliJ IDEA.
- * User: zhygr
- * Date: 12/28/11
- * Time: 4:02 PM
  * Factory for creating a corresponding org.apache.solr.update.UpdateCommand
+ * @author Aliaksandr Zhuhrou
+ * @since 1.0
  */
 object JsonUpdateCommandBuilder {
 
