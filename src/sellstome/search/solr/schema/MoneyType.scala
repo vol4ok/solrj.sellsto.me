@@ -15,6 +15,7 @@ import org.apache.lucene.queries.function.ValueSource
 import sellstome.search.solr.service.finance.CurrencyExchangeRatesService
 import sellstome.search.solr.util.Currencies
 import beans.BooleanBeanProperty
+import org.apache.lucene.index.FieldInfo.IndexOptions
 
 object MoneyType {
   /** logger instance */
@@ -55,6 +56,8 @@ class MoneyType extends AbstractSubTypeFieldType {
     if (field.stored) {
       val customType = new FieldType()
       customType.setStored(true)
+      customType.setIndexed(true)
+      customType.setIndexOptions(IndexOptions.DOCS_ONLY)
       f(f.length - 1) = createField(field.getName, externalVal.toString, customType, boost)
     }
     return f

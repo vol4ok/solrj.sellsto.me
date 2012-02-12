@@ -60,6 +60,9 @@ object MoneyValue extends SellstomeSolrComponent with MoneyParser {
    * represent a ISO currency
    */
   def parse(term: BytesRef): (Long, Currency) = {
+    if (term == null) {
+      throw new NullPointerException("Check for null pointer..")
+    }
     val stored = term.utf8ToString()
     val amountAndCurrency = stored.split(",")
     val currency = Currency.getInstance(amountAndCurrency(1))
