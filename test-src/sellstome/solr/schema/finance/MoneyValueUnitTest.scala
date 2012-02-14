@@ -1,10 +1,10 @@
-package sellstome.search.solr.schema.finance
+package sellstome.solr.schema.finance
 
 import org.scalatest.FunSuite
 import java.util.Currency
 import org.apache.solr.common.SolrException
 import org.apache.lucene.util.BytesRef
-import sellstome.search.solr.util.Currencies
+import sellstome.solr.util.Currencies
 
 /**
  * Created by IntelliJ IDEA.

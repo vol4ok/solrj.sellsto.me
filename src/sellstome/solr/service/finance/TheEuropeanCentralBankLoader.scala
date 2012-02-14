@@ -1,6 +1,6 @@
-package sellstome.search.solr.service.finance
+package sellstome.solr.service.finance
 
-import _root_.sellstome.search.solr.common.{HttpLoader, XmlParser}
+import _root_.sellstome.solr.common.{HttpLoader, XmlParser}
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 import java.io.BufferedReader

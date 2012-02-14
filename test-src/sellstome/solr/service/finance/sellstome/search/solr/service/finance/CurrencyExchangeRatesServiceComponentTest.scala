@@ -1,4 +1,4 @@
-package sellstome.search.solr.service.finance
+package sellstome.solr.service.finance
 
 import org.scalatest.FunSuite
 

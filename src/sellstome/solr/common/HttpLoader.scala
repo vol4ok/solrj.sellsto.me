@@ -1,4 +1,4 @@
-package sellstome.search.solr.common
+package sellstome.solr.common
 
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.GetMethod
@@ -32,8 +32,8 @@ trait HttpLoader {
     }
   }
 
-  /** Retrieves a specified callback */
-  protected def httpGetStream[T](uri: String) ( callback: (BufferedReader) => T ): T = {
+  /**Retrieves a specified callback */
+  protected def httpGetStream[T](uri: String)(callback: (BufferedReader) => T): T = {
     val request = new GetMethod(uri)
     var inputStream: InputStream = null
     try {

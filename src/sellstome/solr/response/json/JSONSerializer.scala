@@ -1,4 +1,4 @@
-package sellstome.search.solr.response.json
+package sellstome.solr.response.json
 
 import converters.FieldConverters
 import org.apache.lucene.document.Document

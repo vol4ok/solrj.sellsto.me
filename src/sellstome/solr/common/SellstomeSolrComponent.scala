@@ -1,4 +1,4 @@
-package sellstome.search.solr.common
+package sellstome.solr.common
 
 import org.apache.solr.common.SolrException
 import org.apache.solr.common.SolrException.ErrorCode
@@ -13,7 +13,7 @@ import javax.annotation.{Nullable, Nonnull}
  */
 trait SellstomeSolrComponent {
 
-  /** Check that condition is true and throw a solr exception otherwise */
+  /**Check that condition is true and throw a solr exception otherwise */
   @inline
   protected def ensure(cond: Boolean, message: String) {
     if (!cond) throw new SolrException(ErrorCode.SERVER_ERROR, message)

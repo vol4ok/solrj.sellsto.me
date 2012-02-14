@@ -1,4 +1,4 @@
-package sellstome.search.solr.request
+package sellstome.solr.request
 
 import org.apache.solr.handler.component.SearchHandler
 import org.apache.solr.request.SolrQueryRequest
@@ -17,7 +17,7 @@ class AdRequestHandler extends SearchHandler {
 
   override def handleRequestBody(req: SolrQueryRequest, rsp: SolrQueryResponse) {
     RequestParams.LocationBound.populateFQQuery(req)
-    super.handleRequestBody(req,rsp)
+    super.handleRequestBody(req, rsp)
   }
 
 }

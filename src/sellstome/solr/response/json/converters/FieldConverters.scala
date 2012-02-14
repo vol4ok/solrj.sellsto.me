@@ -1,7 +1,7 @@
-package sellstome.search.solr.response.json.converters
+package sellstome.solr.response.json.converters
 
 import collection.Map
-import sellstome.search.solr.schema.MoneyType
+import sellstome.solr.schema.MoneyType
 import org.apache.solr.schema._
 
 /**

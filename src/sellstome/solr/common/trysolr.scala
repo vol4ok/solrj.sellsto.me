@@ -1,4 +1,4 @@
-package sellstome.search.solr.common
+package sellstome.solr.common
 
 import org.apache.solr.common.SolrException
 import runtime.NonLocalReturnControl
@@ -26,13 +26,13 @@ import runtime.NonLocalReturnControl
  */
 object trysolr {
 
-  def apply[T]( f: => T ): T = {
+  def apply[T](f: => T): T = {
     try {
-       f
+      f
     } catch {
       case e: NonLocalReturnControl[_] => throw (e)
-      case e: SolrException =>            throw (e)
-      case e: Throwable =>                throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, e)
+      case e: SolrException => throw (e)
+      case e: Throwable => throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, e)
     }
   }
 

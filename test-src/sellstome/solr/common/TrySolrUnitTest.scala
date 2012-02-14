@@ -1,4 +1,4 @@
-package sellstome.search.solr.common
+package sellstome.solr.common
 
 import org.scalatest.FunSuite
 import org.apache.solr.common.SolrException

@@ -1,4 +1,4 @@
-package sellstome.search.solr.response.json.converters
+package sellstome.solr.response.json.converters
 
 import org.json.JSONObject
 import org.apache.solr.schema.FieldType

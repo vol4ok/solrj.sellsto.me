@@ -1,10 +1,9 @@
 package sellstome.search.solr.service.finance.sellstome.search.solr.service.finance
 
 import org.scalatest.FunSuite
-import java.util.Currency
-import sellstome.search.solr.util.Currencies
-import sellstome.search.solr.service.finance.{ExchangeRate, CurrencyExchangeRatesService}
-import sellstome.search.solr.schema.finance.MoneyValue
+import sellstome.solr.util.Currencies
+import sellstome.solr.service.finance.{ExchangeRate, CurrencyExchangeRatesService}
+import sellstome.solr.schema.finance.MoneyValue
 
 /**
  * Created by IntelliJ IDEA.

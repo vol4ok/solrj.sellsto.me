@@ -1,4 +1,4 @@
-package sellstome.search.solr.common
+package sellstome.solr.common
 
 /**
  * Created by IntelliJ IDEA.
@@ -9,6 +9,8 @@ package sellstome.search.solr.common
  */
 trait Disposable extends AutoCloseable {
 
-  def dispose() { close() }
+  def dispose() {
+    close()
+  }
 
 }

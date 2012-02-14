@@ -1,4 +1,4 @@
-package sellstome.search.solr.util
+package sellstome.solr.util
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,10 +10,10 @@ package sellstome.search.solr.util
 object Math {
 
   def pow(a: Long, b: Long): Long = {
-    if ( b < 0 ) throw new IllegalArgumentException("Power should be positive number")
+    if (b < 0) throw new IllegalArgumentException("Power should be positive number")
     var index = 0
     var result = 1l
-    while(index < b) {
+    while (index < b) {
       result = result * b
       index = index + 1
     }

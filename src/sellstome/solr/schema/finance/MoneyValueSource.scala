@@ -1,4 +1,4 @@
-package sellstome.search.solr.schema.finance
+package sellstome.solr.schema.finance
 
 import org.apache.solr.schema.SchemaField
 import org.apache.lucene.queries.function.ValueSource
@@ -15,6 +15,7 @@ import org.apache.lucene.queries.function.valuesource.VectorValueSource
 private[schema] class MoneyValueSource(sf: SchemaField, sources: List[ValueSource]) extends VectorValueSource(sources) {
 
   override def name = "money"
+
   override def description = name() + "(" + sf.getName + ");"
 
 }

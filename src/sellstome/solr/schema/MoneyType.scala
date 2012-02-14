@@ -1,4 +1,4 @@
-package sellstome.search.solr.schema
+package sellstome.solr.schema
 
 import finance.{MoneyFieldComparatorSource, MoneyValue, MoneyValueSource}
 import org.slf4j.{LoggerFactory, Logger}
@@ -12,8 +12,8 @@ import org.apache.solr.search.{QParser, SolrConstantScoreQuery}
 import org.apache.lucene.index.IndexableField
 import com.google.common.collect.Lists
 import org.apache.lucene.queries.function.ValueSource
-import sellstome.search.solr.service.finance.CurrencyExchangeRatesService
-import sellstome.search.solr.util.Currencies
+import sellstome.solr.service.finance.CurrencyExchangeRatesService
+import sellstome.solr.util.Currencies
 import beans.BooleanBeanProperty
 import org.apache.lucene.index.FieldInfo.IndexOptions
 

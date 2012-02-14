@@ -1,4 +1,4 @@
-package sellstome.search.solr.common
+package sellstome.solr.common
 
 import org.apache.solr.common.SolrException
 import org.slf4j.Logger
@@ -30,7 +30,7 @@ import org.slf4j.Logger
  */
 object trylog {
 
-  def apply(f: => Unit) (implicit log: Logger) {
+  def apply(f: => Unit)(implicit log: Logger) {
     try {
       f
     } catch {

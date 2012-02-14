@@ -1,4 +1,4 @@
-package sellstome.search.solr.response.json
+package sellstome.solr.response.json
 
 import org.easymock.EasyMock
 import org.apache.solr.search.{SolrIndexSearcher, DocIterator, DocList}

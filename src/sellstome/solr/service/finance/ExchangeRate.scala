@@ -1,4 +1,4 @@
-package sellstome.search.solr.service.finance
+package sellstome.solr.service.finance
 
 import java.util.{Date, Currency}
 
@@ -13,7 +13,7 @@ import java.util.{Date, Currency}
 final class ExchangeRate(from: Currency, to: Currency, rate: Double) {
 
   private var date: Option[Date] = None
-  
+
   def getFrom = from
 
   def getTo = to
@@ -22,16 +22,16 @@ final class ExchangeRate(from: Currency, to: Currency, rate: Double) {
 
   def getDate = date
 
-  /** The setter for the only optional field here */
+  /**The setter for the only optional field here */
   def setDate(date: Date): ExchangeRate = {
     if (date == null) this.date = None else this.date = Some(date)
     return this
   }
 
-  /** @return a exchange rate for an inverse conversion */
+  /**@return a exchange rate for an inverse conversion */
   def inverse(): ExchangeRate = {
-    val inverseRate = new ExchangeRate(to, from, 1/rate )
-    date.map( inverseRate.setDate( _ )  )
+    val inverseRate = new ExchangeRate(to, from, 1 / rate)
+    date.map(inverseRate.setDate(_))
     return inverseRate
   }
 

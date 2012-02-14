@@ -1,6 +1,5 @@
-package sellstome.search.solr.common
+package sellstome.solr.common
 
-import java.io.Closeable
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,12 +18,14 @@ object using {
    * @tparam B type of return of closure function
    * @return a result of computation with a given resource
    */
-  def apply[A <: {def close()}, B]( resource: A) ( f: (A) => B ): B = {
+  def apply[A <: {def close()}, B](resource: A)(f: (A) => B): B = {
     try {
       f(resource)
     } finally {
-      if (resource != null) try { resource.close() }
+      if (resource != null) try {
+        resource.close()
+      }
     }
   }
-  
+
 }

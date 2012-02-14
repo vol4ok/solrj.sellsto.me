@@ -1,7 +1,7 @@
-package sellstome.search.solr.schema.finance
+package sellstome.solr.schema.finance
 
 import org.apache.lucene.index.AtomicReaderContext
-import sellstome.search.solr.service.finance.ICurrencyExchangeRateService
+import sellstome.solr.service.finance.ICurrencyExchangeRateService
 import org.apache.lucene.util.Bits
 import org.apache.lucene.search._
 import org.apache.lucene.search.FieldValueHitQueue.Entry
@@ -17,11 +17,11 @@ import util.Sorting
  * @since 1.0
  */
 class MoneyFieldComparatorSource(exchangeRatesService: ICurrencyExchangeRateService, secondaryField: Option[String]) extends FieldComparatorSource {
-  
+
   def newComparator(primaryField: String, numHits: Int, sortPos: Int, reversed: Boolean) = {
     val missingValue = if (reversed) Long.MinValue else Long.MaxValue
     new MoneyFieldComparator(numHits, primaryField, secondaryField,
-                             missingValue, exchangeRatesService)
+      missingValue, exchangeRatesService)
   }
 
   /**
@@ -36,17 +36,17 @@ class MoneyFieldComparatorSource(exchangeRatesService: ICurrencyExchangeRateServ
   class MoneyFieldComparator(numHits: Int, primaryField: String, secondaryField: Option[String],
                              missingValue: Long, exchangeRatesService: ICurrencyExchangeRateService) extends FieldComparator[Long] {
 
-    private val values: Array[Long]                               = new Array[Long](numHits)
-    /** Values encoded as long for a given indexed part of field */
-    private var currentReaderValues: Array[Long]                  = null
-    private var bottom: Long                                      = 0L
-    private var docsWithField: Bits                               = null
-    private val primaryParser                                     = FieldCache.NUMERIC_UTILS_LONG_PARSER
-    /** allows directly manipulate this queue content */
-    private var queue: FieldValueHitQueue[Entry]                  = null
+    private val values: Array[Long] = new Array[Long](numHits)
+    /**Values encoded as long for a given indexed part of field */
+    private var currentReaderValues: Array[Long] = null
+    private var bottom: Long = 0L
+    private var docsWithField: Bits = null
+    private val primaryParser = FieldCache.NUMERIC_UTILS_LONG_PARSER
+    /**allows directly manipulate this queue content */
+    private var queue: FieldValueHitQueue[Entry] = null
 
     def compare(firstSlot: Int, secondSlot: Int): Int = {
-      val firstValue  = values(firstSlot)
+      val firstValue = values(firstSlot)
       val secondValue = values(secondSlot)
       return Ordering.Long.compare(firstValue, secondValue)
     }
@@ -77,12 +77,14 @@ class MoneyFieldComparatorSource(exchangeRatesService: ICurrencyExchangeRateServ
 
     def setNextReader(context: AtomicReaderContext): MoneyFieldComparator = {
       currentReaderValues = FieldCache.DEFAULT.getLongs(context.reader, primaryField, primaryParser, true)
-      docsWithField       = FieldCache.DEFAULT.getDocsWithField(context.reader, primaryField)
-      if (docsWithField.isInstanceOf[Bits.MatchAllBits]) { docsWithField = null }
-//    Sorting.stableSort(queue.getHeap(), (first: Entry, second: Entry) => {
-//
-//      throw new NotImplementedError()
-//    })
+      docsWithField = FieldCache.DEFAULT.getDocsWithField(context.reader, primaryField)
+      if (docsWithField.isInstanceOf[Bits.MatchAllBits]) {
+        docsWithField = null
+      }
+      //    Sorting.stableSort(queue.getHeap(), (first: Entry, second: Entry) => {
+      //
+      //      throw new NotImplementedError()
+      //    })
 
       return this
     }

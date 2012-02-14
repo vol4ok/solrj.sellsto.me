@@ -1,4 +1,4 @@
-package sellstome.search.solr.util
+package sellstome.solr.util
 
 import java.util.Currency
 
@@ -12,7 +12,7 @@ import java.util.Currency
 object Currencies {
 
   implicit def asJavaCurrency(code: String): Currency =
-                                        Currency.getInstance(code)
+    Currency.getInstance(code)
 
   def apply(code: String): Currency = Currency.getInstance(code)
 

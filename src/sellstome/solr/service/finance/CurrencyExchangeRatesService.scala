@@ -1,7 +1,7 @@
-package sellstome.search.solr.service.finance
+package sellstome.solr.service.finance
 
-import _root_.sellstome.search.solr.common.Disposable
-import _root_.sellstome.search.solr.schema.finance.MoneyValue
+import _root_.sellstome.solr.common.Disposable
+import _root_.sellstome.solr.schema.finance.MoneyValue
 import java.util.concurrent.Executors
 import com.google.common.collect.Maps
 import java.util.Currency

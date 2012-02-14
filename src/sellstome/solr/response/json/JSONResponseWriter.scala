@@ -1,10 +1,9 @@
-package sellstome.search.solr.response.json
+package sellstome.solr.response.json
 
 import org.apache.solr.common.util.NamedList
 import org.apache.solr.request.SolrQueryRequest
 import java.io.Writer
 import org.apache.solr.response.{SolrQueryResponse, QueryResponseWriter}
-
 
 
 object JSONResponseWriter {

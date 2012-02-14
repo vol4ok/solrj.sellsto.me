@@ -1,7 +1,7 @@
 package sellstome.search.solr.service.finance.sellstome.search.solr.service.finance
 
 import org.scalatest.FunSuite
-import sellstome.search.solr.service.finance.TheEuropeanCentralBankLoader
+import sellstome.solr.service.finance.TheEuropeanCentralBankLoader
 
 /**
  * Created by IntelliJ IDEA.
