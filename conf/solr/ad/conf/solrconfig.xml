@@ -59,7 +59,7 @@
     <httpCaching never304="true" />
   </requestDispatcher>
 
-  <requestHandler name="search" class="sellstome.search.solr.request.AdRequestHandler" default="true">
+  <requestHandler name="search" class="sellstome.solr.request.AdRequestHandler" default="true">
     <lst name="defaults">
        <str name="echoParams">explicit</str>
        <int name="rows">10</int>
@@ -68,7 +68,7 @@
   </requestHandler>
 
   <requestHandler name="/update/json"
-                  class="sellstome.search.solr.request.JsonUpdateHandler"
+                  class="sellstome.solr.request.JsonUpdateHandler"
                   startup="lazy" >
       <lst name="defaults">
           <str name="wt">json</str>
@@ -174,7 +174,7 @@
     </highlighting>
   </searchComponent>
 
-  <queryResponseWriter name="adjson" class="sellstome.search.solr.response.json.JSONResponseWriter"/>
+  <queryResponseWriter name="adjson" class="sellstome.solr.response.json.JSONResponseWriter"/>
 
   <admin>
     <defaultQuery>*:*</defaultQuery>

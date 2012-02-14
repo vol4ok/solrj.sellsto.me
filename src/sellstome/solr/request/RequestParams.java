@@ -1,4 +1,4 @@
-package sellstome.search.solr.request;
+package sellstome.solr.request;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;

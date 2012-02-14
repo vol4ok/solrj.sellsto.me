@@ -1,7 +1,6 @@
-package sellstome.search.solr.service.finance.sellstome.search.solr.service.finance
+package sellstome.search.solr.service.finance
 
 import org.scalatest.FunSuite
-import sellstome.search.solr.service.finance.CurrencyExchangeRatesService
 
 /**
  * Created by IntelliJ IDEA.

@@ -1,4 +1,4 @@
-package sellstome.search.solr.common;
+package sellstome.solr.common;
 
 /**
  * The exception is thrown when a requested feature or operation is not implemented.

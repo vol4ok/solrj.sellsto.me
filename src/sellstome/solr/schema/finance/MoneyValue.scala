@@ -4,7 +4,7 @@ import java.util.Currency
 import com.google.common.base.Joiner
 import org.apache.solr.common.SolrException
 import javax.annotation.Nonnull
-import sellstome.search.solr.common.{SellstomeSolrComponent, trysolr, NotImplementedException}
+import sellstome.search.solr.common.{SellstomeSolrComponent, trysolr}
 import org.apache.lucene.search.FieldCache.Parser
 import org.apache.lucene.util.BytesRef
 

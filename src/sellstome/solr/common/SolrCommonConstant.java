@@ -1,4 +1,4 @@
-package sellstome.search.solr.common;
+package sellstome.solr.common;
 
 /**
  * Created by IntelliJ IDEA.

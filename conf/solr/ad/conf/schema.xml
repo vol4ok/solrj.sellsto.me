@@ -157,7 +157,7 @@
     <fieldType name="point"                     class="solr.PointType"          dimension="2" subFieldSuffix="_d"/>
     <fieldType name="location"                  class="solr.LatLonType"         subFieldSuffix="_coordinate"/>
     <fieldtype name="geohash"                   class="solr.GeoHashField"                                       />
-    <fieldType name="money"                     class="sellstome.search.solr.schema.MoneyType" subFieldSuffix="_money" debug="true" />
+    <fieldType name="money"                     class="sellstome.solr.schema.MoneyType" subFieldSuffix="_money" debug="true" />
  </types>
 
  <fields>

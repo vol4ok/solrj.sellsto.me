@@ -10,12 +10,12 @@ import java.io.StringWriter
 import org.apache.commons.lang.StringUtils
 import org.apache.solr.request.SolrQueryRequest
 import org.apache.solr.common.params.SolrParams
-import sellstome.search.solr.common.NotImplementedException
 import org.apache.solr.response.{ResultContext, SolrQueryResponse}
 import org.apache.solr.common.util.SimpleOrderedMap
 import org.apache.solr.schema.{StrField, SchemaField, IndexSchema}
 import com.google.common.collect.Maps
 import org.apache.lucene.index.IndexableField
+import sellstome.solr.common.NotImplementedException
 
 /**
  * Tests a sellstome json search result serializer.

@@ -2,10 +2,10 @@ package sellstome.search.solr.schema.finance
 
 import org.apache.lucene.index.AtomicReaderContext
 import sellstome.search.solr.service.finance.ICurrencyExchangeRateService
-import org.apache.lucene.search.{FieldComparator, FieldCache, FieldComparatorSource}
-import org.apache.lucene.util.{BytesRef, Bits}
-import org.apache.lucene.util.packed.PackedInts
-import java.util.Currency
+import org.apache.lucene.util.Bits
+import org.apache.lucene.search._
+import org.apache.lucene.search.FieldValueHitQueue.Entry
+import util.Sorting
 
 /**
  * A factory class that instantiates the MoneyFieldComparator.
@@ -42,16 +42,21 @@ class MoneyFieldComparatorSource(exchangeRatesService: ICurrencyExchangeRateServ
     private var bottom: Long                                      = 0L
     private var docsWithField: Bits                               = null
     private val primaryParser                                     = FieldCache.NUMERIC_UTILS_LONG_PARSER
+    /** allows directly manipulate this queue content */
+    private var queue: FieldValueHitQueue[Entry]                  = null
 
     def compare(firstSlot: Int, secondSlot: Int): Int = {
       val firstValue  = values(firstSlot)
       val secondValue = values(secondSlot)
-
       return Ordering.Long.compare(firstValue, secondValue)
     }
 
     def setBottom(slot: Int) {
       this.bottom = values(slot)
+    }
+
+    def setPriorityQueue(queue: FieldValueHitQueue[Entry]) {
+      this.queue = queue
     }
 
     def compareBottom(docId: Int): Int = {
@@ -74,6 +79,11 @@ class MoneyFieldComparatorSource(exchangeRatesService: ICurrencyExchangeRateServ
       currentReaderValues = FieldCache.DEFAULT.getLongs(context.reader, primaryField, primaryParser, true)
       docsWithField       = FieldCache.DEFAULT.getDocsWithField(context.reader, primaryField)
       if (docsWithField.isInstanceOf[Bits.MatchAllBits]) { docsWithField = null }
+//    Sorting.stableSort(queue.getHeap(), (first: Entry, second: Entry) => {
+//
+//      throw new NotImplementedError()
+//    })
+
       return this
     }
 
