@@ -24,6 +24,6 @@ class PostProcessSortField(@Nonnull field: String, @Nonnull comparator: FieldCom
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-abstract class PostProcessor {
+abstract class SortRefiner {
 
 }
