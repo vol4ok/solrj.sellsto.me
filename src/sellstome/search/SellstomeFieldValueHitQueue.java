@@ -2,11 +2,14 @@ package sellstome.search;
 
 import org.apache.lucene.search.FieldValueHitQueue;
 import org.apache.lucene.search.SortField;
+import sellstome.lucene.SortRefinerComparator;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @author Aliaksandr Zhuhrou
+ * @since 1.0
  */
 public abstract class SellstomeFieldValueHitQueue<T extends FieldValueHitQueue.Entry>
        extends FieldValueHitQueue<T> {
@@ -31,8 +34,8 @@ public abstract class SellstomeFieldValueHitQueue<T extends FieldValueHitQueue.E
 
         /**
          * Returns whether <code>a</code> is less relevant than <code>b</code>.
-         * @param a ScoreDoc
-         * @param b ScoreDoc
+         * @param hitA ScoreDoc
+         * @param hitB ScoreDoc
          * @return <code>true</code> if document <code>a</code> should be sorted after document <code>b</code>.
          */
         @Override
@@ -109,7 +112,7 @@ public abstract class SellstomeFieldValueHitQueue<T extends FieldValueHitQueue.E
      *          The number of hits to retain. Must be greater than zero.
      * @throws IOException
      */
-    public static <T extends FieldValueHitQueue.Entry> FieldValueHitQueue<T> create(SortField[] fields, int size) throws IOException {
+    public static <T extends FieldValueHitQueue.Entry> SellstomeFieldValueHitQueue<T> create(SortField[] fields, int size) throws IOException {
 
         if (fields.length == 0) {
             throw new IllegalArgumentException("Sort must contain at least one field");
@@ -120,6 +123,13 @@ public abstract class SellstomeFieldValueHitQueue<T extends FieldValueHitQueue.E
         } else {
             return new MultiComparatorsFieldValueHitQueue<T>(fields, size);
         }
+    }
+
+    /** Allows refine a given search results. */
+    @SuppressWarnings({"unchecked"})
+    public void applyRefinementSorting(SortRefinerComparator comparator) {
+        T[] heap = (T[]) getHeapArray();
+        Arrays.sort(heap, comparator);
     }
 
 }

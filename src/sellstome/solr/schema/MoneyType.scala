@@ -1,6 +1,6 @@
 package sellstome.solr.schema
 
-import finance.{MoneyFieldComparatorSource, MoneyValue, MoneyValueSource}
+import finance.{MoneyFieldRefinerSource, MoneyFieldComparatorSource, MoneyValue, MoneyValueSource}
 import org.slf4j.{LoggerFactory, Logger}
 import org.apache.lucene.document.FieldType
 import org.apache.solr.search.function.ValueSourceRangeFilter
@@ -16,12 +16,14 @@ import sellstome.solr.service.finance.CurrencyExchangeRatesService
 import sellstome.solr.util.Currencies
 import beans.BooleanBeanProperty
 import org.apache.lucene.index.FieldInfo.IndexOptions
+import org.apache.solr.common.SolrException.ErrorCode
+import sellstome.lucene.PostProcessSortField
 
 object MoneyType {
   /** logger instance */
   private[schema] val log: Logger = LoggerFactory.getLogger(classOf[MoneyType])
   /** todo zhugrov a - think how to refactor it via dependency injection pattern */
-  val ExchangeRatesService = new CurrencyExchangeRatesService()
+  val ExchangeRateService = new CurrencyExchangeRatesService()
   /** base currency */
   val BaseCurrency = Currencies("EUR")
   /** is debug parameter name for a given SchemaField */
@@ -35,6 +37,8 @@ class MoneyType extends AbstractSubTypeFieldType {
   @BooleanBeanProperty
   var debugEnabled = false
 
+
+
   protected override def init(schema: IndexSchema, args: java.util.Map[String, String]) {
     super.init(schema, args)
     val debugEnabled = args.get(MoneyType.DebugEnabled)
@@ -45,12 +49,18 @@ class MoneyType extends AbstractSubTypeFieldType {
     createSuffixCache(1)
   }
 
+
+
+
   override def isPolyField: Boolean = true
+
+
+
 
   override def createFields(field: SchemaField, externalVal: AnyRef, boost: Float): Array[IndexableField] = {
     val f: Array[IndexableField] = new Array[IndexableField]((if (field.indexed) 2 else 0) + (if (field.stored) 1 else 0))
     if (field.indexed) {
-      val value = MoneyType.ExchangeRatesService.convertCurrency(MoneyValue.parse(externalVal.toString), MoneyType.BaseCurrency)
+      val value = MoneyType.ExchangeRateService.convertCurrency(MoneyValue.parse(externalVal.toString), MoneyType.BaseCurrency)
       f(0) = subField(field, 0).createField(String.valueOf(value.getAmount), boost)
     }
     if (field.stored) {
@@ -59,13 +69,21 @@ class MoneyType extends AbstractSubTypeFieldType {
       customType.setIndexed(true)
       customType.setIndexOptions(IndexOptions.DOCS_ONLY)
       f(f.length - 1) = createField(field.getName, externalVal.toString, customType, boost)
+    } else {
+      throw new SolrException(ErrorCode.SERVER_ERROR, "A money type field should be stored in order for the sort refinement to work corectly.")
     }
     return f
   }
 
+
+
+
   override def getFieldQuery(parser: QParser, field: SchemaField, externalVal: String): Query = {
     return getRangeQuery(parser, field, externalVal, externalVal, true, true)
   }
+
+
+
 
   override def getRangeQuery(parser: QParser, field: SchemaField, lowerBoundValue: String, upperBoundValue: String, minInclusive: Boolean, maxInclusive: Boolean): Query = {
     //todo zhugrov a - reimplement this method
@@ -77,16 +95,23 @@ class MoneyType extends AbstractSubTypeFieldType {
     return new SolrConstantScoreQuery(new ValueSourceRangeFilter(getValueSource(field, parser) , lower.getAmount + "", upper.getAmount + "", minInclusive, maxInclusive))
   }
 
+
+
+
   override def getValueSource(field: SchemaField, parser: QParser): ValueSource = {
     //todo zhugrov a - study hard the implementation of this method
     val indexField = subField(field, 0)
     return new MoneyValueSource(field, Lists.newArrayList(indexField.getType().getValueSource(indexField, parser)))
   }
 
-  def getSortField(field: SchemaField, reverse: Boolean): SortField = new SortField(   subField(field, 0).getName(),
-                                                                                       //todo zhugrov a - if field is not stored then secondary field should be None
-                                                                                       new MoneyFieldComparatorSource(MoneyType.ExchangeRatesService, Option(field.getName())),
-                                                                                       reverse)
+
+
+  /** @return Returns the SortField instance that should be used to sort fields. Also performs refinemets of given sorts results. */
+  def getSortField(field: SchemaField, reverse: Boolean): SortField = new PostProcessSortField( subField(field, 0).getName(),
+                                                                                                new MoneyFieldComparatorSource(),
+                                                                                                new MoneyFieldRefinerSource(field.getName(), MoneyType.ExchangeRateService, MoneyType.BaseCurrency),
+                                                                                                reverse)
+
 
   /**
    * It never makes sense to create a single field, so make it impossible to happen
@@ -95,8 +120,10 @@ class MoneyType extends AbstractSubTypeFieldType {
     throw new UnsupportedOperationException("LatLonType uses multiple fields. Field=" + field.getName)
   }
 
+
+
   /** How to use this method to deserialize the corresponding indexable field */
-  def write(writer: TextResponseWriter, name: String, field: IndexableField) = {
+  def write(writer: TextResponseWriter, name: String, field: IndexableField) {
     writer.writeStr(name, field.stringValue, false)
   }
 

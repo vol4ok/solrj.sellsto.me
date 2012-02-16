@@ -18,7 +18,7 @@ object MoneySolrFieldConverter extends SolrField2JsonConverter {
       price.put("amount", moneyValue.getAmount)
       price.put("currency", moneyValue.getCurrency.getCurrencyCode())
       if (moneyType.isDebugEnabled()) {
-        price.put("amountInBaseCurrency", MoneyType.ExchangeRatesService.convertCurrency(moneyValue, MoneyType.BaseCurrency))
+        price.put("amountInBaseCurrency", MoneyType.ExchangeRateService.convertCurrency(moneyValue, MoneyType.BaseCurrency))
       }
       return price
     }

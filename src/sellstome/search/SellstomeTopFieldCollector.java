@@ -1,18 +1,26 @@
 package sellstome.search;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.IndexReaderContext;
 import org.apache.lucene.search.*;
-import org.apache.lucene.util.PriorityQueue;
+import sellstome.lucene.PostProcessSortField;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Adds sort refinements functionality.
  * todo zhugrov a - it really sucks. In order to add a few lines of code
  * I was forced to copy about 13 classes.
  * @author Aliaksandr Zhuhrou
+ * @since 1.0
  */
 public abstract class SellstomeTopFieldCollector extends org.apache.lucene.search.TopFieldCollector {
+
+
 
     /*
      * Implements a TopFieldCollector over one SortField criteria, without
@@ -23,12 +31,10 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
 
         FieldComparator comparator;
         final int reverseMul;
-        final FieldValueHitQueue<FieldValueHitQueue.Entry> queue;
 
-        public OneComparatorNonScoringCollector(FieldValueHitQueue<FieldValueHitQueue.Entry> queue,
-                                                int numHits, boolean fillFields) throws IOException {
-            super(queue, numHits, fillFields);
-            this.queue = queue;
+        public OneComparatorNonScoringCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue,
+                                                int numHits, IndexReaderContext readerContext, boolean fillFields, SortField[] fields) throws IOException {
+            super(queue, numHits, readerContext, fillFields, fields);
             comparator = queue.getComparators()[0];
             reverseMul = queue.getReverseMul()[0];
         }
@@ -78,6 +84,10 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
             comparator.setScorer(scorer);
         }
 
+        @Override
+        protected boolean isMultiFieldCollector() {
+            return false;
+        }
     }
 
     /*
@@ -88,9 +98,9 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
     private static class OutOfOrderOneComparatorNonScoringCollector extends
             OneComparatorNonScoringCollector {
 
-        public OutOfOrderOneComparatorNonScoringCollector(FieldValueHitQueue<FieldValueHitQueue.Entry> queue,
-                                                          int numHits, boolean fillFields) throws IOException {
-            super(queue, numHits, fillFields);
+        public OutOfOrderOneComparatorNonScoringCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue,
+                                                          int numHits, IndexReaderContext readerContext, boolean fillFields, SortField[] fields) throws IOException {
+            super(queue, numHits, readerContext, fillFields, fields);
         }
 
         @Override
@@ -135,9 +145,9 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
 
         Scorer scorer;
 
-        public OneComparatorScoringNoMaxScoreCollector(FieldValueHitQueue<FieldValueHitQueue.Entry> queue,
-                                                       int numHits, boolean fillFields) throws IOException {
-            super(queue, numHits, fillFields);
+        public OneComparatorScoringNoMaxScoreCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue,
+                                                       int numHits, IndexReaderContext readerContext, boolean fillFields, SortField[] fields) throws IOException {
+            super(queue, numHits, readerContext, fillFields, fields);
         }
 
         final void updateBottom(int doc, float score) {
@@ -195,10 +205,10 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
     private static class OutOfOrderOneComparatorScoringNoMaxScoreCollector extends
             OneComparatorScoringNoMaxScoreCollector {
 
-        public OutOfOrderOneComparatorScoringNoMaxScoreCollector(
-                FieldValueHitQueue<FieldValueHitQueue.Entry> queue, int numHits, boolean fillFields)
+        public OutOfOrderOneComparatorScoringNoMaxScoreCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue,
+                                                                 int numHits, IndexReaderContext readerContext, boolean fillFields, SortField[] fields)
                 throws IOException {
-            super(queue, numHits, fillFields);
+            super(queue, numHits, readerContext, fillFields, fields);
         }
 
         @Override
@@ -249,9 +259,9 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
 
         Scorer scorer;
 
-        public OneComparatorScoringMaxScoreCollector(FieldValueHitQueue<FieldValueHitQueue.Entry> queue,
-                                                     int numHits, boolean fillFields) throws IOException {
-            super(queue, numHits, fillFields);
+        public OneComparatorScoringMaxScoreCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue,
+                                                     int numHits, IndexReaderContext readerContext, boolean fillFields, SortField[] fields) throws IOException {
+            super(queue, numHits, readerContext, fillFields, fields);
             // Must set maxScore to NEG_INF, or otherwise Math.max always returns NaN.
             maxScore = Float.NEGATIVE_INFINITY;
         }
@@ -309,9 +319,9 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
     private static class OutOfOrderOneComparatorScoringMaxScoreCollector extends
             OneComparatorScoringMaxScoreCollector {
 
-        public OutOfOrderOneComparatorScoringMaxScoreCollector(FieldValueHitQueue<FieldValueHitQueue.Entry> queue,
-                                                               int numHits, boolean fillFields) throws IOException {
-            super(queue, numHits, fillFields);
+        public OutOfOrderOneComparatorScoringMaxScoreCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue,
+                                                               int numHits, IndexReaderContext readerContext, boolean fillFields, SortField[] fields) throws IOException {
+            super(queue, numHits, readerContext, fillFields, fields);
         }
 
         @Override
@@ -359,11 +369,9 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
 
         final FieldComparator[] comparators;
         final int[] reverseMul;
-        final FieldValueHitQueue<FieldValueHitQueue.Entry> queue;
-        public MultiComparatorNonScoringCollector(FieldValueHitQueue<FieldValueHitQueue.Entry> queue,
-                                                  int numHits, boolean fillFields) throws IOException {
-            super(queue, numHits, fillFields);
-            this.queue = queue;
+        public MultiComparatorNonScoringCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue,
+                                                  int numHits, IndexReaderContext readerContext, boolean fillFields, SortField[] fields) throws IOException {
+            super(queue, numHits, readerContext, fillFields, fields);
             comparators = queue.getComparators();
             reverseMul = queue.getReverseMul();
         }
@@ -436,6 +444,11 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
                 comparators[i].setScorer(scorer);
             }
         }
+
+        @Override
+        protected boolean isMultiFieldCollector() {
+            return true;
+        }
     }
 
     /*
@@ -446,9 +459,9 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
     private static class OutOfOrderMultiComparatorNonScoringCollector extends
             MultiComparatorNonScoringCollector {
 
-        public OutOfOrderMultiComparatorNonScoringCollector(FieldValueHitQueue<FieldValueHitQueue.Entry> queue,
-                                                            int numHits, boolean fillFields) throws IOException {
-            super(queue, numHits, fillFields);
+        public OutOfOrderMultiComparatorNonScoringCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue,
+                                                            int numHits, IndexReaderContext readerContext, boolean fillFields, SortField[] fields) throws IOException {
+            super(queue, numHits, readerContext, fillFields, fields);
         }
 
         @Override
@@ -515,9 +528,9 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
 
         Scorer scorer;
 
-        public MultiComparatorScoringMaxScoreCollector(FieldValueHitQueue<FieldValueHitQueue.Entry> queue,
-                                                       int numHits, boolean fillFields) throws IOException {
-            super(queue, numHits, fillFields);
+        public MultiComparatorScoringMaxScoreCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue,
+                                                       int numHits, IndexReaderContext readerContext, boolean fillFields, SortField[] fields) throws IOException {
+            super(queue, numHits, readerContext, fillFields, fields);
             // Must set maxScore to NEG_INF, or otherwise Math.max always returns NaN.
             maxScore = Float.NEGATIVE_INFINITY;
         }
@@ -594,9 +607,9 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
     private final static class OutOfOrderMultiComparatorScoringMaxScoreCollector
             extends MultiComparatorScoringMaxScoreCollector {
 
-        public OutOfOrderMultiComparatorScoringMaxScoreCollector(FieldValueHitQueue<FieldValueHitQueue.Entry> queue,
-                                                                 int numHits, boolean fillFields) throws IOException {
-            super(queue, numHits, fillFields);
+        public OutOfOrderMultiComparatorScoringMaxScoreCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue,
+                                                                 int numHits, IndexReaderContext readerContext, boolean fillFields, SortField[] fields) throws IOException {
+            super(queue, numHits, readerContext, fillFields, fields);
         }
 
         @Override
@@ -667,9 +680,9 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
 
         Scorer scorer;
 
-        public MultiComparatorScoringNoMaxScoreCollector(FieldValueHitQueue<FieldValueHitQueue.Entry> queue,
-                                                         int numHits, boolean fillFields) throws IOException {
-            super(queue, numHits, fillFields);
+        public MultiComparatorScoringNoMaxScoreCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue,
+                                                         int numHits, IndexReaderContext readerContext, boolean fillFields, SortField[] fields) throws IOException {
+            super(queue, numHits, readerContext, fillFields, fields);
         }
 
         final void updateBottom(int doc, float score) {
@@ -745,10 +758,10 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
     private final static class OutOfOrderMultiComparatorScoringNoMaxScoreCollector
             extends MultiComparatorScoringNoMaxScoreCollector {
 
-        public OutOfOrderMultiComparatorScoringNoMaxScoreCollector(
-                FieldValueHitQueue<FieldValueHitQueue.Entry> queue, int numHits, boolean fillFields)
+        public OutOfOrderMultiComparatorScoringNoMaxScoreCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue,
+                                                                   int numHits, IndexReaderContext readerContext, boolean fillFields, SortField[] fields)
                 throws IOException {
-            super(queue, numHits, fillFields);
+            super(queue, numHits, readerContext, fillFields, fields);
         }
 
         @Override
@@ -818,9 +831,19 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
 
     }
 
+    /** Allows us to implement a post-processing functionality */
+    protected IndexReaderContext readerContext;
 
-    public SellstomeTopFieldCollector(PriorityQueue<FieldValueHitQueue.Entry> pq, int numHits, boolean fillFields) {
+    protected SellstomeFieldValueHitQueue queue;
+
+    protected SortField[] fields;
+
+    public SellstomeTopFieldCollector(SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> pq, int numHits,
+                                      IndexReaderContext readerContext, boolean fillFields, SortField[] fields) {
         super(pq, numHits, fillFields);
+        this.readerContext = readerContext;
+        this.queue = pq;
+        this.fields = fields;
     }
 
     /**
@@ -859,7 +882,7 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
      *         the sort criteria.
      * @throws IOException
      */
-    public static TopFieldCollector create(Sort sort, int numHits,
+    public static TopFieldCollector create(Sort sort, int numHits, IndexReaderContext readerContext,
                                            boolean fillFields, boolean trackDocScores, boolean trackMaxScore,
                                            boolean docsScoredInOrder)
             throws IOException {
@@ -872,23 +895,23 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
             throw new IllegalArgumentException("numHits must be > 0; please use TotalHitCountCollector if you just need the total hit count");
         }
 
-        FieldValueHitQueue<FieldValueHitQueue.Entry> queue = SellstomeFieldValueHitQueue.create(sort.getSort(), numHits);
+        SellstomeFieldValueHitQueue<FieldValueHitQueue.Entry> queue = SellstomeFieldValueHitQueue.create(sort.getSort(), numHits);
         if (queue.getComparators().length == 1) {
             if (docsScoredInOrder) {
                 if (trackMaxScore) {
-                    return new OneComparatorScoringMaxScoreCollector(queue, numHits, fillFields);
+                    return new OneComparatorScoringMaxScoreCollector(queue, numHits, readerContext, fillFields, sort.getSort());
                 } else if (trackDocScores) {
-                    return new OneComparatorScoringNoMaxScoreCollector(queue, numHits, fillFields);
+                    return new OneComparatorScoringNoMaxScoreCollector(queue, numHits, readerContext, fillFields, sort.getSort());
                 } else {
-                    return new OneComparatorNonScoringCollector(queue, numHits, fillFields);
+                    return new OneComparatorNonScoringCollector(queue, numHits, readerContext, fillFields, sort.getSort());
                 }
             } else {
                 if (trackMaxScore) {
-                    return new OutOfOrderOneComparatorScoringMaxScoreCollector(queue, numHits, fillFields);
+                    return new OutOfOrderOneComparatorScoringMaxScoreCollector(queue, numHits, readerContext, fillFields, sort.getSort());
                 } else if (trackDocScores) {
-                    return new OutOfOrderOneComparatorScoringNoMaxScoreCollector(queue, numHits, fillFields);
+                    return new OutOfOrderOneComparatorScoringNoMaxScoreCollector(queue, numHits, readerContext, fillFields, sort.getSort());
                 } else {
-                    return new OutOfOrderOneComparatorNonScoringCollector(queue, numHits, fillFields);
+                    return new OutOfOrderOneComparatorNonScoringCollector(queue, numHits, readerContext, fillFields, sort.getSort());
                 }
             }
         }
@@ -896,19 +919,19 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
         // multiple comparators.
         if (docsScoredInOrder) {
             if (trackMaxScore) {
-                return new MultiComparatorScoringMaxScoreCollector(queue, numHits, fillFields);
+                return new MultiComparatorScoringMaxScoreCollector(queue, numHits, readerContext, fillFields, sort.getSort());
             } else if (trackDocScores) {
-                return new MultiComparatorScoringNoMaxScoreCollector(queue, numHits, fillFields);
+                return new MultiComparatorScoringNoMaxScoreCollector(queue, numHits, readerContext, fillFields, sort.getSort());
             } else {
-                return new MultiComparatorNonScoringCollector(queue, numHits, fillFields);
+                return new MultiComparatorNonScoringCollector(queue, numHits, readerContext, fillFields, sort.getSort());
             }
         } else {
             if (trackMaxScore) {
-                return new OutOfOrderMultiComparatorScoringMaxScoreCollector(queue, numHits, fillFields);
+                return new OutOfOrderMultiComparatorScoringMaxScoreCollector(queue, numHits, readerContext, fillFields, sort.getSort());
             } else if (trackDocScores) {
-                return new OutOfOrderMultiComparatorScoringNoMaxScoreCollector(queue, numHits, fillFields);
+                return new OutOfOrderMultiComparatorScoringNoMaxScoreCollector(queue, numHits, readerContext, fillFields, sort.getSort());
             } else {
-                return new OutOfOrderMultiComparatorNonScoringCollector(queue, numHits, fillFields);
+                return new OutOfOrderMultiComparatorNonScoringCollector(queue, numHits, readerContext, fillFields, sort.getSort());
             }
         }
     }
@@ -965,9 +988,24 @@ public abstract class SellstomeTopFieldCollector extends org.apache.lucene.searc
 
 
     protected void applyRefinementSorting() {
+        SortField sortField = Iterables.find(Arrays.asList(fields), new Predicate<SortField>() {
 
+            @Override
+            public boolean apply(@Nullable SortField sortField) {
+                return sortField != null && sortField instanceof PostProcessSortField;
+            }
+
+        });
+        if (sortField != null) {
+            if (!isMultiFieldCollector()) {
+                PostProcessSortField ppField = (PostProcessSortField) sortField;
+                queue.applyRefinementSorting(ppField.createRefiner(readerContext.reader()));
+            }
+        }
     }
 
+    /** Returns true if a given collector uses multiple field comparators */
+    protected abstract boolean isMultiFieldCollector();
 
 
 }

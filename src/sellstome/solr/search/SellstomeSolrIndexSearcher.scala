@@ -116,7 +116,7 @@ class SellstomeSolrIndexSearcher(core: SolrCore, schema: IndexSchema, name: Stri
         }
       }
       else {
-        topCollector = SellstomeTopFieldCollector.create(weightSort(cmd.getSort), len, false, needScores, needScores, true)
+        topCollector = SellstomeTopFieldCollector.create(weightSort(cmd.getSort), len, readerContext, false, needScores, needScores, true)
       }
       var collector: Collector = topCollector
       if (timeAllowed > 0) {
