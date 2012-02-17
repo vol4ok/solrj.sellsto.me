@@ -128,8 +128,7 @@ public abstract class SellstomeFieldValueHitQueue<T extends FieldValueHitQueue.E
     /** Allows refine a given search results. */
     @SuppressWarnings({"unchecked"})
     public void applyRefinementSorting(SortRefinerComparator comparator) {
-        T[] heap = (T[]) getHeapArray();
-        Arrays.sort(heap, comparator);
+        Arrays.sort( getHeapArray(), comparator);
     }
 
 }

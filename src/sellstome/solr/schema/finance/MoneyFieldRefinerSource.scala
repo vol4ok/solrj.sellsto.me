@@ -2,12 +2,12 @@ package sellstome.solr.schema.finance
 
 import org.apache.lucene.search.FieldValueHitQueue
 import sellstome.lucene.{SortRefinerComparator, SortRefinerComparatorSource}
-import javax.annotation.Nonnull
 import org.apache.lucene.search.FieldValueHitQueue.Entry
 import sellstome.solr.service.finance.ICurrencyExchangeRateService
 import org.apache.lucene.index.{FieldInfo, StoredFieldVisitor, IndexReader}
 import org.apache.lucene.index.StoredFieldVisitor.Status
 import java.util.Currency
+import javax.annotation.{Nullable, Nonnull}
 
 /**
  * Creates a refiner for sorting by a money field.
@@ -30,9 +30,13 @@ class MoneyFieldRefiner(@Nonnull indexReader: IndexReader, @Nonnull storedFieldN
       extends SortRefinerComparator[FieldValueHitQueue.Entry](indexReader) {
 
   /** Compares two pre-ordered hits. Uses original (amount,currency) value and latest exchange rates */
-  override def compare(firstEntry: Entry, secondEntry: Entry):Int = {
-    val firstValue  = { val visitor = new MoneyFieldVisitor(storedFieldName); indexReader.document(firstEntry.doc,  visitor); visitor.getValue() }
-    val secondValue = { val visitor = new MoneyFieldVisitor(storedFieldName); indexReader.document(secondEntry.doc, visitor); visitor.getValue() }
+  override def compare(@Nullable firstEntry: AnyRef, @Nullable secondEntry: AnyRef):Int = {
+    //todo zhugrov a - cleanup this code
+    if (firstEntry == null && secondEntry == null) return  0
+    if (firstEntry == null && secondEntry != null) return -1
+    if (firstEntry != null && secondEntry == null) return  1
+    val firstValue  = { val visitor = new MoneyFieldVisitor(storedFieldName); indexReader.document(firstEntry.asInstanceOf[Entry].doc,  visitor); visitor.getValue() }
+    val secondValue = { val visitor = new MoneyFieldVisitor(storedFieldName); indexReader.document(secondEntry.asInstanceOf[Entry].doc, visitor); visitor.getValue() }
     val firstValueConveted    = exchangeRateService.convertCurrency(firstValue,  baseCurrency)
     val secondValueConverted  = exchangeRateService.convertCurrency(secondValue, baseCurrency)
     val compare = firstValueConveted.getAmount.compareTo( secondValueConverted.getAmount )

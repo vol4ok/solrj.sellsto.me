@@ -34,10 +34,10 @@ class PostProcessSortField(@Nonnull field: String, @Nonnull comparatorSource: Fi
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-abstract class SortRefinerComparator[Entry <: FieldValueHitQueue.Entry](@Nonnull indexReader: IndexReader) extends Comparator[Entry] {
+abstract class SortRefinerComparator[Entry <: FieldValueHitQueue.Entry](@Nonnull indexReader: IndexReader) extends Comparator[AnyRef] {
 
   /** Compares two entries in SellstomeFieldValueHitQueue */
-  def compare(firstEntry: Entry, secondEntry: Entry): Int
+  def compare(firstEntry: AnyRef, secondEntry: AnyRef): Int
 
 }
 
