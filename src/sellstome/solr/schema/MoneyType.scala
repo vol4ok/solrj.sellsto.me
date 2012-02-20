@@ -58,7 +58,7 @@ class MoneyType extends AbstractSubTypeFieldType {
 
 
   override def createFields(field: SchemaField, externalVal: AnyRef, boost: Float): Array[IndexableField] = {
-    val f: Array[IndexableField] = new Array[IndexableField]((if (field.indexed) 2 else 0) + (if (field.stored) 1 else 0))
+    val f: Array[IndexableField] = new Array[IndexableField]((if (field.indexed) 1 else 0) + (if (field.stored) 1 else 0))
     if (field.indexed) {
       val value = MoneyType.ExchangeRateService.convertCurrency(MoneyValue.parse(externalVal.toString), MoneyType.BaseCurrency)
       f(0) = subField(field, 0).createField(String.valueOf(value.getAmount), boost)

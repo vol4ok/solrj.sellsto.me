@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- Used for tests of money type fields -->
+<schema name="ad" version="1.4">
+    <types>
+        <fieldType name="string"  class="solr.StrField"                   sortMissingLast="true" omitNorms="true"/>
+        <fieldType name="long"    class="solr.TrieLongField"              precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+        <fieldType name="money"   class="sellstome.solr.schema.MoneyType" subFieldSuffix="_money" debug="true" />
+    </types>
+
+    <fields>
+        <field name="id"             type="string"       indexed="true"  stored="true"   required="true"  />
+        <field name="price"          type="money"        indexed="true"  stored="true"   required="true"  />
+        <field name="price_0_money"  type="long"         indexed="true"  stored="false"  required="false" />
+    </fields>
+
+    <uniqueKey>id</uniqueKey>
+    <defaultSearchField>id</defaultSearchField>
+    <solrQueryParser defaultOperator="OR"/>
+
+</schema>

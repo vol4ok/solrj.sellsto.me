@@ -39,6 +39,7 @@ dependencies {
     provided        'commons-codec:commons-codec:1.6'
 
     //test dependencies
+    testCompile     'junit:junit:4.10'
     testCompile     'org.easymock:easymock:3.1'
     testCompile     'org.powermock:powermock-api-easymock:1.4.11'
     testCompile     'org.powermock:powermock-module-javaagent:1.4.11'
