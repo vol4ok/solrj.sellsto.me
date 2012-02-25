@@ -4,6 +4,8 @@ import org.apache.solr.util.TestHarness
 import org.apache.solr.schema.IndexSchema
 import org.apache.solr.core._
 import sellstome.solr.core.SellstomeSolrCore
+import org.apache.solr.common.util.XML
+import java.io.{IOException, StringWriter}
 
 
 object SolrTestHelper {

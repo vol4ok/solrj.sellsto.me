@@ -10,8 +10,11 @@
 
     <fields>
         <field name="id"             type="string"       indexed="true"  stored="true"   required="true"  />
+        <field name="signatureField" type="string"       indexed="true"  stored="false"                   />
         <field name="price"          type="money"        indexed="true"  stored="true"   required="true"  />
         <field name="price_0_money"  type="long"         indexed="true"  stored="false"  required="false" />
+
+        <dynamicField name="*_sS" type="string"  indexed="false" stored="true"/>
     </fields>
 
     <uniqueKey>id</uniqueKey>

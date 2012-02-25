@@ -24,7 +24,7 @@ import org.apache.solr.schema.{FieldType, IndexSchema}
 object JSONSerializer {
   
   /** A list of fields that allowed to be serialized into response */
-  private val allowedFields = List("id","price")
+  private val allowedFields = List("id","price","message","description","location")
 
   /**
    *  Transforms a single entry to a json string

@@ -4,9 +4,7 @@ import finance.{MoneyFieldRefinerSource, MoneyFieldComparatorSource, MoneyValue,
 import org.slf4j.{LoggerFactory, Logger}
 import org.apache.lucene.document.FieldType
 import org.apache.solr.search.function.ValueSourceRangeFilter
-import org.apache.lucene.search.{SortField, Query}
 import org.apache.solr.common.SolrException
-import org.apache.solr.schema.{SchemaField, IndexSchema, AbstractSubTypeFieldType}
 import org.apache.solr.response.TextResponseWriter
 import org.apache.solr.search.{QParser, SolrConstantScoreQuery}
 import org.apache.lucene.index.IndexableField
@@ -18,6 +16,8 @@ import beans.BooleanBeanProperty
 import org.apache.lucene.index.FieldInfo.IndexOptions
 import org.apache.solr.common.SolrException.ErrorCode
 import sellstome.lucene.PostProcessSortField
+import org.apache.lucene.search.{NumericRangeQuery, SortField, Query}
+import org.apache.solr.schema.{TrieField, SchemaField, IndexSchema, AbstractSubTypeFieldType}
 
 object MoneyType {
   /** logger instance */
@@ -35,8 +35,10 @@ class MoneyType extends AbstractSubTypeFieldType {
 
   /** whenever we print the debug information */
   @BooleanBeanProperty
-  var debugEnabled = false
+  protected var debugEnabled = false
 
+  /** The trie field precision that used for indexing the raw money amount value */
+  protected var rawValuePrecisionStep = TrieField.DEFAULT_PRECISION_STEP
 
 
   protected override def init(schema: IndexSchema, args: java.util.Map[String, String]) {
@@ -49,6 +51,11 @@ class MoneyType extends AbstractSubTypeFieldType {
     createSuffixCache(1)
   }
 
+
+  @inline
+  private def initRawValuePrecisionStep(schema: IndexSchema) {
+
+  }
 
 
 
@@ -83,16 +90,19 @@ class MoneyType extends AbstractSubTypeFieldType {
   }
 
 
-
-
+  /** Returns a range query that used the raw numeric indexed value in base currency. */
   override def getRangeQuery(parser: QParser, field: SchemaField, lowerBoundValue: String, upperBoundValue: String, minInclusive: Boolean, maxInclusive: Boolean): Query = {
-    //todo zhugrov a - reimplement this method
-    val lower: MoneyValue = MoneyValue.parse(lowerBoundValue)
-    val upper: MoneyValue = MoneyValue.parse(upperBoundValue)
-    if (!(lower.getCurrency  == upper.getCurrency)) {
+    val lower = MoneyValue.parse(lowerBoundValue)
+    val upper = MoneyValue.parse(upperBoundValue)
+    if (lower.getCurrency  != upper.getCurrency) {
       throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, "Cannot parse range query " + lowerBoundValue + " to " + upperBoundValue + ": range queries only supported when upper and lower bound have same currency.")
     }
-    return new SolrConstantScoreQuery(new ValueSourceRangeFilter(getValueSource(field, parser) , lower.getAmount + "", upper.getAmount + "", minInclusive, maxInclusive))
+    val lowerRaw = MoneyType.ExchangeRateService.convertCurrency(lower, MoneyType.BaseCurrency).getAmount
+    val upperRaw = MoneyType.ExchangeRateService.convertCurrency(upper, MoneyType.BaseCurrency).getAmount
+
+    return NumericRangeQuery.newLongRange(subField(field, 0).getName(),
+                                          TrieField.DEFAULT_PRECISION_STEP,
+                                          lowerRaw, upperRaw, minInclusive, maxInclusive);
   }
 
 

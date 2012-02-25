@@ -1,11 +1,12 @@
 package sellstome.solr.util
 
-import org.apache.solr.SolrTestCaseJ4
 import sellstome.util.Logging
 import org.apache.solr.common.SolrException
 import java.util.HashSet
 import org.apache.solr.util.TestHarness
-import org.apache.solr.common.params.CommonParams
+import org.apache.solr.{JSONTestUtil, SolrTestCaseJ4}
+import org.apache.solr.common.params.{ModifiableSolrParams, SolrParams, CommonParams}
+import org.apache.solr.request.SolrQueryRequest
 
 /**
  * Contains a set of the utility methods for tests
@@ -84,5 +85,116 @@ class SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
 
   /** Returns a reference to a test helper */
   def testHelper = SellstomeSolrTestCaseJ4.testHelper
+
+  /**
+   * Validates an update XML String is successful
+   */
+  def assertU(update: String) {
+    assertU(null, update)
+  }
+
+  /**
+   * Validates an update XML String is successful
+   */
+  def assertU(message: String, update: String) {
+    SolrTestCaseJ4.assertU(message, update)
+  }
+
+  /**
+   * Validates an update XML String failed
+   */
+  def assertFailedU(update: String) {
+    assertFailedU(null, update)
+  }
+
+  /**
+   * Validates an update XML String failed
+   */
+  def assertFailedU(message: String, update: String) {
+    SolrTestCaseJ4.assertFailedU(message, update)
+  }
+
+  /**
+   * Generates a simple &lt;add&gt;&lt;doc&gt;... XML String with no options
+   *
+   * @param fieldsValues 0th and Even numbered args are fields names odds are field values.
+   * @see #add
+   * @see #doc
+   */
+  def adoc(fieldsValues: String*): String = {
+    SolrTestCaseJ4.add(SolrTestCaseJ4.doc(fieldsValues: _*))
+  }
+
+  /**
+   * Validates a query matches some JSON test expressions using the default double delta tollerance.
+   * @see JSONTestUtil#DEFAULT_DELTA
+   * @see #assertJQ(SolrQueryRequest,double,String...)
+   */
+  def assertJQ(req: SolrQueryRequest, tests: String*) {
+    SolrTestCaseJ4.assertJQ(req, JSONTestUtil.DEFAULT_DELTA, tests: _*)
+  }
+
+  /**
+   * Validates a query matches some JSON test expressions and closes the
+   * query. The text expression is of the form path:JSON.  To facilitate
+   * easy embedding in Java strings, the JSON can have double quotes
+   * replaced with single quotes.
+   * <p>
+   * Please use this with care: this makes it easy to match complete
+   * structures, but doing so can result in fragile tests if you are
+   * matching more than what you want to test.
+   * </p>
+   * @param req Solr request to execute
+   * @param delta tolerance allowed in comparing float/double values
+   * @param tests JSON path expression + '==' + expected value
+   */
+  def assertJQ(req: SolrQueryRequest, delta: Double, tests: String*) {
+    SolrTestCaseJ4.assertJQ(req, delta, tests: _*)
+  }
+
+  /** Makes sure a query throws a SolrException with the listed response code */
+  def assertQEx(message: String, req: SolrQueryRequest, code: Int) {
+    SolrTestCaseJ4.assertQEx(message, req, code)
+  }
+
+  def assertQEx(message: String, req: SolrQueryRequest, code: SolrException.ErrorCode) {
+    SolrTestCaseJ4.assertQEx(message, req, code)
+  }
+
+  /**Validates a query matches some XPath test expressions and closes the query */
+  def assertQ(req: SolrQueryRequest, tests: String*) {
+    SolrTestCaseJ4.assertQ(null, req, tests: _*)
+  }
+
+  /**Validates a query matches some XPath test expressions and closes the query */
+  def assertQ(message: String, req: SolrQueryRequest, tests: String*) {
+    SolrTestCaseJ4.assertQ(message, req, tests: _*)
+  }
+
+  /**
+   * @see TestHarness#optimize
+   */
+  def optimize(args: String*): String = SolrTestCaseJ4.optimize(args: _*)
+
+  /**
+   * @see TestHarness#commit
+   */
+  def commit(args: String*): String = SolrTestCaseJ4.commit(args: _*)
+
+  /** Causes an exception matching the regex pattern to not be logged. */
+  def ignoreException(pattern: String) {
+    SolrTestCaseJ4.ignoreException(pattern)
+  }
+
+  def resetExceptionIgnores() {
+    SolrTestCaseJ4.resetExceptionIgnores()
+  }
+
+  /**
+   * Generates a SolrQueryRequest
+   */
+  def req(q: String*): SolrQueryRequest = SolrTestCaseJ4.req(q: _*)
+
+
 
 }

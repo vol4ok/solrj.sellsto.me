@@ -9,7 +9,7 @@ object MoneyFieldComponentTest {
 
   /** Initializes a solr core */
   @BeforeClass def beforeClass() {
-    SellstomeSolrTestCaseJ4.initCore("sellstome-solrconfig.xml", "schema-money.xml")
+    SellstomeSolrTestCaseJ4.initCore("solrconfig.xml", "schema-money.xml")
   }
 
 }
@@ -52,6 +52,17 @@ class MoneyFieldComponentTest extends SellstomeSolrTestCaseJ4
     val simplePrice   = List("100000","USD").reduceLeft(_+","+_)
     val indexedFields = fieldType.createFields(priceField, simplePrice, 1.0f)
     assert(indexedFields.length == 2)
+  }
+
+  /** Tests a search index with money data type field in the index */
+  @Test def testSearching() {
+    for (i <- 0 until 50) {
+      assertU(adoc("id",i.toString(), "price", (i*100)+","+"EUR"))
+    }
+    assertU(commit())
+    assertQ(req("fl", "*,score", "q", "*:*"), "//*[@numFound='50']")
+
+    clearIndex()
   }
 
 }

@@ -3,15 +3,11 @@ package sellstome.solr.request
 import org.apache.solr.handler.component.SearchHandler
 import org.apache.solr.request.SolrQueryRequest
 import org.apache.solr.response.SolrQueryResponse
-import sellstome.solr.request.RequestParams
 
 /**
- * Created by IntelliJ IDEA.
- * User: zhygr
- * Date: 12/8/11
- * Time: 11:47 PM
  * Parses a select ad query.
  * Main goal of this class is to transform a custom parameters that defines a geo bounding box to a solr Filter Query
+ * @author aliaksandr zhuhrou
  */
 class AdRequestHandler extends SearchHandler {
 
