@@ -4,10 +4,6 @@ import org.apache.solr.common.SolrException
 import runtime.NonLocalReturnControl
 
 /**
- * Created by IntelliJ IDEA.
- * User: Asus
- * Date: 25.01.12
- * Time: 7:55
  * In many solr components we are using a following pattern for wrapping exceptions
  *  try {
  *     return new MoneyValue(java.lang.Long.parseLong(amount), code)
@@ -23,6 +19,7 @@ import runtime.NonLocalReturnControl
  *    some stuff to do
  *  }
  *
+ *  @author Aliaksandr Zhuhrou
  */
 object trysolr {
 

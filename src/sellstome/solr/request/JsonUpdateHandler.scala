@@ -43,23 +43,23 @@ class JsonUpdateHandler extends RequestHandlerBase {
     try {
       val cmd = params.get(Command.RequestParamName)
       cmd match {
-        case Command.AddCommand => updateProcessor.processAdd(JsonUpdateCommandBuilder.buildAdd(req, rsp))
-        case Command.CommitCommand => updateProcessor.processCommit(JsonUpdateCommandBuilder.buildCommit(req, rsp))
-        case Command.DeleteCommand => updateProcessor.processDelete(JsonUpdateCommandBuilder.buildDelete(req, rsp))
-        case Command.MergeCommand => updateProcessor.processMergeIndexes(JsonUpdateCommandBuilder.buildMergeIndexes(req, rsp))
-        case Command.RollbackCommand => updateProcessor.processRollback(JsonUpdateCommandBuilder.buildRollback(req, rsp))
+        case Command.AddCommand       => updateProcessor.processAdd(JsonUpdateCommandBuilder.buildAdd(req, rsp))
+        case Command.CommitCommand    => updateProcessor.processCommit(JsonUpdateCommandBuilder.buildCommit(req, rsp))
+        case Command.DeleteCommand    => updateProcessor.processDelete(JsonUpdateCommandBuilder.buildDelete(req, rsp))
+        case Command.MergeCommand     => updateProcessor.processMergeIndexes(JsonUpdateCommandBuilder.buildMergeIndexes(req, rsp))
+        case Command.RollbackCommand  => updateProcessor.processRollback(JsonUpdateCommandBuilder.buildRollback(req, rsp))
       }
     } finally {
       updateProcessor.finish()
     }
   }
 
-  def getDescription = "allows update using docs in json format"
+  def getDescription  = "allows update using docs in json format"
 
-  def getSourceId = "do not allows disclosure"
+  def getSourceId     = "do not allows disclosure"
 
-  def getSource = "do not allows disclosure"
+  def getSource       = "do not allows disclosure"
 
-  def getVersion = "do not allows disclosure"
+  def getVersion      = "do not allows disclosure"
 
 }

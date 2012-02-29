@@ -158,6 +158,7 @@
     <fieldType name="location"                  class="solr.LatLonType"         subFieldSuffix="_coordinate"/>
     <fieldtype name="geohash"                   class="solr.GeoHashField"                                       />
     <fieldType name="money"                     class="sellstome.solr.schema.MoneyType" subFieldSuffix="_money" debug="true" />
+    <fieldType name="docRank"                   class="sellstome.solr.schema.DocRankFieldType"                          />
  </types>
 
  <fields>
@@ -169,6 +170,7 @@
    <field name="location"       type="location"     indexed="true"  stored="true"   required="true" multiValued="false"     />
    <field name="state"          type="string"       indexed="true"  stored="true"   required="true"                         />
    <field name="searchable"     type="boolean"      indexed="true"  stored="true"   required="true"                         />
+   <field name="rank"           type="docRank"                                      required="true"                         />
    <dynamicField                name="*_coordinate" type="tdouble"  indexed="true"  stored="false"                          />
  </fields>
 

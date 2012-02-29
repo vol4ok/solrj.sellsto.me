@@ -3,10 +3,9 @@ package sellstome.solr.schema
 import finance.{MoneyFieldRefinerSource, MoneyFieldComparatorSource, MoneyValue, MoneyValueSource}
 import org.slf4j.{LoggerFactory, Logger}
 import org.apache.lucene.document.FieldType
-import org.apache.solr.search.function.ValueSourceRangeFilter
 import org.apache.solr.common.SolrException
 import org.apache.solr.response.TextResponseWriter
-import org.apache.solr.search.{QParser, SolrConstantScoreQuery}
+import org.apache.solr.search.QParser
 import org.apache.lucene.index.IndexableField
 import com.google.common.collect.Lists
 import org.apache.lucene.queries.function.ValueSource
@@ -17,7 +16,9 @@ import org.apache.lucene.index.FieldInfo.IndexOptions
 import org.apache.solr.common.SolrException.ErrorCode
 import sellstome.lucene.PostProcessSortField
 import org.apache.lucene.search.{NumericRangeQuery, SortField, Query}
-import org.apache.solr.schema.{TrieField, SchemaField, IndexSchema, AbstractSubTypeFieldType}
+import MoneyType._
+import javax.annotation.Nonnull
+import org.apache.solr.schema._
 
 object MoneyType {
   /** logger instance */
@@ -52,22 +53,21 @@ class MoneyType extends AbstractSubTypeFieldType {
   }
 
 
+  /**
+   * Q: should we cache a given value?
+   * @return a precision step for a given support field
+   */
   @inline
-  private def initRawValuePrecisionStep(schema: IndexSchema) {
-
-  }
-
-
+  private def getRawValuePrecisionStep(field: SchemaField): Int = subField(field, 0)
+                                                                          .getType.asInstanceOf[TrieLongField]
+                                                                          .getPrecisionStep()
 
   override def isPolyField: Boolean = true
-
-
-
 
   override def createFields(field: SchemaField, externalVal: AnyRef, boost: Float): Array[IndexableField] = {
     val f: Array[IndexableField] = new Array[IndexableField]((if (field.indexed) 1 else 0) + (if (field.stored) 1 else 0))
     if (field.indexed) {
-      val value = MoneyType.ExchangeRateService.convertCurrency(MoneyValue.parse(externalVal.toString), MoneyType.BaseCurrency)
+      val value = ExchangeRateService.convertCurrency(MoneyValue.parse(externalVal.toString), MoneyType.BaseCurrency)
       f(0) = subField(field, 0).createField(String.valueOf(value.getAmount), boost)
     }
     if (field.stored) {
@@ -83,25 +83,26 @@ class MoneyType extends AbstractSubTypeFieldType {
   }
 
 
-
-
   override def getFieldQuery(parser: QParser, field: SchemaField, externalVal: String): Query = {
     return getRangeQuery(parser, field, externalVal, externalVal, true, true)
   }
 
 
-  /** Returns a range query that used the raw numeric indexed value in base currency. */
+  /**
+   * todo zhugrov a - test the implementation of this method.
+   * @return a range query that used the raw numeric indexed value in base currency.
+   */
   override def getRangeQuery(parser: QParser, field: SchemaField, lowerBoundValue: String, upperBoundValue: String, minInclusive: Boolean, maxInclusive: Boolean): Query = {
     val lower = MoneyValue.parse(lowerBoundValue)
     val upper = MoneyValue.parse(upperBoundValue)
     if (lower.getCurrency  != upper.getCurrency) {
       throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, "Cannot parse range query " + lowerBoundValue + " to " + upperBoundValue + ": range queries only supported when upper and lower bound have same currency.")
     }
-    val lowerRaw = MoneyType.ExchangeRateService.convertCurrency(lower, MoneyType.BaseCurrency).getAmount
-    val upperRaw = MoneyType.ExchangeRateService.convertCurrency(upper, MoneyType.BaseCurrency).getAmount
+    val lowerRaw = ExchangeRateService.convertCurrency(lower, MoneyType.BaseCurrency).getAmount
+    val upperRaw = ExchangeRateService.convertCurrency(upper, MoneyType.BaseCurrency).getAmount
 
     return NumericRangeQuery.newLongRange(subField(field, 0).getName(),
-                                          TrieField.DEFAULT_PRECISION_STEP,
+                                          getRawValuePrecisionStep(field),
                                           lowerRaw, upperRaw, minInclusive, maxInclusive);
   }
 

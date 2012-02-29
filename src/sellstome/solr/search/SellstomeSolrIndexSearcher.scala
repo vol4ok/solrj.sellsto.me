@@ -32,7 +32,7 @@ class SellstomeSolrIndexSearcher(core: SolrCore, schema: IndexSchema, name: Stri
                                                                             core.getIndexReaderFactory().newReader(directoryFactory.get(path, config.lockType)),
                                                                             true, enableCache, false, directoryFactory)
 
-  protected override def getDocListNC(qr: SolrIndexSearcher.QueryResult, cmd: SolrIndexSearcher.QueryCommand): Unit = {
+  protected override def getDocListNC(qr: SolrIndexSearcher.QueryResult, cmd: SolrIndexSearcher.QueryCommand) {
     val timeAllowed: Long = cmd.getTimeAllowed
     val len: Int = cmd.getSupersetMaxDoc
     var last: Int = len

@@ -22,13 +22,13 @@ repositories {
 
 dependencies {
     //scala plugin dependencies
-    scalaTools      'org.scala-lang:scala-compiler:2.10.0-M1'
-    scalaTools      'org.scala-lang:scala-library:2.10.0-M1'
+    scalaTools      'org.scala-lang:scala-compiler:2.10.0-M1-virtualized'
+    scalaTools      'org.scala-lang:scala-library:2.10.0-M1-virtualized'
 
     //compile dependencies
     compile         'org.json:json:20090211'
     compile         'net.sourceforge.findbugs:jsr305:1.3.7'
-    compile         'org.scala-lang:scala-library:2.10.0-M1'
+    compile         'org.scala-lang:scala-library:2.10.0-M1-virtualized'
     compile         fileTree(dir:'lib/local/compile', includes: ['reactive-core.jar'])
 
     //provided dependencies
@@ -98,6 +98,12 @@ task updateLibs(type: Sync) {
     copy {
         from filterExtendDependencies(configurations.testRuntime, configurations.testCompile, configurations.compile )
         into 'lib/test/runtime'
+    }
+
+    /** copy scala tools libs */
+    copy {
+        from configurations.scalaTools
+        into 'lib/compiler'
     }
 }
 
