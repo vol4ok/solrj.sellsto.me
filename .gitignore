@@ -9,3 +9,5 @@
 /out
 /server
 /sources
+/lib/compiler/scala-compiler-2.10.0-M1-virtualized.jar
+/lib/compiler/scala-library-2.10.0-M1-virtualized.jar

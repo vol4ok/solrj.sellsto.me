@@ -177,5 +177,8 @@
  <uniqueKey>id</uniqueKey>
  <defaultSearchField>message</defaultSearchField>
  <solrQueryParser defaultOperator="OR"/>
+ <similarity class="sellstome.solr.schema.RankAwareSimilarityFactory">
+    <str name="paramkey">param value</str>
+ </similarity>
 
 </schema>
