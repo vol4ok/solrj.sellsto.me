@@ -11,11 +11,7 @@ import org.apache.lucene.util.BytesRef
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class RankAwareSimilarity extends DefaultSimilarity {
-
-  @Deprecated
-  val boostField = "rank"
-
+class RankAwareSimilarity(boostField: String) extends DefaultSimilarity {
 
   override def exactSimScorer(stats: Similarity.SimWeight, context: AtomicReaderContext): Similarity.ExactSimScorer = {
     val baseScorer  = super.exactSimScorer(stats, context)
