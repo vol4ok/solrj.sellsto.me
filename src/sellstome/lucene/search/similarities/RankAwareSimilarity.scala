@@ -7,7 +7,8 @@ import org.apache.lucene.util.BytesRef
 
 
 /**
- *
+ * A scoring implementation that takes into account a external document rank value
+ * @param boostField a name of the DocValues field that stores a long rank value
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
@@ -60,5 +61,5 @@ class RankAwareSimilarity(boostField: String) extends DefaultSimilarity {
     }
   }
 
-
+  override def toString = "RankAwareSimilarity"
 }

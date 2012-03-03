@@ -5,8 +5,8 @@ import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.store.MockDirectoryWrapper
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.util.{SmartRandom, Version, LuceneTestCase}
-import org.apache.lucene.index.{LogMergePolicy, IndexWriterConfig, IndexReader}
-import org.apache.lucene.document.{FieldType, Field}
+import org.apache.lucene.document.{DocValuesField, FieldType, Field}
+import org.apache.lucene.index.{DocValues, LogMergePolicy, IndexWriterConfig, IndexReader}
 
 /**
  * Scala wrapper for the org.apache.lucene.util.LuceneTestCase
@@ -48,5 +48,8 @@ class SellstomeLuceneTestCase extends LuceneTestCase
   def newLogMergePolicy(): LogMergePolicy = LuceneTestCase.newLogMergePolicy()
 
   def newField(name: String, value: String, fieldType: FieldType): Field = LuceneTestCase.newField(name, value, fieldType)
+
+  /** Creates a new DocValues field for storage of long type data in the [[org.apache.lucene.index.DocValues.Type.VAR_INTS]] format */
+  def newDocValueField(name: String, value: Long): DocValuesField = new DocValuesField(name, value, DocValues.Type.VAR_INTS)
 
 }
