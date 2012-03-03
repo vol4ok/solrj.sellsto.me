@@ -1,8 +1,7 @@
 package sellstome.solr.schema
 
-import sellstome.solr.util.SellstomeSolrTestCaseJ4
+import sellstome.solr.SellstomeSolrTestCaseJ4
 import org.junit.{Test, BeforeClass}
-import org.scalatest.junit.{JUnitSuite, AssertionsForJUnit}
 
 /** Companion object. */
 object MoneyFieldComponentTest {
@@ -19,9 +18,7 @@ object MoneyFieldComponentTest {
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class MoneyFieldComponentTest extends SellstomeSolrTestCaseJ4
-                              with AssertionsForJUnit
-                              with JUnitSuite {
+class MoneyFieldComponentTest extends SellstomeSolrTestCaseJ4 {
 
   @Test def testSchemaBasics() {
     val schema = testHelper.getCore().getSchema()

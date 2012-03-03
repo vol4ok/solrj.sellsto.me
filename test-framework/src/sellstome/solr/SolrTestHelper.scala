@@ -1,4 +1,4 @@
-package sellstome.solr.util
+package sellstome.solr
 
 import org.apache.solr.util.TestHarness
 import org.apache.solr.schema.IndexSchema
@@ -10,18 +10,18 @@ import java.io.{IOException, StringWriter}
 
 object SolrTestHelper {
 
-  /** Initializes a sellstome core container for tests */
+  /**Initializes a sellstome core container for tests */
   protected class Initializer(coreName: String, dataDirectory: String,
-                    solrConfig: SolrConfig, indexSchema: IndexSchema) extends CoreContainer.Initializer {
+                              solrConfig: SolrConfig, indexSchema: IndexSchema) extends CoreContainer.Initializer {
 
     def getCoreName: String = coreName
 
     override def initialize: CoreContainer = {
       val container: sellstome.solr.core.CoreContainer = new sellstome.solr.core.CoreContainer() {
-        this.loader          = new SolrResourceLoader( SolrResourceLoader.locateSolrHome())
-        this.solrHome        = loader.getInstanceDir()
-        this.hostPort        = System.getProperty("hostPort")
-        this.hostContext     = "solr"
+        this.loader = new SolrResourceLoader(SolrResourceLoader.locateSolrHome())
+        this.solrHome = loader.getInstanceDir()
+        this.hostPort = System.getProperty("hostPort")
+        this.hostContext = "solr"
         this.defaultCoreName = "collection1"
         initZooKeeper(System.getProperty("zkHost"), 10000)
       }
@@ -36,6 +36,7 @@ object SolrTestHelper {
       return container
     }
   }
+
 }
 
 
@@ -45,7 +46,7 @@ object SolrTestHelper {
  *
  */
 class SolrTestHelper(coreName: String, init: CoreContainer.Initializer)
-      extends TestHarness(coreName, init) {
+  extends TestHarness(coreName, init) {
 
   /**
    * @param dataDirectory path for index data, will not be cleaned up
@@ -87,7 +88,7 @@ class SolrTestHelper(coreName: String, init: CoreContainer.Initializer)
    * @param dataDirectory path for index data, will not be cleaned up
    */
   def this(dataDirectory: String) =
-        this(dataDirectory, "schema.xml")
+    this(dataDirectory, "schema.xml")
 
 
 }

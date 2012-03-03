@@ -1,4 +1,4 @@
-package sellstome.solr.util
+package sellstome.solr
 
 import sellstome.util.Logging
 import org.apache.solr.common.SolrException
@@ -7,6 +7,7 @@ import org.apache.solr.util.TestHarness
 import org.apache.solr.{JSONTestUtil, SolrTestCaseJ4}
 import org.apache.solr.common.params.{ModifiableSolrParams, SolrParams, CommonParams}
 import org.apache.solr.request.SolrQueryRequest
+import org.scalatest.junit.{JUnitSuite, AssertionsForJUnit}
 
 /**
  * Contains a set of the utility methods for tests
@@ -14,16 +15,16 @@ import org.apache.solr.request.SolrQueryRequest
  * @since  1.0
  */
 object SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
-                               with Logging{
+with Logging {
 
-  /** Causes an exception matching the regex pattern to not be logged. */
+  /**Causes an exception matching the regex pattern to not be logged. */
   def ignoreException(pattern: String) {
     if (SolrException.ignorePatterns == null) SolrException.ignorePatterns = new HashSet[String]()
     SolrException.ignorePatterns.add(pattern)
   }
 
-  var factoryProp: String         = null
-  var testHelper: SolrTestHelper  = null
+  var factoryProp: String = null
+  var testHelper: SolrTestHelper = null
 
   /**
    * Call initCore in @BeforeClass to instantiate a solr core in your test class.
@@ -67,7 +68,7 @@ object SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
 
   def createCore() {
     SolrTestCaseJ4.solrConfig = TestHarness.createConfig(SolrTestCaseJ4.getSolrConfigFile())
-    testHelper = new SolrTestHelper( SolrTestCaseJ4.dataDir.getAbsolutePath, SolrTestCaseJ4.solrConfig, SolrTestCaseJ4.getSchemaFile())
+    testHelper = new SolrTestHelper(SolrTestCaseJ4.dataDir.getAbsolutePath, SolrTestCaseJ4.solrConfig, SolrTestCaseJ4.getSchemaFile())
     SolrTestCaseJ4.h = testHelper
     SolrTestCaseJ4.lrf = testHelper.getRequestFactory("standard", 0, 20, CommonParams.VERSION, "2.2")
   }
@@ -81,9 +82,12 @@ object SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
  * @since  1.0
  */
 class SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
-                              with Logging {
+                              with Logging
+                              with AssertionsForJUnit
+                              with JUnitSuite
+{
 
-  /** Returns a reference to a test helper */
+  /**Returns a reference to a test helper */
   def testHelper = SellstomeSolrTestCaseJ4.testHelper
 
   /**
@@ -152,7 +156,7 @@ class SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
     SolrTestCaseJ4.assertJQ(req, delta, tests: _*)
   }
 
-  /** Makes sure a query throws a SolrException with the listed response code */
+  /**Makes sure a query throws a SolrException with the listed response code */
   def assertQEx(message: String, req: SolrQueryRequest, code: Int) {
     SolrTestCaseJ4.assertQEx(message, req, code)
   }
@@ -181,7 +185,7 @@ class SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
    */
   def commit(args: String*): String = SolrTestCaseJ4.commit(args: _*)
 
-  /** Causes an exception matching the regex pattern to not be logged. */
+  /**Causes an exception matching the regex pattern to not be logged. */
   def ignoreException(pattern: String) {
     SolrTestCaseJ4.ignoreException(pattern)
   }
@@ -194,7 +198,6 @@ class SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
    * Generates a SolrQueryRequest
    */
   def req(q: String*): SolrQueryRequest = SolrTestCaseJ4.req(q: _*)
-
 
 
 }
