@@ -7,6 +7,20 @@ import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.util.{SmartRandom, Version, LuceneTestCase}
 import org.apache.lucene.document.{DocValuesField, FieldType, Field}
 import org.apache.lucene.index.{DocValues, LogMergePolicy, IndexWriterConfig, IndexReader}
+import org.junit.BeforeClass
+import org.apache.lucene.codecs.lucene40.Lucene40Codec
+import org.apache.lucene.codecs.Codec
+
+/** Companion object */
+object SellstomeLuceneTestCase {
+
+ /** We should use only the latest codec for our tests */
+ @BeforeClass def beforeClassSellstomeLuceneTestCaseJ4() {
+   val codec = new Lucene40Codec()
+   Codec.setDefault(codec)
+ }
+
+}
 
 /**
  * Scala wrapper for the org.apache.lucene.util.LuceneTestCase
