@@ -1,13 +1,13 @@
 package sellstome.solr
 
-import sellstome.util.Logging
 import org.apache.solr.common.SolrException
 import java.util.HashSet
 import org.apache.solr.util.TestHarness
 import org.apache.solr.{JSONTestUtil, SolrTestCaseJ4}
 import org.apache.solr.common.params.{ModifiableSolrParams, SolrParams, CommonParams}
 import org.apache.solr.request.SolrQueryRequest
-import org.scalatest.junit.{JUnitSuite, AssertionsForJUnit}
+import org.scalatest.junit.{JUnitSuite}
+import sellstome.util.{AssertionsForJUnit, Logging}
 
 /**
  * Contains a set of the utility methods for tests
@@ -83,11 +83,19 @@ with Logging {
  */
 class SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
                               with Logging
-                              with AssertionsForJUnit
                               with JUnitSuite
 {
 
-  /**Returns a reference to a test helper */
+  /**
+   * Shuts down the test harness, and makes the best attempt possible
+   * to delete dataDir, unless the system property "solr.test.leavedatadir"
+   * is set.
+   */
+  def deleteCore(): Unit = SolrTestCaseJ4.deleteCore()
+
+  def initCore(config: String, schema: String):Unit = SellstomeSolrTestCaseJ4.initCore(config, schema)
+
+  /** Returns a reference to a test helper */
   def testHelper = SellstomeSolrTestCaseJ4.testHelper
 
   /**
@@ -128,6 +136,9 @@ class SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
   def adoc(fieldsValues: String*): String = {
     SolrTestCaseJ4.add(SolrTestCaseJ4.doc(fieldsValues: _*))
   }
+
+  /** Send JSON update commands */
+  def updateJ(json: String, args: SolrParams) = SolrTestCaseJ4.updateJ(json, args)
 
   /**
    * Validates a query matches some JSON test expressions using the default double delta tollerance.
@@ -184,6 +195,20 @@ class SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
    * @see TestHarness#commit
    */
   def commit(args: String*): String = SolrTestCaseJ4.commit(args: _*)
+
+  /**
+   * Generates a &lt;delete&gt;... XML string for an ID
+   * @see TestHarness#deleteById
+   */
+  def delI(id: String): String = SolrTestCaseJ4.delI(id)
+
+  /**
+   * Generates a &lt;delete&gt;... XML string for an query
+   * @see TestHarness#deleteByQuery
+   */
+  def delQ(q: String): String = SolrTestCaseJ4.delQ(q)
+
+  def params(params: String*): ModifiableSolrParams = SolrTestCaseJ4.params(params: _*)
 
   /**Causes an exception matching the regex pattern to not be logged. */
   def ignoreException(pattern: String) {
