@@ -18,6 +18,7 @@ class RankAwareSimilarity(boostField: String) extends DefaultSimilarity {
     val baseScorer  = super.exactSimScorer(stats, context)
     val values      = context.reader.docValues(boostField).getSource()
 
+
     return new Similarity.ExactSimScorer {
 
       /** Calculates a boosted version of score */

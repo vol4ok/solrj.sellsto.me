@@ -30,7 +30,7 @@
 
   <jmx />
 
-  <updateHandler class="solr.DirectUpdateHandler2"/>
+  <updateHandler class="sellstome.solr.update.SellstomeUpdateHandler"/>
   
   <query>
     <maxBooleanClauses>1024</maxBooleanClauses>
