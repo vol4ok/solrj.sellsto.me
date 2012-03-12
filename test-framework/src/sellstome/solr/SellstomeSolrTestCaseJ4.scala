@@ -23,7 +23,6 @@ with Logging {
     SolrException.ignorePatterns.add(pattern)
   }
 
-  var factoryProp: String = null
   var testHelper: SolrTestHelper = null
 
   /**
@@ -50,8 +49,8 @@ with Logging {
   def initCore() {
     info("####initCore")
     ignoreException("ignore_exception")
-    factoryProp = System.getProperty("solr.directoryFactory")
-    if (factoryProp == null) {
+    SolrTestCaseJ4.factoryProp = System.getProperty("solr.directoryFactory")
+    if (SolrTestCaseJ4.factoryProp == null) {
       System.setProperty("solr.directoryFactory", "solr.RAMDirectoryFactory")
     }
     if (SolrTestCaseJ4.dataDir == null) {
@@ -73,6 +72,11 @@ with Logging {
     SolrTestCaseJ4.lrf = testHelper.getRequestFactory("standard", 0, 20, CommonParams.VERSION, "2.2")
   }
 
+  def deleteCore() {
+    SolrTestCaseJ4.deleteCore()
+
+  }
+
 }
 
 /**
@@ -91,7 +95,7 @@ class SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
    * to delete dataDir, unless the system property "solr.test.leavedatadir"
    * is set.
    */
-  def deleteCore(): Unit = SolrTestCaseJ4.deleteCore()
+  def deleteCore() = SellstomeSolrTestCaseJ4.deleteCore()
 
   def initCore(config: String, schema: String):Unit = SellstomeSolrTestCaseJ4.initCore(config, schema)
 
