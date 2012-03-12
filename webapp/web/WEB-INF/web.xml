@@ -19,14 +19,40 @@
         <servlet-class>org.apache.solr.servlet.LogLevelSelection</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>Zookeeper</servlet-name>
+        <servlet-class>org.apache.solr.servlet.ZookeeperInfoServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>LoadAdminUI</servlet-name>
+        <servlet-class>org.apache.solr.servlet.LoadAdminUiServlet</servlet-class>
+    </servlet>
+
+    <!-- Will be removed before 4.0 release! -->
     <servlet-mapping>
         <servlet-name>Logging</servlet-name>
-        <url-pattern>/admin/logging</url-pattern>
+        <url-pattern>/logging</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>Zookeeper</servlet-name>
+        <url-pattern>/zookeeper</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>LoadAdminUI</servlet-name>
+        <url-pattern>/admin.html</url-pattern>
+    </servlet-mapping>
+
+    <mime-mapping>
+        <extension>.xsl</extension>
+        <!-- per http://www.w3.org/TR/2006/PR-xslt20-20061121/ -->
+        <mime-type>application/xslt+xml</mime-type>
+    </mime-mapping>
+
     <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file>admin.html</welcome-file>
     </welcome-file-list>
 
 </web-app>
