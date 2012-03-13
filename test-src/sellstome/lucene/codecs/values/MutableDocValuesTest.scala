@@ -19,9 +19,9 @@ import org.apache.lucene.index.FieldInfo
  * @since 1.0
  */
 class MutableDocValuesTest extends SellstomeLuceneTestCase {
+
   /** actual indexing format */
   private val docValuesFormat: DocValuesFormat = new MutableDocValuesFormat()
-  private val COMP: Comparator[BytesRef] = BytesRef.getUTF8SortedAsUnicodeComparator
 
   def testVariableIntsLimits() {
 
@@ -52,7 +52,7 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
       writer.finish(2)
       var r: DocValues = getDocValues(dir, "test", DocValues.Type.VAR_INTS)
       var source: DocValues.Source = getSource(r)
-      assertEquals(i + " with min: " + minMax(i)(0) + " max: " + minMax(i)(1), expectedTypes(i), source.getType)
+      assertEquals(i + " with min: " + minMax(i)(0) + " max: " + minMax(i)(1), expectedTypes(i), source.getType())
       assertEquals(minMax(i)(0), source.getInt(0))
       assertEquals(minMax(i)(1), source.getInt(1))
       r.close()
@@ -72,20 +72,19 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   }
 
   def testGetInt8Array() {
-    var valueHolder: DocValueHolder = new DocValueHolder()
-    var sourceArray: Array[Byte] = Array[Byte](1, 2, 3)
-    var dir: Directory = newDirectory()
-    val trackBytes: Counter = Counter.newCounter()
-    var w: DocValuesConsumer = Ints.getWriter(dir, "test", trackBytes, Type.FIXED_INTS_8, newIOContext(random))
+    val valueHolder: DocValueHolder = new DocValueHolder()
+    val sourceArray: Array[Byte] = Array[Byte](1, 2, 3)
+    val dir: Directory = newDirectory()
+    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FIXED_INTS_8)
     for (i <- 0 until sourceArray.length) {
       valueHolder.numberValue = sourceArray(i).asInstanceOf[Long]
       w.add(i, valueHolder)
     }
     w.finish(sourceArray.length)
-    var r: DocValues = Ints.getValues(dir, "test", sourceArray.length, Type.FIXED_INTS_8, newIOContext(random))
-    var source: DocValues.Source = r.getSource
+    val r: DocValues = getDocValues(dir, "test", Type.FIXED_INTS_8)
+    val source: DocValues.Source = r.getSource()
     assertTrue(source.hasArray)
-    var loaded: Array[Byte] = (source.getArray.asInstanceOf[Array[Byte]])
+    val loaded: Array[Byte] = (source.getArray.asInstanceOf[Array[Byte]])
     assertEquals(loaded.length, sourceArray.length)
     for (i <- 0 until loaded.length) {
       assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i))
@@ -95,20 +94,19 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   }
 
   def testGetInt16Array() {
-    var valueHolder: DocValueHolder = new DocValueHolder
-    var sourceArray: Array[Short] = Array[Short](1, 2, 3)
-    var dir: Directory = newDirectory()
-    val trackBytes: Counter = Counter.newCounter
-    var w: DocValuesConsumer = Ints.getWriter(dir, "test", trackBytes, Type.FIXED_INTS_16, newIOContext(random))
+    val valueHolder: DocValueHolder = new DocValueHolder()
+    val sourceArray: Array[Short] = Array[Short](1, 2, 3)
+    val dir: Directory = newDirectory()
+    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FIXED_INTS_16)
     for (i <- 0 until sourceArray.length) {
       valueHolder.numberValue = sourceArray(i).asInstanceOf[Long]
       w.add(i, valueHolder)
     }
     w.finish(sourceArray.length)
-    var r: DocValues = Ints.getValues(dir, "test", sourceArray.length, Type.FIXED_INTS_16, newIOContext(random))
-    var source: DocValues.Source = r.getSource
+    val r: DocValues = getDocValues(dir, "test", Type.FIXED_INTS_16)
+    val source: DocValues.Source = r.getSource
     assertTrue(source.hasArray)
-    var loaded: Array[Short] = (source.getArray.asInstanceOf[Array[Short]])
+    val loaded: Array[Short] = (source.getArray.asInstanceOf[Array[Short]])
     assertEquals(loaded.length, sourceArray.length)
     for (i <- 0 until loaded.length) {
       assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i))
@@ -121,15 +119,14 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     var valueHolder: DocValueHolder = new DocValueHolder()
     var sourceArray: Array[Long] = Array[Long](1, 2, 3)
     var dir: Directory = newDirectory()
-    val trackBytes: Counter = Counter.newCounter
-    var w: DocValuesConsumer = Ints.getWriter(dir, "test", trackBytes, Type.FIXED_INTS_64, newIOContext(random))
+    var w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FIXED_INTS_64)
     for (i <- 0 until sourceArray.length) {
       valueHolder.numberValue = sourceArray(i)
       w.add(i, valueHolder)
     }
     w.finish(sourceArray.length)
-    var r: DocValues = Ints.getValues(dir, "test", sourceArray.length, Type.FIXED_INTS_64, newIOContext(random))
-    var source: DocValues.Source = r.getSource
+    var r: DocValues = getDocValues(dir, "test", Type.FIXED_INTS_64)
+    var source: DocValues.Source = r.getSource()
     assertTrue(source.hasArray)
     var loaded: Array[Long] = (source.getArray.asInstanceOf[Array[Long]])
     assertEquals(loaded.length, sourceArray.length)
@@ -141,20 +138,19 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   }
 
   def testGetInt32Array() {
-    var valueHolder: DocValueHolder = new DocValueHolder
-    var sourceArray: Array[Int] = Array[Int](1, 2, 3)
-    var dir: Directory = newDirectory()
-    val trackBytes: Counter = Counter.newCounter
-    var w: DocValuesConsumer = Ints.getWriter(dir, "test", trackBytes, Type.FIXED_INTS_32, newIOContext(random))
+    val valueHolder: DocValueHolder = new DocValueHolder()
+    val sourceArray: Array[Int] = Array[Int](1, 2, 3)
+    val dir: Directory = newDirectory()
+    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FIXED_INTS_32)
     for (i <- 0 until sourceArray.length) {
       valueHolder.numberValue = sourceArray(i).asInstanceOf[Long]
       w.add(i, valueHolder)
     }
     w.finish(sourceArray.length)
-    var r: DocValues = Ints.getValues(dir, "test", sourceArray.length, Type.FIXED_INTS_32, newIOContext(random))
-    var source: DocValues.Source = r.getSource
+    val r: DocValues = getDocValues(dir, "test", Type.FIXED_INTS_32)
+    val source: DocValues.Source = r.getSource()
     assertTrue(source.hasArray)
-    var loaded: Array[Int] = (source.getArray.asInstanceOf[Array[Int]])
+    val loaded: Array[Int] = (source.getArray.asInstanceOf[Array[Int]])
     assertEquals(loaded.length, sourceArray.length)
     for (i <- 0 until loaded.length) {
       assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i))
@@ -164,20 +160,19 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   }
 
   def testGetFloat32Array() {
-    var valueHolder: DocValueHolder = new DocValueHolder
-    var sourceArray: Array[Float] = Array[Float](1, 2, 3)
-    var dir: Directory = newDirectory()
-    val trackBytes: Counter = Counter.newCounter
-    var w: DocValuesConsumer = Floats.getWriter(dir, "test", trackBytes, newIOContext(random), Type.FLOAT_32)
+    val valueHolder: DocValueHolder = new DocValueHolder()
+    val sourceArray: Array[Float] = Array[Float](1, 2, 3)
+    val dir: Directory = newDirectory()
+    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FLOAT_32)
     for (i <- 0 until sourceArray.length) {
       valueHolder.numberValue = sourceArray(i)
       w.add(i, valueHolder)
     }
     w.finish(sourceArray.length)
-    var r: DocValues = Floats.getValues(dir, "test", 3, newIOContext(random), Type.FLOAT_32)
-    var source: DocValues.Source = r.getSource
+    val r: DocValues = getDocValues(dir, "test", Type.FLOAT_32)
+    val source: DocValues.Source = r.getSource()
     assertTrue(source.hasArray)
-    var loaded: Array[Float] = (source.getArray.asInstanceOf[Array[Float]])
+    val loaded: Array[Float] = source.getArray.asInstanceOf[Array[Float]]
     assertEquals(loaded.length, sourceArray.length)
     for (i <- 0 until loaded.length) {
       assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i), 0.0f)
@@ -187,20 +182,19 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   }
 
   def testGetFloat64Array() {
-    var valueHolder: DocValueHolder = new DocValueHolder
-    var sourceArray: Array[Double] = Array[Double](1, 2, 3)
-    var dir: Directory = newDirectory()
-    val trackBytes: Counter = Counter.newCounter
-    var w: DocValuesConsumer = Floats.getWriter(dir, "test", trackBytes, newIOContext(random), Type.FLOAT_64)
+    val valueHolder: DocValueHolder = new DocValueHolder()
+    val sourceArray: Array[Double] = Array[Double](1, 2, 3)
+    val dir: Directory = newDirectory()
+    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FLOAT_64)
     for (i <- 0 until sourceArray.length) {
       valueHolder.numberValue = sourceArray(i)
       w.add(i, valueHolder)
     }
     w.finish(sourceArray.length)
-    var r: DocValues = Floats.getValues(dir, "test", 3, newIOContext(random), Type.FLOAT_64)
-    var source: DocValues.Source = r.getSource
+    val r: DocValues = getDocValues(dir, "test", Type.FLOAT_64)
+    val source: DocValues.Source = r.getSource()
     assertTrue(source.hasArray)
-    var loaded: Array[Double] = (source.getArray.asInstanceOf[Array[Double]])
+    val loaded: Array[Double] = source.getArray.asInstanceOf[Array[Double]]
     assertEquals(loaded.length, sourceArray.length)
     for (i <- 0 until loaded.length) {
       assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i), 0.0d)
@@ -217,18 +211,14 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     runTestFloats(Type.FLOAT_64)
   }
 
-
-
-
-  protected def testInts(`type`: DocValues.Type, maxBit: Int)() {
-    var valueHolder: DocValueHolder = new DocValueHolder()
+  protected def testInts(docType: DocValues.Type, maxBit: Int)() {
+    val valueHolder: DocValueHolder = new DocValueHolder()
     var maxV: Long = 1
     val NUM_VALUES: Int = 333 + random.nextInt(333)
     val values: Array[Long] = new Array[Long](NUM_VALUES)
     for (rx <- 1 until maxBit) {
-      var dir: Directory = newDirectory()
-      val trackBytes: Counter = Counter.newCounter
-      var w: DocValuesConsumer = Ints.getWriter(dir, "test", trackBytes, `type`, newIOContext(random))
+      val dir: Directory = newDirectory()
+      val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", docType)
       for (i <- 0 until NUM_VALUES) {
         val v: Long = random.nextLong % (1 + maxV)
         valueHolder.numberValue = ({
@@ -238,11 +228,10 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
       }
       val additionalDocs: Int = 1 + random.nextInt(9)
       w.finish(NUM_VALUES + additionalDocs)
-      assertEquals(0, trackBytes.get)
-      var r: DocValues = Ints.getValues(dir, "test", NUM_VALUES + additionalDocs, `type`, newIOContext(random))
+      val r: DocValues = getDocValues(dir, "test", docType)
       for (iter <- 0 until 2) {
-        var s: DocValues.Source = getSource(r)
-        assertEquals(`type`, s.getType)
+        val s: DocValues.Source = getSource(r)
+        assertEquals(docType, s.getType)
         for (i1 <- 0 until NUM_VALUES) {
           val v: Long = s.getInt(i1)
           assertEquals("index " + i1, values(i1), v)
@@ -254,15 +243,14 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     }
   }
 
-  protected def runTestFloats(`type`: DocValues.Type)() {
-    var valueHolder: DocValueHolder = new DocValueHolder
-    var dir: Directory = newDirectory()
-    val trackBytes: Counter = Counter.newCounter
-    var w: DocValuesConsumer = Floats.getWriter(dir, "test", trackBytes, newIOContext(random), `type`)
+  protected def runTestFloats(docType: DocValues.Type)() {
+    val valueHolder: DocValueHolder = new DocValueHolder
+    val dir: Directory = newDirectory()
+    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", docType)
     val NUM_VALUES: Int = 777 + random.nextInt(777)
     val values: Array[Double] = new Array[Double](NUM_VALUES)
     for (i <- 0 until NUM_VALUES) {
-      val v: Double = if (`type` eq Type.FLOAT_32) random.nextFloat else random.nextDouble
+      val v: Double = if (docType eq Type.FLOAT_32) random.nextFloat else random.nextDouble
       valueHolder.numberValue = ({
         values(i) = v; values(i)
       })
@@ -270,10 +258,9 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     }
     val additionalValues: Int = 1 + random.nextInt(10)
     w.finish(NUM_VALUES + additionalValues)
-    assertEquals(0, trackBytes.get)
-    var r: DocValues = Floats.getValues(dir, "test", NUM_VALUES + additionalValues, newIOContext(random), `type`)
+    val r: DocValues = getDocValues(dir, "test", docType)
     for (iter <- 0 until 2) {
-      var s: DocValues.Source = getSource(r)
+      val s: DocValues.Source = getSource(r)
       for (i <- 0 until NUM_VALUES) {
         assertEquals("" + i, values(i), s.getFloat(i), 0.0f)
       }
@@ -358,7 +345,6 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
 
     var bytes: BytesRef = null
     var numberValue: Number = null
-    var comp: Comparator[BytesRef] = null
   }
 
 
