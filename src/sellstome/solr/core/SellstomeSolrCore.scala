@@ -84,7 +84,7 @@ class SellstomeSolrCore(name: String, dataDir: String, config: SolrConfig, schem
             newestSearcher.incref
             return newestSearcher
           }
-          currentReader.incRef
+          currentReader.incRef()
           newReader = currentReader
         }
         tmp = new SellstomeSolrIndexSearcher(this, schema, (if (realtime) "realtime" else "main"), newReader, true, !realtime, true, directoryFactory)
@@ -97,7 +97,7 @@ class SellstomeSolrCore(name: String, dataDir: String, config: SolrConfig, schem
       newSearcher.incref
       searcherLock synchronized {
         if (realtimeSearcher != null) {
-          realtimeSearcher.decref
+          realtimeSearcher.decref()
         }
         realtimeSearcher = newSearcher
         searcherList.add(realtimeSearcher)
@@ -110,9 +110,9 @@ class SellstomeSolrCore(name: String, dataDir: String, config: SolrConfig, schem
       }
     }
     finally {
-      openSearcherLock.unlock
+      openSearcherLock.unlock()
       if (newestSearcher != null) {
-        newestSearcher.decref
+        newestSearcher.decref()
       }
     }
   }

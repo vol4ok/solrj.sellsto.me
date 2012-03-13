@@ -33,8 +33,8 @@ class SellstomeSolrIndexSearcher(core: SolrCore, schema: IndexSchema, name: Stri
                                                                             true, enableCache, false, directoryFactory)
 
   protected override def getDocListNC(qr: SolrIndexSearcher.QueryResult, cmd: SolrIndexSearcher.QueryCommand) {
-    val timeAllowed: Long = cmd.getTimeAllowed
-    val len: Int = cmd.getSupersetMaxDoc
+    val timeAllowed: Long = cmd.getTimeAllowed()
+    val len: Int = cmd.getSupersetMaxDoc()
     var last: Int = len
     if (last < 0 || last > maxDoc) last = maxDoc
     val lastDocRequested: Int = last
@@ -51,37 +51,37 @@ class SellstomeSolrIndexSearcher(core: SolrCore, schema: IndexSchema, name: Stri
       val topscore: Array[Float] = Array[Float](Float.NegativeInfinity)
       val numHits: Array[Int] = new Array[Int](1)
       var collector = if (!needScores) {
-                                            new Collector {
+          new Collector {
 
-                                              def setScorer(scorer: Scorer) {}
+            def setScorer(scorer: Scorer) {}
 
-                                              def collect(doc: Int) { numHits(0) = numHits(0) + 1 }
+            def collect(doc: Int) { numHits(0) = numHits(0) + 1 }
 
-                                              def setNextReader(context: AtomicReaderContext) {}
+            def setNextReader(context: AtomicReaderContext) {}
 
-                                              def acceptsDocsOutOfOrder = true
+            def acceptsDocsOutOfOrder = true
 
-                                            }
+          }
       } else {
-                                            new Collector {
+          new Collector {
 
-                                              private[search] var scorer: Scorer = null
+            private[search] var scorer: Scorer = null
 
-                                              def setScorer(scorer: Scorer) {
-                                                this.scorer = scorer
-                                              }
+            def setScorer(scorer: Scorer) {
+              this.scorer = scorer
+            }
 
-                                              def collect(doc: Int) {
-                                                numHits(0) = numHits(0) + 1;
-                                                val score = scorer.score
-                                                if (score > topscore(0)) topscore(0) = score
-                                              }
+            def collect(doc: Int) {
+              numHits(0) = numHits(0) + 1
+              val score = scorer.score
+              if (score > topscore(0)) topscore(0) = score
+            }
 
-                                              def setNextReader(context: AtomicReaderContext) {}
+            def setNextReader(context: AtomicReaderContext) {}
 
-                                              def acceptsDocsOutOfOrder = true
+            def acceptsDocsOutOfOrder = true
 
-                                            }
+          }
       }
 
       if (timeAllowed > 0) {

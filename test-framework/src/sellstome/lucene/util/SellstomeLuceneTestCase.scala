@@ -14,7 +14,10 @@ import org.apache.lucene.codecs.Codec
 /** Companion object */
 object SellstomeLuceneTestCase {
 
- /** We should use only the latest codec for our tests */
+ /**
+  * We should use only the latest codec for our tests
+  * todo zhugrov a - change the implementation of the default codec to a [[sellstome.lucene.codecs.MutableDocValuesCodec]]
+  */
  @BeforeClass def beforeClassSellstomeLuceneTestCaseJ4() {
    val codec = new Lucene40Codec()
    Codec.setDefault(codec)

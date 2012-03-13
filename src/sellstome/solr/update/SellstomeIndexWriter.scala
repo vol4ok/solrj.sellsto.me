@@ -12,14 +12,10 @@ import org.apache.lucene.codecs.Codec
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class SellstomeIndexWriter(name: String,
-                           path: String,
+class SellstomeIndexWriter(name: String,path: String,
                            directoryFactory: DirectoryFactory,
-                           create: Boolean,
-                           schema: IndexSchema,
-                           config: SolrIndexConfig,
-                           delPolicy: IndexDeletionPolicy,
-                           codec: Codec,
-                           forceNewDirectory: Boolean) extends SolrIndexWriter(name, path, directoryFactory, create, schema, config, delPolicy, codec, forceNewDirectory) {
+                           create: Boolean, schema: IndexSchema, config: SolrIndexConfig,
+                           delPolicy: IndexDeletionPolicy, codec: Codec, forceNewDirectory: Boolean)
+    extends SolrIndexWriter(name, path, directoryFactory, create, schema, config, delPolicy, codec, forceNewDirectory) {
 
 }
