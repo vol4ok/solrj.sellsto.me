@@ -14,13 +14,18 @@ import org.apache.lucene.index.{PerDocWriteState, SegmentReadState, SegmentInfo}
  * @since 1.0
  */
 class MutableDocValuesFormat extends DocValuesFormat {
+
+  val DocValuesSegmentSuffix = "dv"
+
   /** consumes doc values and saves them do a disk */
-  def docsConsumer(state: PerDocWriteState) = new MutableDocValuesConsumer()
+  def docsConsumer(state: PerDocWriteState) = new MutableDocValuesPerDocConsumer(state, DocValuesSegmentSuffix)
 
   /** allows reading for doc values from external storage */
   def docsProducer(state: SegmentReadState) = new MutableDocValuesProducer()
 
   /** Populates a list of files that used for a given segment */
-  def files(info: SegmentInfo, files: Set[String]) {}
+  def files(info: SegmentInfo, files: Set[String]) {
+    MutableDocValuesPerDocConsumer.files(info, files, DocValuesSegmentSuffix)
+  }
 
 }
