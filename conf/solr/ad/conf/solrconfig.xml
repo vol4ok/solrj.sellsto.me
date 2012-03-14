@@ -16,6 +16,7 @@
   </indexDefaults>
 
   <mainIndex>
+    <codecFactory>sellstome.solr.core.SimpleTextCodecFactory</codecFactory>
     <useCompoundFile>false</useCompoundFile>
     <ramBufferSizeMB>32</ramBufferSizeMB>
     <mergeFactor>10</mergeFactor>
