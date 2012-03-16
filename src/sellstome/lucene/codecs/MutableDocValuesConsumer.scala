@@ -13,6 +13,7 @@ import org.apache.lucene.index.DocValues.Type
  * todo zhugrov a - Make document Id passing to this class in out of order.
  * </p>
  * note: that currently we support only subset of all [[org.apache.lucene.index.DocValues.Type]]
+ * the first iteration of this will use similar format as the [[org.apache.lucene.codecs.simpletext.SimpleTextDocValuesConsumer]]
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */

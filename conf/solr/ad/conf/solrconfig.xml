@@ -16,13 +16,13 @@
   </indexDefaults>
 
   <mainIndex>
-    <codecFactory>sellstome.solr.core.SimpleTextCodecFactory</codecFactory>
     <useCompoundFile>false</useCompoundFile>
     <ramBufferSizeMB>32</ramBufferSizeMB>
     <mergeFactor>10</mergeFactor>
     <unlockOnStartup>false</unlockOnStartup>
     <reopenReaders>true</reopenReaders>
     <infoStream file="INFOSTREAM.txt">false</infoStream>
+    <codecFactory class="sellstome.solr.core.SimpleTextCodecFactory" />
     <deletionPolicy class="solr.SolrDeletionPolicy">
       <str name="maxCommitsToKeep">1</str>
       <str name="maxOptimizedCommitsToKeep">0</str>

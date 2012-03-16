@@ -11,11 +11,19 @@ import org.scalatest.FunSuite
  */
 class LanguageFeaturesUnitTest extends FunSuite {
 
-  test("String interpolation") {
-    val a = 10
-    val b = 20
-    val sip = s"The value of a=$a and the value of b=$b"
-    Console.println(sip)
+  test("Option") {
+    var result = None.map[Option[Boolean]]( (number: Int) =>
+      if (number > 4) Some(true) else None
+    ).flatMap[Boolean]( result =>
+       if (result.isDefined) Some(result.get) else None
+    )
+    Console.println("result: "+result)
+  }
+
+  test("Equals") {
+    val one = new String(Array('a','b','c'))
+    val two = new String(Array('a','b','c'))
+    Console.println( one == two )
   }
 
 }
