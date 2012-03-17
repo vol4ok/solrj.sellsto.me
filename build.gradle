@@ -41,12 +41,12 @@ dependencies {
     provided        'commons-codec:commons-codec:1.6'
 
     //test dependencies
-    testCompile     'junit:junit:4.10'
+    testCompile     'junit:junit:4.10' //todo zhugrov a - we should introduce a testProvided configuration
     testCompile     'org.easymock:easymock:3.1'
     testCompile     'org.powermock:powermock-api-easymock:1.4.11'
     testCompile     'org.powermock:powermock-module-javaagent:1.4.11'
     testCompile     'org.powermock:powermock-api-support:1.4.11'
-    testCompile     'org.scalatest:scalatest_2.9.0:1.6.1'
+    testCompile     'org.scalatest:scalatest_2.9.1:1.7.1'
 }
 
 sourceSets {
