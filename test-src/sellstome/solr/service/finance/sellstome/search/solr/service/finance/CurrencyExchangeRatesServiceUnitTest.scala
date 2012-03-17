@@ -4,15 +4,14 @@ import org.scalatest.FunSuite
 import sellstome.solr.util.Currencies
 import sellstome.solr.service.finance.{ExchangeRate, CurrencyExchangeRatesService}
 import sellstome.solr.schema.finance.MoneyValue
+import sellstome.BaseUnitTest
 
 /**
- * Created by IntelliJ IDEA.
- * User: Alexander Zhugrov
- * Date: 03.02.12
- * Time: 9:08
- * Tests methods in {@link CurrencyExchangeRatesService}
+ * Tests methods in [[sellstome.solr.service.finance.CurrencyExchangeRatesService]]
+ * @author Alexander Zhugrov
+ * @since 1.0
  */
-class CurrencyExchangeRatesServiceUnitTest extends FunSuite {
+class CurrencyExchangeRatesServiceUnitTest extends BaseUnitTest {
   
   test("CurrencyExchangeRatesService#convertCurrency") {
     val service = new CurrencyExchangeRatesService() {

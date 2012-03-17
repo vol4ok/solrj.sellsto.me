@@ -1,16 +1,13 @@
 package sellstome.solr.service.finance.sellstome.search.solr.service.finance
 
-import org.scalatest.FunSuite
 import sellstome.solr.service.finance.TheEuropeanCentralBankLoader
+import sellstome.BaseUnitTest
 
 /**
- * Created by IntelliJ IDEA.
+ * Tests the [[sellstome.solr.service.finance.TheEuropeanCentralBankLoader]]
  * User: Alexander Zhugrov
- * Date: 27.01.12
- * Time: 4:10
- * @tests {TheEuropeanCentralBankLoader}
  */
-class TheEuropeanCentralBankLoaderComponentTest extends FunSuite {
+class TheEuropeanCentralBankLoaderComponentTest extends BaseUnitTest {
 
   test("Test poll() method") {
     val loader = new TheEuropeanCentralBankLoader()

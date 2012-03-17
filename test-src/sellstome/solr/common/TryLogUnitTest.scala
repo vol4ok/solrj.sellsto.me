@@ -3,6 +3,7 @@ package sellstome.solr.common
 import org.scalatest.FunSuite
 import org.apache.solr.common.SolrException
 import org.slf4j.{Logger, LoggerFactory}
+import sellstome.BaseUnitTest
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,7 +12,7 @@ import org.slf4j.{Logger, LoggerFactory}
  * Time: 1:44
  * Test trylog control structure
  */
-class TryLogUnitTest extends FunSuite {
+class TryLogUnitTest extends BaseUnitTest {
 
   implicit val log: Logger = LoggerFactory.getLogger(classOf[TryLogUnitTest])
   

@@ -5,15 +5,13 @@ import java.util.Currency
 import org.apache.solr.common.SolrException
 import org.apache.lucene.util.BytesRef
 import sellstome.solr.util.Currencies
+import sellstome.BaseUnitTest
 
 /**
- * Created by IntelliJ IDEA.
- * User: Alexander Zhugrov
- * Date: 02.02.12
- * Time: 0:36
- *
+ * @author Alexander Zhugrov
+ * @since 1.0
  */
-class MoneyValueUnitTest extends FunSuite {
+class MoneyValueUnitTest extends BaseUnitTest {
 
   val USD = Currency.getInstance("USD")
 

@@ -1,19 +1,16 @@
 package sellstome.solr.common
 
-import org.scalatest.FunSuite
 import org.easymock.EasyMock
 import org.easymock.EasyMock._
 import Console._
 import java.io.Closeable
+import sellstome.BaseUnitTest
 
 /**
- * Created by IntelliJ IDEA.
- * User: Alexander Zhugrov
- * Date: 05.02.12
- * Time: 13:57
- *
+ * @author Alexander Zhugrov
+ * @since 1.0
  */
-class UsingUnitTest extends FunSuite {
+class UsingUnitTest extends BaseUnitTest {
   
   test("Normal case") {
     val closeable = newCloseable()

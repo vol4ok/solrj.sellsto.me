@@ -1,16 +1,14 @@
 package sellstome.solr.common
 
-import org.scalatest.FunSuite
 import java.io.StringReader
+import sellstome.BaseUnitTest
 
 /**
- * Created by IntelliJ IDEA.
- * User: Alexander Zhugrov
- * Date: 26.01.12
- * Time: 1:32
- * @test {XmlParser}
+ * Tests [[sellstome.solr.common.XmlParser]]
+ * @author Alexander Zhugrov
+ * @since 1.0
  */
-class XmlParserUnitTest extends FunSuite with XmlParser {
+class XmlParserUnitTest extends BaseUnitTest with XmlParser {
 
   private val XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gesmes:Envelope xmlns:gesmes=\"http://www.gesmes.org/xml/2002-08-01\" " +
     "xmlns=\"http://www.ecb.int/vocabulary/2002-08-01/eurofxref\">\n\t<gesmes:subject>Reference rates</gesmes:subject>\n\t<gesmes:Sender>\n\t\t" +

@@ -7,6 +7,6 @@ import org.scalatest.FunSuite
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class BaseUnitTest extends FunSuite {
+abstract class BaseUnitTest extends FunSuite {
 
 }

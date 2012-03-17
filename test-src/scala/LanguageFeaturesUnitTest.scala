@@ -1,15 +1,12 @@
 package scala
 
-import org.scalatest.FunSuite
+import sellstome.BaseUnitTest
 
 /**
- * Created by IntelliJ IDEA.
- * User: Alexander Zhugrov
- * Date: 27.01.12
- * Time: 11:51
  * Some tests that related to scala language features.
+ * @author Aliaksandr Zhuhrou
  */
-class LanguageFeaturesUnitTest extends FunSuite {
+class LanguageFeaturesUnitTest extends BaseUnitTest {
 
   test("Option") {
     var result = None.map[Option[Boolean]]( (number: Int) =>

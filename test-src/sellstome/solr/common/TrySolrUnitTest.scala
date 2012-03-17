@@ -2,15 +2,14 @@ package sellstome.solr.common
 
 import org.scalatest.FunSuite
 import org.apache.solr.common.SolrException
+import sellstome.BaseUnitTest
 
 /**
- * Created by IntelliJ IDEA.
- * User: Asus
- * Date: 25.01.12
- * Time: 2:35
  * Tests functionality of solr component exceptional wrapper
+ * @author aliaksandr zhuhrou
+ * @since 1.0
  */
-class TrySolrUnitTest extends FunSuite {
+class TrySolrUnitTest extends BaseUnitTest {
 
   test("test normal case") {
 

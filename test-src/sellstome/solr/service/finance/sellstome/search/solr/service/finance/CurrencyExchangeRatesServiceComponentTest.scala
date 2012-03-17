@@ -1,22 +1,19 @@
 package sellstome.solr.service.finance
 
-import org.scalatest.FunSuite
+import _root_.sellstome.solr.SellstomeSolrTestCaseJ4
+import org.junit.Test
 
 /**
- * Created by IntelliJ IDEA.
- * User: Alexander Zhugrov
- * Date: 29.01.12
- * Time: 2:37
- * To change this template use File | Settings | File Templates.
+ * todo zhugrov a - implement this test
+ * @author Alexander Zhugrov
+ * @since 1.0
  */
-class CurrencyExchangeRatesServiceComponentTest extends FunSuite {
+class CurrencyExchangeRatesServiceComponentTest extends SellstomeSolrTestCaseJ4 {
   
-  test("Dummy test") {
-
-    val service = new CurrencyExchangeRatesService()
+  @Test def dummyTest() {
+    new CurrencyExchangeRatesService()
     Thread.sleep(10000)
     Console.println("Service created")
   }
-  
   
 }

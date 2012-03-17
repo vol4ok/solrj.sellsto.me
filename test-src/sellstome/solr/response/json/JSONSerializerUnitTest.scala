@@ -16,13 +16,14 @@ import org.apache.solr.schema.{StrField, SchemaField, IndexSchema}
 import com.google.common.collect.Maps
 import org.apache.lucene.index.IndexableField
 import sellstome.solr.common.NotImplementedException
+import sellstome.BaseUnitTest
 
 /**
  * Tests a sellstome json search result serializer.
  * @author Zhuhrou Aliaksandr
  * @since 1.0
  */
-class JSONSerializerUnitTest extends FunSuite with BeforeAndAfterAll {
+class JSONSerializerUnitTest extends BaseUnitTest with BeforeAndAfterAll {
 
   /** Initialize a power mock agent */
   protected override def beforeAll() {

@@ -1,16 +1,13 @@
 package sellstome.solr.common
 
-import org.scalatest.FunSuite
-import java.io.Reader
+import sellstome.BaseUnitTest
 
 /**
- * Created by IntelliJ IDEA.
- * User: Alexander Zhugrov
- * Date: 27.01.12
- * Time: 1:16
- * @tests {HttpLoader}
+ * Tests a [[sellstome.solr.common.HttpLoader]]
+ * @author Alexander Zhugrov
+ * @since 1.0
  */
-class HttpLoaderComponentTest extends FunSuite with HttpLoader {
+class HttpLoaderComponentTest extends BaseUnitTest with HttpLoader {
 
   test("Get Google Page") {
     val pageHtml = httpGet("https://www.google.com")
