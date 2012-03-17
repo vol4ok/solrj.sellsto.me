@@ -6,8 +6,8 @@ import org.apache.solr.util.TestHarness
 import org.apache.solr.{JSONTestUtil, SolrTestCaseJ4}
 import org.apache.solr.common.params.{ModifiableSolrParams, SolrParams, CommonParams}
 import org.apache.solr.request.SolrQueryRequest
-import org.scalatest.junit.{JUnitSuite}
-import sellstome.util.{AssertionsForJUnit, Logging}
+import org.scalatest.junit.JUnitSuite
+import sellstome.util.Logging
 
 /**
  * Contains a set of the utility methods for tests
@@ -85,7 +85,7 @@ with Logging {
  * @author Aliaksandr Zhuhrou
  * @since  1.0
  */
-class SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
+abstract class SellstomeSolrTestCaseJ4 extends SolrTestCaseJ4
                               with Logging
                               with JUnitSuite
 {

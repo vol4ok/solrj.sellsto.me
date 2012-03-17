@@ -23,4 +23,12 @@ class LanguageFeaturesUnitTest extends BaseUnitTest {
     Console.println( one == two )
   }
 
+  test("'new' keyword syntax") {
+    val collection = new {
+      val one = "one"
+      val second = "second"
+    }
+    Console.println(collection.getClass)
+  }
+
 }

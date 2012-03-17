@@ -8,24 +8,9 @@ import javax.annotation.Nonnull
 
 
 object FindDocValuesSliceInfos {
+  import FindDVSlicesGenMethod._
 
   val DefaultGenLookaheadCount = 10
-
-}
-
-/**
- * Utility class for executing code that needs to do
- * something with the current slices file.  This is
- * necessary with lock-less commits because from the time
- * you locate the current slices file name, until you
- * actually open it, read its contents, or check modified
- * time, etc., it could have been deleted due to a writer
- * commit finishing.
- * @author Aliaksandr Zhuhrou
- * @since 1.0
- */
-class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DocValuesSliceFS { outer =>
-  import FindDVSlicesGenMethod._
 
   /** Encapsulates a progress info records */
   class ProgressInfo[T] {
@@ -83,7 +68,7 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DocVa
           retryCount = retryCount + 1
         }
       } else if (useMethod == FindDVSlicesGenMethod.LookAhead) {
-          genLookaheadCount = genLookaheadCount + 1
+        genLookaheadCount = genLookaheadCount + 1
       } else {
         throw new IllegalStateException("not supported find dv gen method: %s".format(useMethod))
       }
@@ -114,11 +99,27 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DocVa
 
     /** whenever we receive a progressive values for slices generation */
     protected def isSeenProgress(): Boolean
-                = genSeenPrevSize != genSeen.size
+    = genSeenPrevSize != genSeen.size
 
 
 
   }
+
+}
+
+/**
+ * Utility class for executing code that needs to do
+ * something with the current slices file.  This is
+ * necessary with lock-less commits because from the time
+ * you locate the current slices file name, until you
+ * actually open it, read its contents, or check modified
+ * time, etc., it could have been deleted due to a writer
+ * commit finishing.
+ * @author Aliaksandr Zhuhrou
+ * @since 1.0
+ */
+class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DocValuesSliceFS { outer =>
+  import FindDocValuesSliceInfos.ProgressInfo
 
   /**
    * Finds a given slices file and pass its to a
