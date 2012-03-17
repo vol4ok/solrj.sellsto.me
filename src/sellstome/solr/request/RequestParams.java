@@ -48,7 +48,7 @@ public interface RequestParams {
 
             if (filterQuery != null) {
                 SolrParams fqParam = toSolrParams(CommonParams.FQ, filterQuery);
-                req.setParams(new DefaultSolrParams(fqParam, reqParams));
+                req.setParams(SolrParams.wrapDefaults(fqParam, reqParams));
             }
 
         }

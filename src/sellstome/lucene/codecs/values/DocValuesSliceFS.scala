@@ -1,10 +1,9 @@
 package sellstome.lucene.codecs.values
 
-import com.google.common.io.Files
 import org.apache.commons.io.FilenameUtils
-import javax.annotation.{Nullable, Nonnull}
-import org.apache.lucene.store.{IOContext, IndexInput, Directory}
-import org.apache.lucene.index.{CorruptIndexException, IndexFormatTooNewException, SegmentInfo, IndexFileNames}
+import javax.annotation.Nonnull
+import org.apache.lucene.store.{IOContext, Directory}
+import org.apache.lucene.index.{CorruptIndexException, IndexFormatTooNewException, SegmentInfo}
 import sellstome.util.Logging
 import java.io.{IOException, FileNotFoundException}
 
@@ -87,11 +86,11 @@ trait DocValuesSliceFS extends Logging {
   /**
    * Computes a full file name from base, extension and generation.
    */
-  def fileNameFromGeneration(@Nonnull base: String, @Nonnull ext: String, @Nonnull gen: Long): String = {
+  def fileNameFromGeneration(@Nonnull docValuesId: String, @Nonnull gen: Long): String = {
     if (gen == SegmentInfo.WITHOUT_GEN) {
-       return base+"."+ext
+       return docValuesId+"."+DocValuesSliceFS.DVSlicesExtension
     } else {
-       return base+"."+ext+"_"+gen.toString
+       return docValuesId+"."+DocValuesSliceFS.DVSlicesExtension+"_"+gen.toString
     }
   }
 
