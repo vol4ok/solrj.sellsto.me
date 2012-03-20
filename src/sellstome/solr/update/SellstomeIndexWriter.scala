@@ -12,7 +12,7 @@ import org.apache.lucene.codecs.Codec
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class SellstomeIndexWriter(name: String,path: String,
+class SellstomeIndexWriter(name: String, path: String,
                            directoryFactory: DirectoryFactory,
                            create: Boolean, schema: IndexSchema, config: SolrIndexConfig,
                            delPolicy: IndexDeletionPolicy, codec: Codec, forceNewDirectory: Boolean)

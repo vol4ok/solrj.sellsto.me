@@ -19,7 +19,7 @@ object FindDocValuesSliceInfos {
     protected var result: Option[T] = None
     protected var retryCount: Int = 0
     /** number of attempts of using a particular methods */
-    protected var genLookaheadCount: Int = 0
+    protected var genLookaheadCount: Int = 1
     protected val defaultGenLookaheadCount: Int = 10
     /** Size of the #genSeen set in previous iteration */
     protected var genSeenPrevSize = 0
@@ -97,14 +97,16 @@ object FindDocValuesSliceInfos {
       }
     }
 
+    /**
+     * Gets a gen by simply advancing the last seen generation
+     * @return
+     */
+    def genByLookaheadMethod(): Long = genSeen.max + genLookaheadCount
+
     /** whenever we receive a progressive values for slices generation */
-    protected def isSeenProgress(): Boolean
-    = genSeenPrevSize != genSeen.size
-
-
+    protected def isSeenProgress(): Boolean = genSeenPrevSize != genSeen.size
 
   }
-
 }
 
 /**
@@ -150,7 +152,14 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DocVa
           }
         }
       } else if (method == FindDVSlicesGenMethod.LookAhead) {
-
+        try {
+            val docValuesSliceFN = fileNameFromGeneration(docValuesId, progressInfo.genByLookaheadMethod())
+            progressInfo.setResult(process(docValuesSliceFN))
+        } catch {
+          case e: IOException => {
+            progressInfo.setLastSeenException(e)
+          }
+        }
       } else { throw new IllegalStateException("not supported find dv gen method %s".format(method)) }
       progressInfo.advance()
     }

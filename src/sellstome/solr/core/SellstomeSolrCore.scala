@@ -2,13 +2,25 @@ package sellstome.solr.core
 
 import org.apache.solr.schema.IndexSchema
 import org.apache.solr.core.{CoreDescriptor, SolrConfig, SolrCore}
-import org.apache.solr.update.UpdateHandler
 import org.apache.solr.search.SolrIndexSearcher
-import java.io.File
 import org.apache.lucene.index.{IndexWriter, DirectoryReader}
 import org.apache.solr.common.SolrException
 import org.apache.solr.util.RefCounted
 import sellstome.solr.search.SellstomeSolrIndexSearcher
+import org.apache.lucene.store.Directory
+import org.apache.solr.update.{SolrIndexWriter, UpdateHandler}
+import collection.mutable.HashSet
+import java.io.{IOException, File}
+import sellstome.util.Logging
+import sellstome.solr.update.SellstomeIndexWriter
+import org.slf4j.{LoggerFactory, Logger}
+
+
+object SellstomeSolrCore {
+  /** a logger instance */
+  private[core] val logger: Logger = LoggerFactory.getLogger(classOf[SellstomeSolrCore])
+  private[core] val dirs = new HashSet[String]
+}
 
 
 /**
@@ -123,6 +135,40 @@ class SellstomeSolrCore(name: String, dataDir: String, config: SolrConfig, schem
    */
   override def newSearcher(name: String): SolrIndexSearcher = {
     return new SellstomeSolrIndexSearcher(this, getNewIndexDir, schema, getSolrConfig.mainIndexConfig, name, false, directoryFactory)
+  }
+
+  /** Initializes a solr index. */
+  override def initIndex() {
+    import SellstomeSolrCore._
+    try {
+      val indexDir: String = getNewIndexDir()
+      val indexExists: Boolean = getDirectoryFactory.exists(indexDir)
+      var firstTime: Boolean = false
+      classOf[SolrCore] synchronized {
+        firstTime = dirs.add(new File(indexDir).getCanonicalPath)
+      }
+      var removeLocks: Boolean = solrConfig.unlockOnStartup
+      initIndexReaderFactory()
+      if (indexExists && firstTime && removeLocks) {
+        val dir: Directory = directoryFactory.get(indexDir, getSolrConfig.mainIndexConfig.lockType)
+        if (dir != null) {
+          if (IndexWriter.isLocked(dir)) {
+            logger.warn(logid + "WARNING: Solr index directory '" + indexDir + "' is locked.  Unlocking...")
+            IndexWriter.unlock(dir)
+          }
+          directoryFactory.release(dir)
+        }
+      }
+      if (!indexExists) {
+        logger.warn(logid + "Solr index directory '" + new File(indexDir) + "' doesn't exist." + " Creating new index...")
+        var writer = new SellstomeIndexWriter("SolrCore.initIndex", indexDir, getDirectoryFactory, true, schema, solrConfig.mainIndexConfig, solrDelPolicy, codec, false)
+        writer.close()
+      }
+    } catch {
+      case e: IOException => {
+        throw new RuntimeException(e)
+      }
+    }
   }
 
 
