@@ -10,6 +10,7 @@ import org.apache.lucene.index.{DocValues, LogMergePolicy, IndexWriterConfig, In
 import org.junit.BeforeClass
 import org.apache.lucene.codecs.lucene40.Lucene40Codec
 import org.apache.lucene.codecs.Codec
+import org.apache.lucene.index.DocValues.Type
 
 /** Companion object */
 object SellstomeLuceneTestCase {
@@ -66,7 +67,9 @@ class SellstomeLuceneTestCase extends LuceneTestCase
 
   def newField(name: String, value: String, fieldType: FieldType): Field = LuceneTestCase.newField(name, value, fieldType)
 
+  def newDocValueField(name: String, value: Long, dvType: Type) = new DocValuesField(name, value, dvType)
+
   /** Creates a new DocValues field for storage of long type data in the [[org.apache.lucene.index.DocValues.Type.VAR_INTS]] format */
-  def newDocValueField(name: String, value: Long): DocValuesField = new DocValuesField(name, value, DocValues.Type.VAR_INTS)
+  def newDocValueField(name: String, value: Long): DocValuesField = new DocValuesField(name, value, Type.VAR_INTS)
 
 }

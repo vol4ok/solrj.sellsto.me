@@ -2,14 +2,17 @@ package sellstome.lucene.codecs
 
 import scala.collection.JavaConversions._
 import org.apache.lucene.index.DocValues.Type
-import org.apache.lucene.codecs.{DocValuesConsumer, PerDocConsumer}
 import org.apache.lucene.store.Directory
 import java.io.IOException
 import org.apache.lucene.util.IOUtils
 import java.util.{HashSet, Set}
 import org.apache.lucene.index._
+import org.apache.lucene.codecs.{PerDocProducerBase, DocValuesConsumer, PerDocConsumer}
 
 object MutableDocValuesPerDocConsumer {
+
+  /** a list of doc values types that this field consumer supports. */
+  val SupportedTypes = List(Type.FIXED_INTS_64, Type.VAR_INTS)
 
   def files(info: SegmentInfo, files: Set[String], extension: String) {
     this.files(info.dir, info.getFieldInfos(), info.name, files, extension)
@@ -52,16 +55,14 @@ object MutableDocValuesPerDocConsumer {
  */
 class MutableDocValuesPerDocConsumer(state: PerDocWriteState, fileExtension: String) extends PerDocConsumer {
 
-  /** a list of doc values types that this field consumer supports */
-  private val supportedTypes = List(Type.FIXED_INTS_64, Type.VAR_INTS)
-
   /**
    * Adds a new DocValuesField
    * @throws UnsupportedOperationException in case if does not supports a given doc values type.
    */
   def addValuesField(docValuesType: Type, field: FieldInfo): DocValuesConsumer = {
     if (!isSupportedType(docValuesType)) throw new UnsupportedOperationException("Codec doesn't support given type: "+docValuesType)
-    return new MutableDocValuesConsumer(state.segmentName, state.directory, state.context, docValuesType, fileExtension)
+    return MutableDocValuesConsumerFactory.create(docValuesType, PerDocProducerBase.docValuesId(state.segmentName, field.number),
+      state.directory, state.bytesUsed, state.context)
   }
 
   /** delete all files that contain a un-committed data */
@@ -80,6 +81,6 @@ class MutableDocValuesPerDocConsumer(state: PerDocWriteState, fileExtension: Str
    * @param docValuesType a given type
    * @return whenever we supports this primitive type
    */
-  def isSupportedType(docValuesType: Type): Boolean = supportedTypes.contains(docValuesType)
+  def isSupportedType(docValuesType: Type): Boolean = MutableDocValuesPerDocConsumer.SupportedTypes.contains(docValuesType)
 
 }
