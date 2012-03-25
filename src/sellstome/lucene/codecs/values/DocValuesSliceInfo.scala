@@ -6,6 +6,7 @@ package sellstome.lucene.codecs.values
  * @since 1.0
  */
 class DocValuesSliceInfo(name: String) {
+
   /** Name of given slice info */
   def getName(): String = name
 

@@ -1,7 +1,8 @@
 package sellstome.lucene.codecs.values
 
-import org.apache.lucene.index.IndexFileNames
 import org.apache.lucene.store.Directory
+import scala.collection.mutable
+import javax.annotation.Nonnull
 
 /**
  * Allows fetch the information about the slice info objects from the persistent storage.
@@ -9,10 +10,14 @@ import org.apache.lucene.store.Directory
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class DocValuesSliceInfos extends DocValuesSliceFS {
+class DocValuesSliceInfos extends DVInfosFileSystemSupport {
 
-  //used to name new slices
-  var counter = 0
+  /** used to name new slices */
+  protected var counter = 0
+  /** current infos generation. Should not be nodified directly. */
+  protected var generation = DVSliceFilesSupport.DefaultGeneration
+  /** used to hold a current set of slices */
+  protected val slices = new mutable.ArrayBuffer[DocValuesSliceInfo]()
 
   /** Reads the information from the file system */
   def read(docValuesId: String, dir: Directory) {
@@ -20,6 +25,11 @@ class DocValuesSliceInfos extends DocValuesSliceFS {
       val infosReader = new DVSliceInfosReaderImpl()
       //infosReader.read(dir, infosFileName, )
     })
+  }
+
+  def append(@Nonnull slice: DocValuesSliceInfo) {
+    if (slices.contains(slice)) throw new IllegalArgumentException("This slice info is already contained!")
+    slices.append(slice)
   }
 
   /**
@@ -42,5 +52,8 @@ class DocValuesSliceInfos extends DocValuesSliceFS {
     counter += 1
     return sliceName
   }
+
+  /** increment a current generation */
+  protected def incGeneration() { generation += 1 }
 
 }

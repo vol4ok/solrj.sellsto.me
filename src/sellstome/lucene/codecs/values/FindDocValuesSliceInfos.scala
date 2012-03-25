@@ -1,10 +1,13 @@
 package sellstome.lucene.codecs.values
 
-import org.apache.lucene.store.Directory
 import java.io.IOException
 import collection.mutable.HashSet
 import org.apache.lucene.index.{IndexNotFoundException, CorruptIndexException}
 import javax.annotation.Nonnull
+import org.apache.lucene.store.{IOContext, Directory}
+import sellstome.util.Logging
+import java.io.FileNotFoundException
+import org.apache.lucene.index.IndexFormatTooNewException
 
 
 object FindDocValuesSliceInfos {
@@ -120,7 +123,8 @@ object FindDocValuesSliceInfos {
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DocValuesSliceFS {
+class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVSliceFilesSupport
+                                                                   with Logging {
   import FindDocValuesSliceInfos.ProgressInfo
 
   /**
@@ -165,6 +169,65 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DocVa
     }
 
     return progressInfo.getResult()
+  }
+
+  /**
+   * Tries to read the last commit generation from FS.
+   * @param docValuesId a base name for a given doc values slices
+   * @param dir access to a flat list of files
+   * @return a last commit generation
+   */
+  protected def readLastGen(@Nonnull docValuesId: String, @Nonnull dir: Directory): Option[Long] = {
+    val files = dir.listAll()
+    val genA = if (files != null) getLastCommitGeneration(docValuesId, files) else None
+    val genB = readLastGenFromGenFile(docValuesId, dir)
+    return List(genA, genB).foldLeft[Option[Long]](None) {
+      (maxGenOrNone, genOrNone) =>
+        maxGenOrNone match {
+          case Some(maxGen) => genOrNone match {
+            case Some(gen) => if (gen > maxGen) genOrNone else maxGenOrNone
+            case None      => maxGenOrNone
+          }
+          case None => genOrNone
+        }
+    }
+  }
+
+  /**
+   * Also open docValuesId.dvslices_gen and read its
+   * contents.
+   * @param docValuesId base name for a given doc values slices
+   * @param dir provides access to a flat list of files
+   * @return a commit generation recorded in the docValuesId.dvslices_gen
+   */
+  protected def readLastGenFromGenFile(docValuesId: String, dir: Directory): Option[Long] = {
+    (try {
+      Some(dir.openInput(docValuesId+"."+DVSliceFilesSupport.DVSlicesGenExtension, IOContext.READONCE))
+    } catch {
+      case e: FileNotFoundException =>  { error(e); None }
+      case e: IOException =>            { error(e); None }
+    }).map[Option[Long]]( (genInput) =>
+      try {
+        val version: Int = genInput.readInt()
+        if (version == DVSliceFilesSupport.FormatSegmentsGenCurrent) {
+          val gen0: Long = genInput.readLong()
+          val gen1: Long = genInput.readLong()
+          debug("fallback check: %s; %s".format(gen0, gen1))
+          if (gen0 == gen1) {
+            Some(gen0)
+          } else {
+            None
+          }
+        } else {
+          throw new IndexFormatTooNewException(genInput, version, DVSliceFilesSupport.FormatSegmentsGenCurrent, DVSliceFilesSupport.FormatSegmentsGenCurrent)
+        }
+      } catch {
+        case e: CorruptIndexException => { throw e }
+        case e: IOException => { error(e); None }
+      } finally {
+        genInput.close()
+      }
+    ).flatMap[Long]( optionGen => if (optionGen.isDefined) Some(optionGen.get) else None)
   }
 
 }
