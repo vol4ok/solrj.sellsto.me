@@ -1,6 +1,5 @@
 package sellstome.lucene.codecs.values
 
-import org.apache.lucene.store.Directory
 import scala.collection.mutable
 import javax.annotation.Nonnull
 
@@ -9,8 +8,9 @@ import javax.annotation.Nonnull
  * Also uses the file system to read the actual information.
  * @author Aliaksandr Zhuhrou
  * @since 1.0
+ * @param docValuesId unique id per segment and field
  */
-class DocValuesSliceInfos extends DVInfosFileSystemSupport {
+class DocValuesSliceInfos(docValuesId: String) extends DVInfosFileSystemSupport {
 
   /** used to name new slices */
   protected var counter: Int = 0
@@ -18,14 +18,6 @@ class DocValuesSliceInfos extends DVInfosFileSystemSupport {
   protected var generation: Long = DVInfosFileSystemSupport.DefaultGeneration
   /** used to hold a current set of slices */
   protected val slices = new mutable.ArrayBuffer[DocValuesSliceInfo]()
-
-  /** Reads the information from the file system */
-  def read(docValuesId: String, dir: Directory) {
-    new FindDocValuesSliceInfos(docValuesId, dir).find[Unit]( (infosFileName) => {
-      val infosReader = new DVSliceInfosReaderImpl()
-      //infosReader.read(dir, infosFileName, )
-    })
-  }
 
   def append(@Nonnull slice: DocValuesSliceInfo) {
     if (slices.contains(slice)) throw new IllegalArgumentException("This slice info is already contained!")
@@ -39,7 +31,7 @@ class DocValuesSliceInfos extends DVInfosFileSystemSupport {
    * @tparam U The return type for the iterator function.
    */
   def foreach[U](f:DocValuesSliceInfo => U) {
-    ???
+    slices.foreach(f)
   }
 
   /**
@@ -55,13 +47,36 @@ class DocValuesSliceInfos extends DVInfosFileSystemSupport {
 
   /** Gets current item generation */
   def currentGeneration(): Long = generation
+
   /** Gets current counter */
   def currentCounter(): Int = counter
+
+  /** Gets snapshot for its internal state */
+  def currentSnapshot(): Snapshot = new Snapshot(counter, generation)
+
+  def getDocValuesId() = docValuesId
+
   /** A number of slices */
   def size(): Int = slices.size
+
+  /** Resets an internal object state */
+  def resetState(counter: Int, generation: Long) {
+    this.counter = counter
+    this.generation = generation
+    this.slices.clear()
+  }
+
+  /** Resets an internal object state */
+  def resetState(snapShot: Snapshot) {
+    resetState(snapShot.counter, snapShot.generation)
+  }
+
   /** increment a current generation */
   protected def incGeneration() { generation = nextGeneration() }
   /** gets the next generation value */
   protected def nextGeneration(): Long = generation + 1
+
+  /** Represents in-moment snapshot for its internal state */
+  class Snapshot(val counter: Int, val generation: Long)
 
 }

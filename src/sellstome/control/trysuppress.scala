@@ -7,7 +7,7 @@ import runtime.NonLocalReturnControl
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-object trysupress {
+object trysuppress {
 
   /**
    * Executes a given block and catch any exceptions during execution

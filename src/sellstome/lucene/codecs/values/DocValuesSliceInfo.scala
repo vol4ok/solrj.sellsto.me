@@ -7,10 +7,4 @@ import javax.annotation.Nonnull
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class DocValuesSliceInfo(@Nonnull name: String) {
-
-  /** Name of given slice info */
-  @Nonnull
-  def getName(): String = name
-
-}
+class DocValuesSliceInfo(@Nonnull val name: String)

@@ -128,7 +128,7 @@ object FindDocValuesSliceInfos {
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVSliceFilesSupport
+class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVInfosFilenamesSupport
                                                                    with Logging {
   import FindDocValuesSliceInfos.ProgressInfo
 
@@ -151,7 +151,7 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVSli
           throw new IndexNotFoundException("No docValueId.dvslices* file found in %s.".format(dir))
         } else {
           progressInfo.addGenSeen(genOrNone.get)
-          val docValuesSliceFN = fileNameFromGeneration(docValuesId, genOrNone.get)
+          val docValuesSliceFN = fileForGeneration(docValuesId, genOrNone.get)
           try {
             progressInfo.setResult(process(docValuesSliceFN))
           } catch {
@@ -162,7 +162,7 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVSli
         }
       } else if (method == FindDVSlicesGenMethod.LookAhead) {
         try {
-            val docValuesSliceFN = fileNameFromGeneration(docValuesId, progressInfo.genByLookaheadMethod())
+            val docValuesSliceFN = fileForGeneration(docValuesId, progressInfo.genByLookaheadMethod())
             progressInfo.setResult(process(docValuesSliceFN))
         } catch {
           case e: IOException => {
@@ -207,7 +207,7 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVSli
    */
   protected def readLastGenFromGenFile(docValuesId: String, dir: Directory): Option[Long] = {
     (try {
-      Some(dir.openInput(docValuesId+"."+DVSliceFilesSupport.DVSlicesGenExtension, IOContext.READONCE))
+      Some(dir.openInput(generationFile(docValuesId), IOContext.READONCE))
     } catch {
       case e: FileNotFoundException =>  { error(e); None }
       case e: IOException =>            { error(e); None }

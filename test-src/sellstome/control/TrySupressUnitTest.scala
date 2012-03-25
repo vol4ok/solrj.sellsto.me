@@ -4,14 +4,14 @@ import sellstome.BaseUnitTest
 import java.io.IOException
 
 /**
- * Tests [[sellstome.control.trysupress]]
+ * Tests [[sellstome.control.trysuppress]]
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
 class TrySupressUnitTest extends BaseUnitTest {
 
   test("normal case") {
-    val result = trysupress {
+    val result = trysuppress {
       2 + 2
     }
     assert(result.get == 4)
@@ -22,14 +22,14 @@ class TrySupressUnitTest extends BaseUnitTest {
   }
 
   protected def calculate(): Int = {
-    trysupress {
+    trysuppress {
       return 10
     }
     return 0
   }
 
   test("supress error") {
-    var result = trysupress {
+    var result = trysuppress {
       throw new IOException("Could not open file.")
     }
     assert(result == None)

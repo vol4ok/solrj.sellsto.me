@@ -19,7 +19,7 @@ object using {
       f(resource)
     } finally {
       if (resource != null) {
-        trysupress {
+        trysuppress {
           resource.close()
         }
       }

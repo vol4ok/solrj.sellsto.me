@@ -46,14 +46,12 @@ object DocValuesSlicesSupport {
  * @since 1.0
  */
 trait DocValuesSlicesSupport {
-  /** Information about all available slices. Used for generation of new unique slice name. */
-  protected val dvSliceInfos: DocValuesSliceInfos = new DocValuesSliceInfos()
   /** An current slice that being written */
   protected var currentSlice: DocValuesSliceInfo = null
 
   /** Compose a current slice file name */
   protected def currentSliceFileName(docValuesId: String): String = {
-     return docValuesId+currentSlice.getName()+"."+DocValuesSlicesSupport.DVSegmentSuffix
+     return docValuesId+currentSlice.name+"."+DocValuesSlicesSupport.DVSegmentSuffix
   }
 
   /** The size of fixed size dv value or -1 for the compressed storage. */

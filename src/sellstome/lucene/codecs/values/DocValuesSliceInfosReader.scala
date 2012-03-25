@@ -17,6 +17,6 @@ abstract class DocValuesSliceInfosReader {
    * @param infos empty instance to be populated with data
    * @throws IOException when some recoverable exception occurred
    */
-  def read(directory: Directory, infosFileName: String, header: ChecksumIndexInput, infos: DocValuesSliceInfos, context: IOContext): Unit
+  def read(directory: Directory, infosFileName: String, header: ChecksumIndexInput, infos: DocValuesSliceInfos, context: IOContext)
 
 }

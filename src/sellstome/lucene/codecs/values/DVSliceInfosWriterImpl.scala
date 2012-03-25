@@ -19,7 +19,7 @@ class DVSliceInfosWriterImpl extends DocValuesSliceInfosWriter {
       output.writeInt(infos.currentCounter())
       output.writeInt(infos.size())
       infos.foreach((slice) => {
-        output.writeString(slice.getName())
+        output.writeString(slice.name)
       })
       output
     }
