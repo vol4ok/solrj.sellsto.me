@@ -3,6 +3,7 @@ package sellstome.lucene.codecs.values
 import org.apache.lucene.codecs.lucene40.values.PackedIntValues.PackedIntsWriter
 import org.apache.lucene.util.Counter
 import org.apache.lucene.store.{IOContext, Directory}
+import sellstome.lucene.codecs.DocValuesSlicesSupport
 
 /**
  * Stores integers using [[org.apache.lucene.util.packed.PackedInts]]
@@ -10,7 +11,10 @@ import org.apache.lucene.store.{IOContext, Directory}
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class PackedIntsMutableDVConsumer(dir: Directory, id: String, bytesUsed: Counter, context: IOContext)
-  extends PackedIntsWriter(dir, id, bytesUsed, context) {
+class PackedIntsMutableDVConsumer(dir: Directory, dvFieldId: String, bytesUsed: Counter, context: IOContext)
+  extends PackedIntsWriter(dir, dvFieldId, bytesUsed, context)
+  with DocValuesSlicesSupport {
+
+
 
 }

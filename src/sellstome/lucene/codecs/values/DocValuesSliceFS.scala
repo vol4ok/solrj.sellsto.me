@@ -36,7 +36,7 @@ trait DocValuesSliceFS extends Logging {
    * @param dir access to a flat list of files
    * @return a last commit generation
    */
-  def readLastGen(@Nonnull docValuesId: String, @Nonnull dir: Directory): Option[Long] = {
+  protected def readLastGen(@Nonnull docValuesId: String, @Nonnull dir: Directory): Option[Long] = {
     val files = dir.listAll()
     val genA = if (files != null) getLastCommitGeneration(docValuesId, files) else None
     val genB = readLastGenFromGenFile(docValuesId, dir)
@@ -58,7 +58,7 @@ trait DocValuesSliceFS extends Logging {
    * @param files array of file names to check
    * @return a generation number
    */
-  def getLastCommitGeneration(@Nonnull docValuesId: String, @Nonnull files: Array[String]): Option[Long] = {
+  protected def getLastCommitGeneration(@Nonnull docValuesId: String, @Nonnull files: Array[String]): Option[Long] = {
     return files.foldLeft[Option[Long]](None) {
       (maxGenOrNone, fileName) =>
         if (isDocSlicesFileWithId(fileName, docValuesId)) {
@@ -74,7 +74,7 @@ trait DocValuesSliceFS extends Logging {
   }
 
   /** Parses the generation off the segments file name and return it. */
-  def genForFileName(@Nonnull fileName: String): Long = {
+  protected def genForFileName(@Nonnull fileName: String): Long = {
     val extension = FilenameUtils.getExtension(fileName)
     if (extension.startsWith(DocValuesSliceFS.DVSlicesExtension)) {
       return extension.substring((DocValuesSliceFS.DVSlicesExtension+"_").length()).toLong
@@ -86,7 +86,7 @@ trait DocValuesSliceFS extends Logging {
   /**
    * Computes a full file name from base, extension and generation.
    */
-  def fileNameFromGeneration(@Nonnull docValuesId: String, @Nonnull gen: Long): String = {
+  protected def fileNameFromGeneration(@Nonnull docValuesId: String, @Nonnull gen: Long): String = {
     if (gen == SegmentInfo.WITHOUT_GEN) {
        return docValuesId+"."+DocValuesSliceFS.DVSlicesExtension
     } else {

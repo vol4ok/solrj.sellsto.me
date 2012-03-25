@@ -120,7 +120,7 @@ object FindDocValuesSliceInfos {
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DocValuesSliceFS { outer =>
+class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DocValuesSliceFS {
   import FindDocValuesSliceInfos.ProgressInfo
 
   /**
