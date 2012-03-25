@@ -14,6 +14,11 @@ object FindDocValuesSliceInfos {
   import FindDVSlicesGenMethod._
 
   val DefaultGenLookaheadCount = 10
+  /**
+   * Used for the dv slices gen file only
+   * Whenever you add a new format, make it 1 smaller (negative version logic)!
+   */
+  val FormatSegmentsGenCurrent = -2
 
   /** Encapsulates a progress info records */
   class ProgressInfo[T] {
@@ -209,7 +214,7 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVSli
     }).map[Option[Long]]( (genInput) =>
       try {
         val version: Int = genInput.readInt()
-        if (version == DVSliceFilesSupport.FormatSegmentsGenCurrent) {
+        if (version == FindDocValuesSliceInfos.FormatSegmentsGenCurrent) {
           val gen0: Long = genInput.readLong()
           val gen1: Long = genInput.readLong()
           debug("fallback check: %s; %s".format(gen0, gen1))
@@ -219,7 +224,7 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVSli
             None
           }
         } else {
-          throw new IndexFormatTooNewException(genInput, version, DVSliceFilesSupport.FormatSegmentsGenCurrent, DVSliceFilesSupport.FormatSegmentsGenCurrent)
+          throw new IndexFormatTooNewException(genInput, version, FindDocValuesSliceInfos.FormatSegmentsGenCurrent, FindDocValuesSliceInfos.FormatSegmentsGenCurrent)
         }
       } catch {
         case e: CorruptIndexException => { throw e }

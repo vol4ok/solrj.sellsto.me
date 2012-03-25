@@ -1,12 +1,8 @@
-package sellstome.solr.common
-
+package sellstome.control
 
 /**
- * Created by IntelliJ IDEA.
- * User: Alexander Zhugrov
- * Date: 05.02.12
- * Time: 12:52
  * Implement control structure that similar to a C# using statement
+ * @author Alexander Zhugrov
  */
 object using {
 
@@ -22,8 +18,10 @@ object using {
     try {
       f(resource)
     } finally {
-      if (resource != null) try {
-        resource.close()
+      if (resource != null) {
+        trysupress {
+          resource.close()
+        }
       }
     }
   }

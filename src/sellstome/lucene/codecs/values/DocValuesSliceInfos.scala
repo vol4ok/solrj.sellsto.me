@@ -13,9 +13,9 @@ import javax.annotation.Nonnull
 class DocValuesSliceInfos extends DVInfosFileSystemSupport {
 
   /** used to name new slices */
-  protected var counter = 0
+  protected var counter: Int = 0
   /** current infos generation. Should not be nodified directly. */
-  protected var generation = DVSliceFilesSupport.DefaultGeneration
+  protected var generation: Long = DVInfosFileSystemSupport.DefaultGeneration
   /** used to hold a current set of slices */
   protected val slices = new mutable.ArrayBuffer[DocValuesSliceInfo]()
 
@@ -53,7 +53,15 @@ class DocValuesSliceInfos extends DVInfosFileSystemSupport {
     return sliceName
   }
 
+  /** Gets current item generation */
+  def currentGeneration(): Long = generation
+  /** Gets current counter */
+  def currentCounter(): Int = counter
+  /** A number of slices */
+  def size(): Int = slices.size
   /** increment a current generation */
-  protected def incGeneration() { generation += 1 }
+  protected def incGeneration() { generation = nextGeneration() }
+  /** gets the next generation value */
+  protected def nextGeneration(): Long = generation + 1
 
 }

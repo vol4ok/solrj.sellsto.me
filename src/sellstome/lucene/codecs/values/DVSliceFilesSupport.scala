@@ -11,13 +11,6 @@ object DVSliceFilesSupport {
   val GenSuffix = "gen"
   /** Name of the extension for the generation reference file */
   val DVSlicesGenExtension = DVSlicesExtension+"_"+GenSuffix
-  /**
-   * Used for the dv slices gen file only
-   * Whenever you add a new format, make it 1 smaller (negative version logic)!
-   */
-  val FormatSegmentsGenCurrent = -2
-  /** A default generation for slice infos */
-  val DefaultGeneration = -1
 }
 
 /**

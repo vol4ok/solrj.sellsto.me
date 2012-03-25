@@ -1,17 +1,18 @@
-package sellstome.solr.common
+package sellstome.control
 
 import org.easymock.EasyMock
 import org.easymock.EasyMock._
 import Console._
 import java.io.Closeable
 import sellstome.BaseUnitTest
+import sellstome.control.using
 
 /**
  * @author Alexander Zhugrov
  * @since 1.0
  */
 class UsingUnitTest extends BaseUnitTest {
-  
+
   test("Normal case") {
     val closeable = newCloseable()
     using(closeable) {
@@ -34,7 +35,7 @@ class UsingUnitTest extends BaseUnitTest {
     }
     verify(closeable)
   }
-  
+
   private def newCloseable(): Closeable = {
     val closeable = createMock(classOf[Closeable])
     EasyMock.expect(closeable.close()).once()
