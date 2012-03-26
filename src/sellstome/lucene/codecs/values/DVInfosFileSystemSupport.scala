@@ -6,6 +6,8 @@ import org.apache.lucene.store.{ChecksumIndexInput, IOContext, IndexOutput, Dire
 import org.apache.lucene.index.CorruptIndexException
 import sellstome.transactional.TwoPhaseCommit
 import java.util.Collections
+import sellstome.util.Logging
+import javax.annotation.Nonnull
 
 
 object DVInfosFileSystemSupport {
@@ -21,15 +23,16 @@ object DVInfosFileSystemSupport {
  * @since 1.0
  */
 trait DVInfosFileSystemSupport extends DVInfosFilenamesSupport
-                               with TwoPhaseCommit[Directory] {
+                               with TwoPhaseCommit[Directory]
+                               with Logging {
   //this class factor out all logic that operates on File System
   this: DocValuesSliceInfos =>
   /** This field being set only after prepareCommit phase is finished */
   var pendingInfosOutput: IndexOutput = null
 
   /** Reads the information from the file system */
-  def read(docValuesId: String, dir: Directory) {
-    new FindDocValuesSliceInfos(docValuesId, dir).find[Unit]( (infosFileName) => {
+  def read(dir: Directory) {
+    new FindDocValuesSliceInfos(getDocValuesId(), dir).find[Unit]( (infosFileName) => {
       val snapShot = currentSnapshot()
       val infosReader = newReader()
       var input: ChecksumIndexInput = null
@@ -44,9 +47,10 @@ trait DVInfosFileSystemSupport extends DVInfosFilenamesSupport
       } catch {
         case e: Throwable => {
           this.resetState(snapShot)
+          error(e)
         }
       } finally {
-
+        IOUtils.close(input)
       }
     })
   }
@@ -58,9 +62,9 @@ trait DVInfosFileSystemSupport extends DVInfosFilenamesSupport
 
   def commit(dir: Directory) {
     if (pendingInfosOutput == null) throw new IllegalStateException("prepareCommit was not called")
+
     try {
-      val writer = newWriter()
-      writer.finishCommit(pendingInfosOutput)
+      newWriter().finishCommit(pendingInfosOutput)
       pendingInfosOutput = null
     } catch {
       case e: Throwable => {
@@ -69,7 +73,25 @@ trait DVInfosFileSystemSupport extends DVInfosFilenamesSupport
       }
     }
 
-    val infosFileName = fileForGeneration(getDocValuesId(), currentGeneration())
+    sync(getDocValuesId(), dir)
+    writeGenFile(getDocValuesId(), dir)
+  }
+
+  def rollbackCommit(dir: Directory) {
+    if (pendingInfosOutput != null) {
+      trysuppress { pendingInfosOutput.close() }
+      trysuppress { dir.deleteFile(fileForGeneration(getDocValuesId(), currentGeneration())) }
+      pendingInfosOutput = null
+    }
+  }
+
+  /**
+   * Ensure that any writes to these files are moved to
+   * stable storage.
+   * @throws exception if could not sync with file system
+   */
+  protected def sync(docValuesId: String, dir: Directory) {
+    val infosFileName = fileForGeneration(docValuesId, currentGeneration())
     try {
       dir.sync(Collections.singleton(infosFileName))
     } catch {
@@ -78,11 +100,6 @@ trait DVInfosFileSystemSupport extends DVInfosFilenamesSupport
         throw e
       }
     }
-    ???
-  }
-
-  def rollbackCommit(dir: Directory) {
-    ???
   }
 
   /** Writes a given slice infos to a directory. */
@@ -103,17 +120,33 @@ trait DVInfosFileSystemSupport extends DVInfosFilenamesSupport
   }
 
   /**
-   * Writes a file that contains a current generation value
-   * @param docValuesId
-   * @param dir
+   * Writes a file that contains a current generation value.
+   * If its fails to write a given file it tries to delete it. This method should not
+   * throw any exceptions even if an operation fails.
+   * @param docValuesId an unique id for a given segment and field
+   * @param dir provides access to a flat list of files.
    */
-  protected def writeGenFile(docValuesId: String, dir: Directory) {
-
+  protected def writeGenFile(@Nonnull docValuesId: String, @Nonnull dir: Directory) {
+    try {
+      val genOutput = dir.createOutput(generationFile(docValuesId), IOContext.READONCE)
+      try {
+        genOutput.writeLong(currentGeneration())
+        genOutput.writeLong(currentGeneration())
+      } finally {
+        genOutput.close()
+        dir.sync(Collections.singleton(generationFile(docValuesId)))
+      }
+    } catch {
+      case e: Throwable => {
+        trysuppress { dir.deleteFile(generationFile(docValuesId)) }
+        error(e)
+      }
+    }
   }
 
   /** Extension point for other writer implementations */
-  protected def newWriter(): DocValuesSliceInfosWriter = new DVSliceInfosWriterImpl()
+  protected def newWriter(): DocValuesSliceInfosWriter = DVSliceInfosWriterImpl
   /** Extension point for other reader implementations */
-  protected def newReader(): DocValuesSliceInfosReader = new DVSliceInfosReaderImpl()
+  protected def newReader(): DocValuesSliceInfosReader = DVSliceInfosReaderImpl
 
 }

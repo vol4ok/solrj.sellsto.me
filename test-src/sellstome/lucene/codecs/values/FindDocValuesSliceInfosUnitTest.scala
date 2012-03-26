@@ -12,50 +12,52 @@ import FindDVSlicesGenMethod.FindDVSlicesGenMethod
  */
 class FindDocValuesSliceInfosUnitTest extends BaseUnitTest {
 
-  test("ProgressInfo - basic usage pattern") {
+  test("test exceptional case") {
     val progressInfo = new ProgressInfo[Boolean]()
     val methodSeen = new HashSet[FindDVSlicesGenMethod]()
-
     var infiniteLoopWatch = 0
+    var fileSystemRetryCount = 0
     while(progressInfo.isShouldTryAgain() && infiniteLoopWatch < 1000) {
-      methodSeen.add(progressInfo.proposeMethod())
-      progressInfo.addGenSeen(nextGeneration())
+      val method = progressInfo.proposeMethod()
+      methodSeen.add(method)
+      if (method == FindDVSlicesGenMethod.FileSystem) {
+        progressInfo.addGenSeen(1)
+        fileSystemRetryCount += 1
+      }
       try {
-        val result = processResultOrError()
-        progressInfo.setResult(result)
+        throw new RuntimeException("test exception")
       } catch {
-        case e: HelperRandomTestException => {
+        case e: RuntimeException => {
           progressInfo.setLastSeenException(e)
         }
       }
       progressInfo.advance()
-
       infiniteLoopWatch = infiniteLoopWatch + 1
     }
 
     assert(infiniteLoopWatch != 1000)
     assert(methodSeen.size == 2)
+    assert(fileSystemRetryCount == 3)
     try {
-      val result = progressInfo.getResult()
+      progressInfo.getResult()
+      fail("should throw a Runtime exc on call to the getResult")
     } catch {
-      case e: HelperRandomTestException => { info(e) }
+      case e: RuntimeException => info("Catch the exception.")
     }
   }
 
-  var lastGen: Long = 0
-  protected def nextGeneration(): Long = {
-    if (nextInt(10) > 8) {
-      lastGen = lastGen + 1
+  test("Sucess case") {
+    val progressInfo = new ProgressInfo[Boolean]()
+    var cycles = 0
+    while(progressInfo.isShouldTryAgain()) {
+      progressInfo.addGenSeen(1)
+      progressInfo.setResult(true)
+      progressInfo.advance()
+      cycles += 1
     }
-    return lastGen
-  }
 
-  protected def processResultOrError(): Boolean = {
-    return if (nextInt(10) >= 8) {
-      nextBoolean()
-    } else {
-      throw new HelperRandomTestException()
-    }
+    assert(cycles == 1, "we determine the right result in one step")
+    assert(progressInfo.getResult(), "the result for this operation should be true")
   }
 
 }

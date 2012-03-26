@@ -7,4 +7,13 @@ import javax.annotation.Nonnull
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class DocValuesSliceInfo(@Nonnull val name: String)
+class DocValuesSliceInfo(@Nonnull val name: String) {
+
+  override def hashCode() = name.hashCode
+
+  override def equals(obj: Any): Boolean = obj match {
+    case other: DocValuesSliceInfo  => this.getClass == other.getClass && this.name == other.name
+    case     _                      => false
+  }
+
+}

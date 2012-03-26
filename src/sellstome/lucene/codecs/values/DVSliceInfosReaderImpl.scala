@@ -7,7 +7,7 @@ import org.apache.lucene.store.{IOContext, ChecksumIndexInput, Directory}
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class DVSliceInfosReaderImpl extends DocValuesSliceInfosReader {
+object DVSliceInfosReaderImpl extends DocValuesSliceInfosReader {
 
   def read(dir: Directory, infosFileName: String,
            input: ChecksumIndexInput, infos: DocValuesSliceInfos,

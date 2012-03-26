@@ -1,15 +1,15 @@
 package sellstome.lucene.codecs.values
 
-import org.apache.lucene.util.LuceneTestCase
 import org.junit.Test
 import collection.mutable
+import sellstome.lucene.util.SellstomeLuceneTestCase
 
 /**
  * Tests [[sellstome.lucene.codecs.values.DocValuesSliceInfos]]
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class DocValuesSliceInfosComponentTest extends LuceneTestCase {
+class DocValuesSliceInfosComponentTest extends SellstomeLuceneTestCase {
 
   /**
    * Tests a base use case:
@@ -23,14 +23,30 @@ class DocValuesSliceInfosComponentTest extends LuceneTestCase {
     val testData = new {
       val slices      = new mutable.ArrayBuffer[DocValuesSliceInfo]()
       val docValuesId = "z1_h6"
-    }
-    val slices = new DocValuesSliceInfos(testData.docValuesId)
-    for (i <- 0 until 10) {
-      val slice = new DocValuesSliceInfo(slices.newSliceName())
-      testData.slices.append(slice)
-      slices.append(slice)
+      val dir         = newDirectory()
     }
 
+    val infosForWrite = new DocValuesSliceInfos(testData.docValuesId)
+    for (i <- 0 until 10) {
+      val slice = new DocValuesSliceInfo(infosForWrite.newSliceName())
+      testData.slices.append(slice)
+      infosForWrite.append(slice)
+    }
+    infosForWrite.prepareCommit(testData.dir)
+    infosForWrite.commit(testData.dir)
+    val snapshot = infosForWrite.currentSnapshot()
+
+    val infosForRead = new DocValuesSliceInfos(testData.docValuesId)
+    infosForRead.read(testData.dir)
+
+    assertEquals(snapshot.counter, infosForRead.currentCounter())
+    assertEquals(snapshot.generation, infosForRead.currentGeneration())
+    assertEquals(testData.slices.size, infosForRead.size)
+    infosForRead foreach {
+      info => assertTrue(testData.slices.contains(info))
+    }
+
+    testData.dir.close()
   }
 
 }

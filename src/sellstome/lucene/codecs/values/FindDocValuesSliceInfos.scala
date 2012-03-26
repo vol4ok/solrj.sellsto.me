@@ -7,19 +7,12 @@ import javax.annotation.Nonnull
 import org.apache.lucene.store.{IOContext, Directory}
 import sellstome.util.Logging
 import java.io.FileNotFoundException
-import org.apache.lucene.index.IndexFormatTooNewException
 
 
 object FindDocValuesSliceInfos {
   import FindDVSlicesGenMethod._
 
   val DefaultGenLookaheadCount = 10
-  /**
-   * Used for the dv slices gen file only
-   * Whenever you add a new format, make it 1 smaller (negative version logic)!
-   */
-  val FormatSegmentsGenCurrent = -2
-
   /** Encapsulates a progress info records */
   class ProgressInfo[T] {
     /** last seen exception */
@@ -40,13 +33,17 @@ object FindDocValuesSliceInfos {
      * @return if we should try again in a loop
      */
     def isShouldTryAgain(): Boolean = {
-      if (useMethod == FindDVSlicesGenMethod.FileSystem) {
-        return true
+      if (result.isDefined) {
+          return false
       } else {
-        if (genLookaheadCount < defaultGenLookaheadCount) {
+        if (useMethod == FindDVSlicesGenMethod.FileSystem) {
           return true
         } else {
-          return false
+          if (genLookaheadCount < defaultGenLookaheadCount) {
+            return true
+          } else {
+            return false
+          }
         }
       }
     }
@@ -127,6 +124,8 @@ object FindDocValuesSliceInfos {
  * commit finishing.
  * @author Aliaksandr Zhuhrou
  * @since 1.0
+ * @param docValuesId a unique identifier for a given dv field
+ * @param dir provides access to a flat list of files
  */
 class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVInfosFilenamesSupport
                                                                    with Logging {
@@ -134,9 +133,9 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVInf
 
   /**
    * Finds a given slices file and pass its to a
-   * @param process
-   * @tparam T
-   * @return
+   * @param process function that proccess a most resent infos file
+   * @tparam T the type of an object of the proccess function
+   * @return object returned by the proccess function or throws exception if could not find any.
    */
   @throws(classOf[CorruptIndexException])
   @throws(classOf[IOException])
@@ -213,18 +212,13 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVInf
       case e: IOException =>            { error(e); None }
     }).map[Option[Long]]( (genInput) =>
       try {
-        val version: Int = genInput.readInt()
-        if (version == FindDocValuesSliceInfos.FormatSegmentsGenCurrent) {
-          val gen0: Long = genInput.readLong()
-          val gen1: Long = genInput.readLong()
-          debug("fallback check: %s; %s".format(gen0, gen1))
-          if (gen0 == gen1) {
-            Some(gen0)
-          } else {
-            None
-          }
+        val gen0: Long = genInput.readLong()
+        val gen1: Long = genInput.readLong()
+        debug("fallback check: %s; %s".format(gen0, gen1))
+        if (gen0 == gen1) {
+          Some(gen0)
         } else {
-          throw new IndexFormatTooNewException(genInput, version, FindDocValuesSliceInfos.FormatSegmentsGenCurrent, FindDocValuesSliceInfos.FormatSegmentsGenCurrent)
+          None
         }
       } catch {
         case e: CorruptIndexException => { throw e }
