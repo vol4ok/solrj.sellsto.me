@@ -11,10 +11,14 @@ import sellstome.lucene.codecs.DocValuesSlicesSupport
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class PackedIntsMutableDVConsumer(dir: Directory, dvFieldId: String, bytesUsed: Counter, context: IOContext)
-  extends PackedIntsWriter(dir, dvFieldId, bytesUsed, context)
-  with DocValuesSlicesSupport {
+class MutablePackedIntsDVConsumer(_dir: Directory,
+                                  _docValuesId: String,
+                                  bytesUsed: Counter,
+                                  context: IOContext)
+  extends PackedIntsWriter(_dir, _docValuesId, bytesUsed, context) with DocValuesSlicesSupport {
 
+  def dir(): Directory = _dir
 
+  def docValuesId(): String = _docValuesId
 
 }

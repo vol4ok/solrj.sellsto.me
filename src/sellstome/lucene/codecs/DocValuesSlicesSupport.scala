@@ -4,12 +4,11 @@ import org.apache.lucene.store.{IOContext, Directory}
 import org.apache.lucene.index.DocValues.Type
 import collection.mutable.HashMap
 import org.apache.lucene.util.{Counter, BytesRef}
-import values.{PackedIntsMutableDVConsumer, IntsMutableDVConsumer, DocValuesSliceInfo, DocValuesSliceInfos}
+import values.{MutablePackedIntsDVConsumer, MutableIntsDVConsumer, DocValuesSliceInfo, DocValuesSliceInfos}
 import org.apache.lucene.codecs.DocValuesConsumer
 
 /** Companion object */
 object MutableDocValuesConsumerFactory {
-
   /**
    * Factory method to create a [[org.apache.lucene.codecs.DocValuesConsumer]] instance for a given type. This
    * method returns default implementations for each of the different types
@@ -19,18 +18,18 @@ object MutableDocValuesConsumerFactory {
    * @param dir the [[org.apache.lucene.store.Directory]] to create the files from.
    * @param bytesUsed a byte-usage tracking reference
    * @return a new [[org.apache.lucene.codecs.DocValuesConsumer]] instance for the given [[org.apache.lucene.index.DocValues.Type]]
-   * @throws IOException
+   * @throws IOException if could not create a consumer
    */
   def create(dvType: Type, docValuesId: String, dir: Directory,
               bytesUsed: Counter, context: IOContext): DocValuesConsumer = {
     import Type._
     return dvType match {
-      case FIXED_INTS_16  => new IntsMutableDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
-      case FIXED_INTS_32  => new IntsMutableDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
-      case FIXED_INTS_64  => new IntsMutableDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
-      case FIXED_INTS_8   => new IntsMutableDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
-      case VAR_INTS       => new PackedIntsMutableDVConsumer(dir, docValuesId, bytesUsed, context)
-      case _              => throw new IllegalArgumentException("Unknown Values: " + dvType)
+      case FIXED_INTS_16  => new MutableIntsDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
+      case FIXED_INTS_32  => new MutableIntsDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
+      case FIXED_INTS_64  => new MutableIntsDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
+      case FIXED_INTS_8   => new MutableIntsDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
+      case VAR_INTS       => new MutablePackedIntsDVConsumer(dir, docValuesId, bytesUsed, context)
+      case _              => throw new IllegalArgumentException("Not supported doc values type: " + dvType)
     }
   }
 }
@@ -46,8 +45,19 @@ object DocValuesSlicesSupport {
  * @since 1.0
  */
 trait DocValuesSlicesSupport {
+
+  /** implementing class should make accessible the doc values id */
+  protected def docValuesId(): String
+
+  /** implementing class should make accessible a directory object */
+  protected def dir(): Directory
+
+  /** A current infos */
+  protected val slicesInfos: DocValuesSliceInfos = new DocValuesSliceInfos(docValuesId())
+  slicesInfos.read(dir())
+
   /** An current slice that being written */
-  protected var currentSlice: DocValuesSliceInfo = null
+  protected val currentSlice: DocValuesSliceInfo = new DocValuesSliceInfo(slicesInfos.newSliceName())
 
   /** Compose a current slice file name */
   protected def currentSliceFileName(docValuesId: String): String = {
@@ -72,5 +82,7 @@ trait DocValuesSlicesSupport {
       case 8 => Type.FIXED_INTS_64
       case _ => throw new IllegalStateException("illegal size " + size)
   }
+
+
 
 }

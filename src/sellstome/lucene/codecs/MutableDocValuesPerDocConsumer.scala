@@ -8,11 +8,9 @@ import org.apache.lucene.util.IOUtils
 import java.util.{HashSet, Set}
 import org.apache.lucene.index._
 import org.apache.lucene.codecs.{PerDocProducerBase, DocValuesConsumer, PerDocConsumer}
+import values.MutableDocValuesAware
 
 object MutableDocValuesPerDocConsumer {
-
-  /** a list of doc values types that this field consumer supports. */
-  val SupportedTypes = List(Type.FIXED_INTS_64, Type.VAR_INTS)
 
   def files(info: SegmentInfo, files: Set[String], extension: String) {
     this.files(info.dir, info.getFieldInfos(), info.name, files, extension)
@@ -53,7 +51,8 @@ object MutableDocValuesPerDocConsumer {
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class MutableDocValuesPerDocConsumer(state: PerDocWriteState, fileExtension: String) extends PerDocConsumer {
+class MutableDocValuesPerDocConsumer(state: PerDocWriteState, fileExtension: String) extends PerDocConsumer
+                                                                                     with MutableDocValuesAware {
 
   /**
    * Adds a new DocValuesField
@@ -75,12 +74,5 @@ class MutableDocValuesPerDocConsumer(state: PerDocWriteState, fileExtension: Str
   def close() {
     //need nothing to do here
   }
-
-  /**
-   * Checks if this codec support given [[org.apache.lucene.index.DocValues.Type]]
-   * @param docValuesType a given type
-   * @return whenever we supports this primitive type
-   */
-  def isSupportedType(docValuesType: Type): Boolean = MutableDocValuesPerDocConsumer.SupportedTypes.contains(docValuesType)
 
 }

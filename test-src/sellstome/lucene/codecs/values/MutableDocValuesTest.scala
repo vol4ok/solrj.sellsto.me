@@ -5,13 +5,12 @@ import sellstome.lucene.codecs.MutableDocValuesFormat
 import org.apache.lucene.codecs.{DocValuesConsumer, DocValuesFormat}
 import org.apache.lucene.util.{Counter, BytesRef}
 import java.io.Reader
-import org.apache.lucene.index.{IndexableFieldType, IndexableField, DocValues}
 import org.apache.lucene.analysis.{Analyzer, TokenStream}
 import org.apache.lucene.codecs.lucene40.values.{Floats, Ints}
 import org.apache.lucene.index.DocValues.Type
 import org.apache.lucene.store.{FlushInfo, MergeInfo, IOContext, Directory}
 import java.util.{Random, Comparator}
-import org.apache.lucene.index.FieldInfo
+import org.apache.lucene.index._
 
 /**
  * todo zhugrov a - classify a type for this test
@@ -159,58 +158,6 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     dir.close()
   }
 
-  def testGetFloat32Array() {
-    val valueHolder: DocValueHolder = new DocValueHolder()
-    val sourceArray: Array[Float] = Array[Float](1, 2, 3)
-    val dir: Directory = newDirectory()
-    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FLOAT_32)
-    for (i <- 0 until sourceArray.length) {
-      valueHolder.numberValue = sourceArray(i)
-      w.add(i, valueHolder)
-    }
-    w.finish(sourceArray.length)
-    val r: DocValues = getDocValues(dir, "test", Type.FLOAT_32)
-    val source: DocValues.Source = r.getSource()
-    assertTrue(source.hasArray)
-    val loaded: Array[Float] = source.getArray.asInstanceOf[Array[Float]]
-    assertEquals(loaded.length, sourceArray.length)
-    for (i <- 0 until loaded.length) {
-      assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i), 0.0f)
-    }
-    r.close()
-    dir.close()
-  }
-
-  def testGetFloat64Array() {
-    val valueHolder: DocValueHolder = new DocValueHolder()
-    val sourceArray: Array[Double] = Array[Double](1, 2, 3)
-    val dir: Directory = newDirectory()
-    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FLOAT_64)
-    for (i <- 0 until sourceArray.length) {
-      valueHolder.numberValue = sourceArray(i)
-      w.add(i, valueHolder)
-    }
-    w.finish(sourceArray.length)
-    val r: DocValues = getDocValues(dir, "test", Type.FLOAT_64)
-    val source: DocValues.Source = r.getSource()
-    assertTrue(source.hasArray)
-    val loaded: Array[Double] = source.getArray.asInstanceOf[Array[Double]]
-    assertEquals(loaded.length, sourceArray.length)
-    for (i <- 0 until loaded.length) {
-      assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i), 0.0d)
-    }
-    r.close()
-    dir.close()
-  }
-
-  def testFloats4() {
-    runTestFloats(Type.FLOAT_32)
-  }
-
-  def testFloats8() {
-    runTestFloats(Type.FLOAT_64)
-  }
-
   protected def testInts(docType: DocValues.Type, maxBit: Int)() {
     val valueHolder: DocValueHolder = new DocValueHolder()
     var maxV: Long = 1
@@ -285,13 +232,13 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   protected def getSource(values: DocValues): DocValues.Source = {
     random.nextInt(5) match {
       case 3 =>
-        return values.load
+        return values.load()
       case 2 =>
-        return values.getDirectSource
+        return values.getDirectSource()
       case 1 =>
-        return values.getSource
+        return values.getSource()
       case _ =>
-        return values.getSource
+        return values.getSource()
     }
   }
 
@@ -300,9 +247,18 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   }
 
   /** retrieves a new doc values consumer */
-  protected def getDocValuesConsumer(dir: Directory, fieldId: String, docType: DocValues.Type): DocValuesConsumer = {
-    val fieldInfo = new FieldInfo(fieldId, false, 1, false, true, false, null, docType, null)
-    return docValuesFormat.docsConsumer(null).addValuesField(docType, fieldInfo)
+  protected def getDocValuesConsumer(dir: Directory, fieldId: String, dvType: DocValues.Type): DocValuesConsumer = {
+    import DocValues.Type._
+    val fieldInfo = new FieldInfo(fieldId, false, 1, false, true, false, null, dvType, null)
+    val counter   = Counter.newCounter()
+    val context   = IOContext.READ
+    dvType match {
+      case FIXED_INTS_8  => new MutableIntsDVConsumer(dir, fieldId, counter, context, dvType)
+      case FIXED_INTS_16 => new MutableIntsDVConsumer(dir, fieldId, counter, context, dvType)
+      case FIXED_INTS_32 => new MutableIntsDVConsumer(dir, fieldId, counter, context, dvType)
+      case FIXED_INTS_64 => new MutableIntsDVConsumer(dir, fieldId, counter, context, dvType)
+      case _ => throw new IllegalArgumentException()
+    }
   }
 
   protected def getDocValues(dir: Directory, fieldId: String, docType: DocValues.Type): DocValues = {

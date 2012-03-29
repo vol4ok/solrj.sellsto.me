@@ -22,7 +22,7 @@
     <unlockOnStartup>false</unlockOnStartup>
     <reopenReaders>true</reopenReaders>
     <infoStream file="INFOSTREAM.txt">false</infoStream>
-    <codecFactory class="sellstome.solr.core.SimpleTextCodecFactory" />
+    <codecFactory class="org.apache.solr.core.DefaultCodecFactory" />
     <deletionPolicy class="solr.SolrDeletionPolicy">
       <str name="maxCommitsToKeep">1</str>
       <str name="maxOptimizedCommitsToKeep">0</str>

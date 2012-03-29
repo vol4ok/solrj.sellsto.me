@@ -21,7 +21,7 @@ class MutableDocValuesFormat extends DocValuesFormat {
   def docsConsumer(state: PerDocWriteState) = new MutableDocValuesPerDocConsumer(state, DocValuesSegmentSuffix)
 
   /** allows reading for doc values from external storage */
-  def docsProducer(state: SegmentReadState) = new MutableDocValuesProducer()
+  def docsProducer(segmentState: SegmentReadState) = new MutableDocValuesProducer(segmentState)
 
   /** Populates a list of files that used for a given segment */
   def files(info: SegmentInfo, files: Set[String]) {

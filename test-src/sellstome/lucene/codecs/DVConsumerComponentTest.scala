@@ -17,8 +17,7 @@ class DVConsumerComponentTest extends SellstomeLuceneTestCase {
    */
   def testBaseCase() {
     val dir = newDirectory()
-    //todo check that you have everything right with the IOContext
-
+    ???
   }
 
 }
