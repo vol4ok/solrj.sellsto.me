@@ -246,22 +246,33 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     return getSource(values).asSortedSource
   }
 
-  /** retrieves a new doc values consumer */
+  /**
+   * Instantiates a new doc values consumer
+   * @param dir provides access to a flat list of files
+   * @param fieldId a unique indefinier for DV field
+   * @param dvType a type for a given doc value field
+   * @return a new doc values consumer
+   */
   protected def getDocValuesConsumer(dir: Directory, fieldId: String, dvType: DocValues.Type): DocValuesConsumer = {
     import DocValues.Type._
-    val fieldInfo = new FieldInfo(fieldId, false, 1, false, true, false, null, dvType, null)
-    val counter   = Counter.newCounter()
-    val context   = IOContext.READ
-    dvType match {
-      case FIXED_INTS_8  => new MutableIntsDVConsumer(dir, fieldId, counter, context, dvType)
-      case FIXED_INTS_16 => new MutableIntsDVConsumer(dir, fieldId, counter, context, dvType)
-      case FIXED_INTS_32 => new MutableIntsDVConsumer(dir, fieldId, counter, context, dvType)
-      case FIXED_INTS_64 => new MutableIntsDVConsumer(dir, fieldId, counter, context, dvType)
-      case _ => throw new IllegalArgumentException()
+    return dvType match {
+      case FIXED_INTS_8  => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FIXED_INTS_16 => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FIXED_INTS_32 => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FIXED_INTS_64 => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case _ => throw new IllegalArgumentException("Not supported doc values type: %s".format(dvType))
     }
   }
 
+  /**
+   * Instantiates a new doc values producer
+   * @param dir provides access to a flat list of files
+   * @param fieldId a unique indefiner for a given field
+   *
+   **/
   protected def getDocValues(dir: Directory, fieldId: String, docType: DocValues.Type): DocValues = {
+    import DocValues.Type._
+
     throw new NotImplementedError("this method is not implemented yet")
   }
 

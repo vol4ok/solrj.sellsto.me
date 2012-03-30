@@ -31,6 +31,10 @@ class LanguageFeaturesUnitTest extends BaseUnitTest {
     Console.println(collection.getClass)
   }
 
+  test("null value and string extension format methot") {
+    Console.println("do you aware of null effect: %s".format(null))
+  }
+
   test("overrloaded methods") {
     val testStr: String = "one"
     val testAny: Any = testStr

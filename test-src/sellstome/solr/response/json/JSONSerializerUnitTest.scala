@@ -4,7 +4,7 @@ import org.easymock.EasyMock
 import org.apache.solr.search.{SolrIndexSearcher, DocIterator, DocList}
 import org.apache.lucene.document.Document
 import org.powermock.api.easymock.PowerMock
-import org.scalatest.{BeforeAndAfterAll, FunSuite}
+import org.scalatest.BeforeAndAfterAll
 import org.powermock.modules.agent.PowerMockAgent
 import java.io.StringWriter
 import org.apache.commons.lang.StringUtils
@@ -15,7 +15,6 @@ import org.apache.solr.common.util.SimpleOrderedMap
 import org.apache.solr.schema.{StrField, SchemaField, IndexSchema}
 import com.google.common.collect.Maps
 import org.apache.lucene.index.IndexableField
-import sellstome.solr.common.NotImplementedException
 import sellstome.BaseUnitTest
 
 /**
@@ -56,17 +55,17 @@ class JSONSerializerUnitTest extends BaseUnitTest with BeforeAndAfterAll {
 
       def getParamString = ""
 
-      def getContentStreams = throw new NotImplementedException()
+      def getContentStreams = ???
 
-      def getContext = throw new NotImplementedException()
+      def getContext = ???
 
-      def getParams = throw new NotImplementedException()
+      def getParams = ???
 
       def close() {}
 
-      def getCore = throw new NotImplementedException()
+      def getCore = ???
 
-      def getOriginalParams = throw new NotImplementedException()
+      def getOriginalParams = ???
 
     }
 
