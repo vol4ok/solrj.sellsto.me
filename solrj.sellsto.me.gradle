@@ -1,46 +1,39 @@
+import org.gradle.api.internal.file.UnionFileCollection
+import org.gradle.api.internal.file.collections.SimpleFileCollection
+
 apply plugin: 'scala'
 apply from: "gradle/utilities.gradle"
 
 //fix for scala-java cross compilation
+//todo zhugrov a - it would be great to remove it
 compileScala.taskDependencies.values = compileScala.taskDependencies.values - 'compileJava'
 compileJava.dependsOn compileScala
+compileJava.classpath = new UnionFileCollection(new SimpleFileCollection(compileScala.destinationDir), compileScala.classpath)
 
-configurations {
-    provided {
-        transitive = false
-    }
-    compile {
-        transitive = false
-    }
-    testCompile {
-        transitive = false
-}   }
 
 dependencies {
     //scala plugin dependencies
-    scalaTools      'org.scala-lang:scala-compiler:2.10.0-M2'
-    scalaTools      'org.scala-lang:scala-library:2.10.0-M2'
+    scalaTools     'org.scala-lang:scala-compiler:2.10.0-M2'
+    scalaTools     'org.scala-lang:scala-library:2.10.0-M2'
 
     //compile dependencies
-    compile         project(':lucene')
-    compile         project(':solr')
-    compile         project(':modules:queries')
-    compile         project(':modules:queryparser')
-    compile         'org.json:json:20090211'
-    compile         'net.sourceforge.findbugs:jsr305:1.3.7'
-    compile         'org.scala-lang:scala-library:2.10.0-M2'
-    compile         'javax.servlet:javax.servlet-api:3.0.1'
-    compile         fileTree(dir:'lib/local/compile', includes: ['reactive-core.jar'])
-
-    //provided dependencies
-    provided        'org.slf4j:slf4j-api:1.6.1'
-    provided        'org.slf4j:slf4j-jdk14:1.6.1'
-    provided        'com.google.guava:guava:r05'
-    provided        'commons-lang:commons-lang:2.6'
-    compile         'org.apache.httpcomponents:httpcore:4.1.4'
-    compile         'org.apache.httpcomponents:httpclient:4.1.3'
-    provided        'commons-io:commons-io:2.1'
-    provided        'commons-codec:commons-codec:1.6'
+    compile        project(':lucene')
+    compile        project(':solr')
+    compile        project(':modules:queries')
+    compile        project(':modules:queryparser')
+    compile        'org.json:json:20090211' //Q: do you really need this dependency?
+    compile        'net.sourceforge.findbugs:jsr305:1.3.7'
+    compile        'org.scala-lang:scala-library:2.10.0-M2'
+    compile        fileTree(dir:'lib/local/compile', includes: ['reactive-core.jar'])
+    compile        'javax.servlet:javax.servlet-api:3.0.1'
+    compile        'org.slf4j:slf4j-api:1.6.1'
+    compile        'org.slf4j:slf4j-jdk14:1.6.1'
+    compile        'com.google.guava:guava:r05'
+    compile        'commons-lang:commons-lang:2.6'
+    compile        'org.apache.httpcomponents:httpcore:4.1.4'
+    compile        'org.apache.httpcomponents:httpclient:4.1.3'
+    compile        'commons-io:commons-io:2.1'
+    compile        'commons-codec:commons-codec:1.6'
 
     //test dependencies
     testCompile     project(path: ':solr',   configuration: 'testFramework')
@@ -55,7 +48,6 @@ dependencies {
 
 sourceSets {
     main {
-        compileClasspath += configurations.provided
         scala {
             srcDir 'src'
         }

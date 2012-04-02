@@ -5,7 +5,6 @@ import org.easymock.EasyMock._
 import Console._
 import java.io.Closeable
 import sellstome.BaseUnitTest
-import sellstome.control.using
 
 /**
  * @author Alexander Zhugrov
