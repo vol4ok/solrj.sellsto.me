@@ -3,7 +3,6 @@ package sellstome.solr.request;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import org.apache.solr.common.params.CommonParams;
-import org.apache.solr.common.params.DefaultSolrParams;
 import org.apache.solr.common.params.MapSolrParams;
 import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.request.SolrQueryRequest;
@@ -13,10 +12,6 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: zhygr
- * Date: 12/11/11
- * Time: 1:48 AM
  * Contains a constants that could be found in the search request.
  * For example the ones that defines the bounded location of search results.
  */

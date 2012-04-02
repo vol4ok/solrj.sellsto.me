@@ -165,26 +165,25 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     val values: Array[Long] = new Array[Long](NUM_VALUES)
     for (rx <- 1 until maxBit) {
       val dir: Directory = newDirectory()
-      val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", docType)
+      val writer: DocValuesConsumer = getDocValuesConsumer(dir, "test", docType)
       for (i <- 0 until NUM_VALUES) {
         val v: Long = random.nextLong % (1 + maxV)
-        valueHolder.numberValue = ({
-          values(i) = v; values(i)
-        })
-        w.add(i, valueHolder)
+        values(i) = v
+        valueHolder.numberValue = v
+        writer.add(i, valueHolder)
       }
       val additionalDocs: Int = 1 + random.nextInt(9)
-      w.finish(NUM_VALUES + additionalDocs)
-      val r: DocValues = getDocValues(dir, "test", docType)
+      writer.finish(NUM_VALUES + additionalDocs)
+      val reader: DocValues = getDocValues(dir, "test", docType)
       for (iter <- 0 until 2) {
-        val s: DocValues.Source = getSource(r)
+        val s: DocValues.Source = getSource(reader)
         assertEquals(docType, s.getType)
         for (i1 <- 0 until NUM_VALUES) {
           val v: Long = s.getInt(i1)
           assertEquals("index " + i1, values(i1), v)
         }
       }
-      r.close()
+      reader.close()
       dir.close()
       maxV *= 2
     }
@@ -250,7 +249,7 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
    * Instantiates a new doc values consumer
    * @param dir provides access to a flat list of files
    * @param fieldId a unique indefinier for DV field
-   * @param dvType a type for a given doc value field
+   * @param dvType a data type for a given doc value field
    * @return a new doc values consumer
    */
   protected def getDocValuesConsumer(dir: Directory, fieldId: String, dvType: DocValues.Type): DocValuesConsumer = {
@@ -260,7 +259,8 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
       case FIXED_INTS_16 => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
       case FIXED_INTS_32 => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
       case FIXED_INTS_64 => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
-      case _ => throw new IllegalArgumentException("Not supported doc values type: %s".format(dvType))
+      case VAR_INTS      => new MutablePackedIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ)
+      case _             => throw new IllegalArgumentException("Not supported doc values type: %s".format(dvType))
     }
   }
 
@@ -268,12 +268,19 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
    * Instantiates a new doc values producer
    * @param dir provides access to a flat list of files
    * @param fieldId a unique indefiner for a given field
-   *
+   * @param dvType a data type for a given doc value field
+   * @return a new doc values producer.
    **/
-  protected def getDocValues(dir: Directory, fieldId: String, docType: DocValues.Type): DocValues = {
+  protected def getDocValues(dir: Directory, fieldId: String, dvType: DocValues.Type): DocValues = {
     import DocValues.Type._
-
-    throw new NotImplementedError("this method is not implemented yet")
+    return dvType match {
+      case FIXED_INTS_8  => new MutableIntsDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
+      case FIXED_INTS_16 => new MutableIntsDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
+      case FIXED_INTS_32 => new MutableIntsDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
+      case FIXED_INTS_64 => new MutableIntsDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
+      case VAR_INTS      => ???
+      case _             => throw new IllegalArgumentException("This doc values type: %s is not supported.".format(dvType))
+    }
   }
 
   class DocValueHolder extends IndexableField {
