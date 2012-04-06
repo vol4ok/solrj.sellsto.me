@@ -20,7 +20,7 @@ class SellstomeSolrCoreState(directoryFactory: DirectoryFactory)
                                                forceNewDirectory: Boolean) = new SellstomeIndexWriter(name, core.getNewIndexDir(),
                                                                                                       core.getDirectoryFactory(),
                                                                                                       removeAllExisting, core.getSchema(),
-                                                                                                      core.getSolrConfig().mainIndexConfig,
+                                                                                                      core.getSolrConfig().indexConfig,
                                                                                                       core.getDeletionPolicy(),
                                                                                                       core.getCodec(),
                                                                                                       forceNewDirectory)

@@ -1,7 +1,6 @@
 package sellstome.lucene.codecs.values
 
-import FindDocValuesSliceInfos.ProgressInfo
-import sellstome.{HelperRandomTestException, BaseUnitTest}
+import sellstome.BaseUnitTest
 import collection.mutable.HashSet
 import FindDVSlicesGenMethod.FindDVSlicesGenMethod
 
@@ -13,7 +12,8 @@ import FindDVSlicesGenMethod.FindDVSlicesGenMethod
 class FindDocValuesSliceInfosUnitTest extends BaseUnitTest {
 
   test("test exceptional case") {
-    val progressInfo = new ProgressInfo[Boolean]()
+    val container = new FindDocValuesSliceInfos(null, null)
+    val progressInfo = new container.ProgressInfo[Boolean]()
     val methodSeen = new HashSet[FindDVSlicesGenMethod]()
     var infiniteLoopWatch = 0
     var fileSystemRetryCount = 0
@@ -47,7 +47,8 @@ class FindDocValuesSliceInfosUnitTest extends BaseUnitTest {
   }
 
   test("Sucess case") {
-    val progressInfo = new ProgressInfo[Boolean]()
+    val container = new FindDocValuesSliceInfos(null, null)
+    val progressInfo = new container.ProgressInfo[Boolean]()
     var cycles = 0
     while(progressInfo.isShouldTryAgain()) {
       progressInfo.addGenSeen(1)
@@ -57,7 +58,7 @@ class FindDocValuesSliceInfosUnitTest extends BaseUnitTest {
     }
 
     assert(cycles == 1, "we determine the right result in one step")
-    assert(progressInfo.getResult(), "the result for this operation should be true")
+    assert(progressInfo.getResult().get, "the result for this operation should be true")
   }
 
 }

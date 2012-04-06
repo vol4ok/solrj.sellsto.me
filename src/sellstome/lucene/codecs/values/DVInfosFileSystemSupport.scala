@@ -77,6 +77,7 @@ trait DVInfosFileSystemSupport extends DVInfosFilenamesSupport
     if (pendingInfosOutput != null) {
       trysuppress { pendingInfosOutput.close() }
       trysuppress { dir.deleteFile(fileForGeneration(getDocValuesId(), currentGeneration())) }
+      //Q: should I also delete the gen file
       pendingInfosOutput = null
     }
   }

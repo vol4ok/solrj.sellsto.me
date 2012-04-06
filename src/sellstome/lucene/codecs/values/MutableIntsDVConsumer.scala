@@ -37,6 +37,12 @@ class MutableIntsDVConsumer(_dir: Directory,
         out
   }
 
+  /** write a processed values to a disk. */
+  override def finish(docCount: Int) {
+    super.finish(docCount)
+    flushSlicesInfos()
+  }
+
   protected def docValuesId() = _docValuesId
 
   protected def dir() = _dir

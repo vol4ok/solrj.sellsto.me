@@ -3,6 +3,8 @@ package sellstome.lucene.codecs
 import org.apache.lucene.store.Directory
 import org.apache.lucene.index.DocValues.Type
 import values.{DVFilenamesSupport, DocValuesSliceInfo, DocValuesSliceInfos}
+import sellstome.control.trysuppress
+import sellstome.transactional.TwoPhaseCommit
 
 /**
  * Adds the ability to read and to write the doc values slices
@@ -28,6 +30,17 @@ trait DocValuesSlicesSupport extends DVFilenamesSupport {
   /** Compose a current slice file name */
   protected def currentSliceFileName(docValuesId: String): String = {
     return docValuesId+currentSlice.name+"."+DVSegmentSuffix
+  }
+
+  /** Flushed a given slices infos to a disk */
+  protected def flushSlicesInfos() {
+    val commitable: TwoPhaseCommit[Directory] = slicesInfos
+    try {
+      commitable.prepareCommit(dir())
+      commitable.commit(dir())
+    } finally {
+      trysuppress { commitable.rollbackCommit(dir()) }
+    }
   }
 
   /** The size of fixed size dv value or -1 for the compressed storage. */

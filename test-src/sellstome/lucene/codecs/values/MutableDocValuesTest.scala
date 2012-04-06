@@ -183,6 +183,8 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
 
       val additionalDocs: Int = 1 + random.nextInt(9)
       writer.finish(DocCount + additionalDocs)
+
+
       val reader: DocValues = getDocValues(dir, "test", docType)
       for (readIteration <- 0 until 2) {
         val source: DocValues.Source = getSource(reader)

@@ -5,17 +5,11 @@
   <dataDir>${solr.data.dir:}</dataDir>
   <directoryFactory name="DirectoryFactory" class="${solr.directoryFactory:solr.StandardDirectoryFactory}"/>
 
-  <indexDefaults>
-    <useCompoundFile>false</useCompoundFile>
-    <mergeFactor>10</mergeFactor>
-    <ramBufferSizeMB>32</ramBufferSizeMB>
+  <indexConfig>
     <maxFieldLength>10000</maxFieldLength>
     <writeLockTimeout>1000</writeLockTimeout>
     <commitLockTimeout>10000</commitLockTimeout>
     <lockType>native</lockType>
-  </indexDefaults>
-
-  <mainIndex>
     <useCompoundFile>false</useCompoundFile>
     <ramBufferSizeMB>32</ramBufferSizeMB>
     <mergeFactor>10</mergeFactor>
@@ -27,7 +21,7 @@
       <str name="maxCommitsToKeep">1</str>
       <str name="maxOptimizedCommitsToKeep">0</str>
     </deletionPolicy>
-  </mainIndex>
+  </indexConfig>
 
   <jmx />
 

@@ -42,7 +42,9 @@ trait DVInfosFilenamesSupport {
   /** Parses the generation off the segments file name and return it. */
   protected def generationFor(@Nonnull fileName: String): Long = {
     val extension = FilenameUtils.getExtension(fileName)
-    if (extension.startsWith(DVInfosExtension)) {
+    if (extension == DVInfosExtension) {
+      return SegmentInfo.WITHOUT_GEN
+    } else if (extension.startsWith(DVInfosExtension)) {
       return extension.substring((DVInfosExtension+"_").length()).toLong
     } else {
       throw new IllegalArgumentException("fileName %s is not a doc values slices file".format(fileName))
@@ -76,7 +78,7 @@ trait DVInfosFilenamesSupport {
     val fileBase  = FilenameUtils.getBaseName(fileName)
     if (fileBase == docValuesId) {
       val extension = FilenameUtils.getExtension(fileName)
-      return extension.startsWith(DVInfosExtension)
+      return extension.startsWith(DVInfosExtension) && extension != DVSlicesGenExtension
     } else {
       return false
     }

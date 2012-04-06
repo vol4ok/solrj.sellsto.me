@@ -1,6 +1,5 @@
 package sellstome.transactional
 
-import org.apache.lucene.store.Directory
 
 /**
  * Define two phase commit contract

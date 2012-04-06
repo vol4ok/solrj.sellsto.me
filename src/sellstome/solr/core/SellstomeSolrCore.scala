@@ -66,47 +66,59 @@ class SellstomeSolrCore(name: String, dataDir: String, config: SolrConfig, schem
     var tmp: SolrIndexSearcher = null
     var newestSearcher: RefCounted[SolrIndexSearcher] = null
     val nrt: Boolean = solrConfig.reopenReaders && updateHandlerReopens
+
     openSearcherLock.lock()
     try {
       val newIndexDir: String = getNewIndexDir()
       var indexDirFile: File = null
       var newIndexDirFile: File = null
+
+      // if it's not a normal near-realtime update, check that paths haven't changed.
       if (!nrt) {
-        indexDirFile = new File(getIndexDir).getCanonicalFile
+        indexDirFile = new File(getIndexDir()).getCanonicalFile
         newIndexDirFile = new File(newIndexDir).getCanonicalFile
       }
       searcherLock synchronized {
         newestSearcher = realtimeSearcher
         if (newestSearcher != null) {
-          newestSearcher.incref
+          newestSearcher.incref()
         }
       }
-      if (newestSearcher != null && solrConfig.reopenReaders && (nrt || (indexDirFile == newIndexDirFile))) {
+
+      if (newestSearcher != null && solrConfig.reopenReaders
+          && (nrt || (indexDirFile == newIndexDirFile))) {
+
         var newReader: DirectoryReader = null
         val currentReader: DirectoryReader = newestSearcher.get.getIndexReader
+
         if (updateHandlerReopens) {
-          val writer: IndexWriter = getUpdateHandler.getSolrCoreState.getIndexWriter(this)
+          val writer: IndexWriter = getUpdateHandler().getSolrCoreState().getIndexWriter(this)
           newReader = DirectoryReader.openIfChanged(currentReader, writer, true)
-        }
-        else {
+        } else {
           newReader = DirectoryReader.openIfChanged(currentReader)
         }
+
         if (newReader == null) {
           if (realtime) {
-            newestSearcher.incref
+            newestSearcher.incref()
             return newestSearcher
           }
+
           currentReader.incRef()
           newReader = currentReader
         }
+
         tmp = new SellstomeSolrIndexSearcher(this, schema, (if (realtime) "realtime" else "main"), newReader, true, !realtime, true, directoryFactory)
+
+      } else {
+        tmp = new SellstomeSolrIndexSearcher(this, newIndexDir, schema, getSolrConfig.indexConfig, "main", true, directoryFactory)
       }
-      else {
-        tmp = new SellstomeSolrIndexSearcher(this, newIndexDir, schema, getSolrConfig.mainIndexConfig, "main", true, directoryFactory)
-      }
+
       val searcherList = if (realtime) _realtimeSearchers else _searchers
       val newSearcher: RefCounted[SolrIndexSearcher] = newHolder(tmp, searcherList)
-      newSearcher.incref
+
+      newSearcher.incref()
+
       searcherLock synchronized {
         if (realtimeSearcher != null) {
           realtimeSearcher.decref()
@@ -114,6 +126,7 @@ class SellstomeSolrCore(name: String, dataDir: String, config: SolrConfig, schem
         realtimeSearcher = newSearcher
         searcherList.add(realtimeSearcher)
       }
+
       return newSearcher
     }
     catch {
