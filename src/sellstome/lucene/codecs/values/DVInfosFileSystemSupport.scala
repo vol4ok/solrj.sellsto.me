@@ -9,13 +9,6 @@ import java.util.Collections
 import sellstome.util.Logging
 import javax.annotation.Nonnull
 
-
-object DVInfosFileSystemSupport {
-  /** A default generation for slice infos */
-  val DefaultGeneration: Long = 0
-}
-
-
 /**
  * Contains common operations for working
  * on doc values slices on a File System.
@@ -27,6 +20,9 @@ trait DVInfosFileSystemSupport extends DVInfosFilenamesSupport
                                with Logging {
   //this class factor out all logic that operates on File System
   this: DocValuesSliceInfos =>
+
+  /** A default generation number */
+  val DefaultGeneration: Long = 0
   /** This field being set only after prepareCommit phase is finished */
   var pendingInfosOutput: IndexOutput = null
 

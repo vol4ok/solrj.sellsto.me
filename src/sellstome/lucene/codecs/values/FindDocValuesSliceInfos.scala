@@ -8,7 +8,6 @@ import org.apache.lucene.store.{IOContext, Directory}
 import sellstome.util.Logging
 import java.io.FileNotFoundException
 
-
 object FindDocValuesSliceInfos {
   import FindDVSlicesGenMethod._
 
@@ -173,6 +172,18 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVInf
     }
 
     return progressInfo.getResult()
+  }
+
+  /**
+   * In we couldn't find a slices info file we should check that we don't have any other files related to this doc values id.
+   * In either words we define here a index state invariant
+   * @param docValuesId a unique identifier for a given field && segment combination
+   * @param dir provides access to a flat list of files
+   * @return if a given doc values field values for a given segment are in consistent state
+   */
+  protected def isIndexCorrupted(@Nonnull docValuesId: String, @Nonnull dir: Directory): Boolean = {
+
+    ???
   }
 
   /**

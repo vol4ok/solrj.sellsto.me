@@ -11,6 +11,7 @@ import org.apache.lucene.index.DocValues.Type
 import org.apache.lucene.store.{FlushInfo, MergeInfo, IOContext, Directory}
 import java.util.{Random, Comparator}
 import org.apache.lucene.index._
+import org.junit.Ignore
 
 /**
  * todo zhugrov a - classify a type for this test
@@ -22,6 +23,7 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   /** actual indexing format */
   private val docValuesFormat: DocValuesFormat = new MutableDocValuesFormat()
 
+  @Ignore
   def testVariableIntsLimits() {
 
     var minMax          = Array[Array[Long]](           Array(Long.MinValue, Long.MaxValue),
@@ -59,6 +61,7 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     }
   }
 
+  @Ignore
   def testVInts() {
     testInts(Type.VAR_INTS, 63)
   }
@@ -70,6 +73,7 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     testInts(Type.FIXED_INTS_8, 7)
   }
 
+  @Ignore
   def testGetInt8Array() {
     val valueHolder: DocValueHolder = new DocValueHolder()
     val sourceArray: Array[Byte] = Array[Byte](1, 2, 3)
@@ -92,6 +96,7 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     dir.close()
   }
 
+  @Ignore
   def testGetInt16Array() {
     val valueHolder: DocValueHolder = new DocValueHolder()
     val sourceArray: Array[Short] = Array[Short](1, 2, 3)
@@ -114,6 +119,7 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     dir.close()
   }
 
+  @Ignore
   def testGetInt64Array() {
     var valueHolder: DocValueHolder = new DocValueHolder()
     var sourceArray: Array[Long] = Array[Long](1, 2, 3)
@@ -136,6 +142,7 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     dir.close()
   }
 
+  @Ignore
   def testGetInt32Array() {
     val valueHolder: DocValueHolder = new DocValueHolder()
     val sourceArray: Array[Int] = Array[Int](1, 2, 3)
@@ -161,28 +168,31 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   protected def testInts(docType: DocValues.Type, maxBit: Int)() {
     val valueHolder: DocValueHolder = new DocValueHolder()
     var maxV: Long = 1
-    val NUM_VALUES: Int = 333 + random.nextInt(333)
-    val values: Array[Long] = new Array[Long](NUM_VALUES)
+    val DocCount: Int = 333 + random.nextInt(333)
+    val values = new Array[Long](DocCount)
+
     for (rx <- 1 until maxBit) {
       val dir: Directory = newDirectory()
       val writer: DocValuesConsumer = getDocValuesConsumer(dir, "test", docType)
-      for (i <- 0 until NUM_VALUES) {
-        val v: Long = random.nextLong % (1 + maxV)
-        values(i) = v
-        valueHolder.numberValue = v
-        writer.add(i, valueHolder)
+      for (docIdWrite <- 0 until DocCount) {
+        val value: Long = random.nextLong % (1 + maxV)
+        values(docIdWrite) = value
+        valueHolder.numberValue = value
+        writer.add(docIdWrite, valueHolder)
       }
+
       val additionalDocs: Int = 1 + random.nextInt(9)
-      writer.finish(NUM_VALUES + additionalDocs)
+      writer.finish(DocCount + additionalDocs)
       val reader: DocValues = getDocValues(dir, "test", docType)
-      for (iter <- 0 until 2) {
-        val s: DocValues.Source = getSource(reader)
-        assertEquals(docType, s.getType)
-        for (i1 <- 0 until NUM_VALUES) {
-          val v: Long = s.getInt(i1)
-          assertEquals("index " + i1, values(i1), v)
+      for (readIteration <- 0 until 2) {
+        val source: DocValues.Source = getSource(reader)
+        assertEquals(docType, source.getType())
+        for (docIdRead <- 0 until DocCount) {
+          val v: Long = source.getInt(docIdRead)
+          assertEquals("index " + docIdRead, values(docIdRead), v)
         }
       }
+
       reader.close()
       dir.close()
       maxV *= 2

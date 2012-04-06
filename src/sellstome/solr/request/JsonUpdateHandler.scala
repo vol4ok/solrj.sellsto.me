@@ -54,12 +54,12 @@ class JsonUpdateHandler extends RequestHandlerBase {
     }
   }
 
-  def getDescription  = "allows update using docs in json format"
+  def getDescription      = "allows update using docs in json format"
 
-  def getSourceId     = "do not allows disclosure"
+  def getSourceId         = "do not allows disclosure"
 
-  def getSource       = "do not allows disclosure"
+  def getSource           = "do not allows disclosure"
 
-  def getVersion      = "do not allows disclosure"
+  override def getVersion = "1.0"
 
 }

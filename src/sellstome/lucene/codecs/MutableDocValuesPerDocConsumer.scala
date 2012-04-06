@@ -2,12 +2,12 @@ package sellstome.lucene.codecs
 
 import scala.collection.JavaConversions._
 import org.apache.lucene.index.DocValues.Type
-import org.apache.lucene.store.Directory
 import java.io.IOException
-import org.apache.lucene.util.IOUtils
 import java.util.{HashSet, Set}
 import org.apache.lucene.index._
 import org.apache.lucene.codecs.{PerDocProducerBase, DocValuesConsumer, PerDocConsumer}
+import org.apache.lucene.util.IOUtils
+import org.apache.lucene.store.Directory
 import values.MutableDocValuesAware
 
 object MutableDocValuesPerDocConsumer {
@@ -53,6 +53,8 @@ object MutableDocValuesPerDocConsumer {
  */
 class MutableDocValuesPerDocConsumer(state: PerDocWriteState, fileExtension: String) extends PerDocConsumer
                                                                                      with MutableDocValuesAware {
+  /** a factory for creating a new doc values consumer */
+  val consumerFactory: DocValuesConsumerFactory = MutableDocValuesConsumerFactory
 
   /**
    * Adds a new DocValuesField

@@ -1,50 +1,18 @@
 package sellstome.lucene.codecs
 
-import org.apache.lucene.store.{IOContext, Directory}
+import org.apache.lucene.store.Directory
 import org.apache.lucene.index.DocValues.Type
-import collection.mutable.HashMap
-import org.apache.lucene.util.{Counter, BytesRef}
-import values.{MutablePackedIntsDVConsumer, MutableIntsDVConsumer, DocValuesSliceInfo, DocValuesSliceInfos}
-import org.apache.lucene.codecs.DocValuesConsumer
-
-/** Companion object */
-object MutableDocValuesConsumerFactory {
-  /**
-   * Factory method to create a [[org.apache.lucene.codecs.DocValuesConsumer]] instance for a given type. This
-   * method returns default implementations for each of the different types
-   * defined in the [[org.apache.lucene.index.DocValues.Type]]enumeration.
-   *
-   * @param docValuesId the file name id used to create files within the writer.
-   * @param dir the [[org.apache.lucene.store.Directory]] to create the files from.
-   * @param bytesUsed a byte-usage tracking reference
-   * @return a new [[org.apache.lucene.codecs.DocValuesConsumer]] instance for the given [[org.apache.lucene.index.DocValues.Type]]
-   * @throws IOException if could not create a consumer
-   */
-  def create(dvType: Type, docValuesId: String, dir: Directory,
-              bytesUsed: Counter, context: IOContext): DocValuesConsumer = {
-    import Type._
-    return dvType match {
-      case FIXED_INTS_16  => new MutableIntsDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
-      case FIXED_INTS_32  => new MutableIntsDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
-      case FIXED_INTS_64  => new MutableIntsDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
-      case FIXED_INTS_8   => new MutableIntsDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
-      case VAR_INTS       => new MutablePackedIntsDVConsumer(dir, docValuesId, bytesUsed, context)
-      case _              => throw new IllegalArgumentException("Not supported doc values type: " + dvType)
-    }
-  }
-}
-
-object DocValuesSlicesSupport {
-  val DVSegmentSuffix = "dv"
-}
-
+import values.{DocValuesSliceInfo, DocValuesSliceInfos}
 
 /**
  * Adds the ability to read and to write the doc values slices
+ * todo zhygrov a check this code
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
 trait DocValuesSlicesSupport {
+
+  val DVSegmentSuffix = "dv"
 
   /** implementing class should make accessible the doc values id */
   protected def docValuesId(): String
@@ -61,8 +29,12 @@ trait DocValuesSlicesSupport {
 
   /** Compose a current slice file name */
   protected def currentSliceFileName(docValuesId: String): String = {
-     return docValuesId+currentSlice.name+"."+DocValuesSlicesSupport.DVSegmentSuffix
+     return docValuesId+currentSlice.name+"."+DVSegmentSuffix
   }
+
+  /** Compose a slice file name */
+  protected def sliceFileName(docValuesId: String, slice: String): String
+      =  docValuesId+slice+"."+DVSegmentSuffix
 
   /** The size of fixed size dv value or -1 for the compressed storage. */
   protected def fixedSize(dvType: Type): Int = {

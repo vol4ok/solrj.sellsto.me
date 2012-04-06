@@ -28,7 +28,7 @@ class LanguageFeaturesUnitTest extends BaseUnitTest {
       val one = "one"
       val second = "second"
     }
-    Console.println(collection.getClass)
+    Console.println(collection.getClass())
   }
 
   test("null value and string extension format methot") {

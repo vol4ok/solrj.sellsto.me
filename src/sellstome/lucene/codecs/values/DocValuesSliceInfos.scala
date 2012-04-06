@@ -15,7 +15,7 @@ class DocValuesSliceInfos(docValuesId: String) extends DVInfosFileSystemSupport 
   /** used to name new slices */
   protected var counter: Int = 0
   /** current infos generation. Should not be nodified directly. */
-  protected var generation: Long = DVInfosFileSystemSupport.DefaultGeneration
+  protected var generation: Long = DefaultGeneration
   /** used to hold a current set of slices */
   protected val slices = new mutable.ArrayBuffer[DocValuesSliceInfo]()
 
