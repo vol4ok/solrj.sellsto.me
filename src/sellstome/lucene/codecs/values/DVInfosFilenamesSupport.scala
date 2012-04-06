@@ -4,21 +4,19 @@ import javax.annotation.Nonnull
 import org.apache.commons.io.FilenameUtils
 import org.apache.lucene.index.SegmentInfo
 
-object DVInfosFilenamesSupport {
-  /** Name of the doc values slices file extension */
-  val DVInfosExtension = "dvslices"
-  /** Suffix for the DV slices gen file */
-  val GenSuffix = "gen"
-  /** Name of the extension for the generation reference file */
-  val DVSlicesGenExtension = DVInfosExtension+"_"+GenSuffix
-}
-
 /**
  * Contains methods for operation on dv file names.
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
 trait DVInfosFilenamesSupport {
+
+  /** Name of the doc values slices file extension */
+  protected val DVInfosExtension = "dvslices"
+  /** Suffix for the DV slices gen file */
+  protected val GenSuffix = "gen"
+  /** Name of the extension for the generation reference file */
+  protected val DVSlicesGenExtension = DVInfosExtension+"_"+GenSuffix
 
   /**
    * Get the generation of the most recent changes to a given doc values slices
@@ -29,7 +27,7 @@ trait DVInfosFilenamesSupport {
   protected def getLastCommitGeneration(@Nonnull docValuesId: String, @Nonnull files: Array[String]): Option[Long] = {
     return files.foldLeft[Option[Long]](None) {
       (maxGenOrNone, fileName) =>
-        if (isInfosFileWithId(fileName, docValuesId)) {
+        if (isInfosFileWithId(docValuesId, fileName)) {
           val gen: Long = generationFor(fileName)
           maxGenOrNone match {
             case Some(maxGen) => if (gen > maxGen) Some(gen) else maxGenOrNone
@@ -44,8 +42,8 @@ trait DVInfosFilenamesSupport {
   /** Parses the generation off the segments file name and return it. */
   protected def generationFor(@Nonnull fileName: String): Long = {
     val extension = FilenameUtils.getExtension(fileName)
-    if (extension.startsWith(DVInfosFilenamesSupport.DVInfosExtension)) {
-      return extension.substring((DVInfosFilenamesSupport.DVInfosExtension+"_").length()).toLong
+    if (extension.startsWith(DVInfosExtension)) {
+      return extension.substring((DVInfosExtension+"_").length()).toLong
     } else {
       throw new IllegalArgumentException("fileName %s is not a doc values slices file".format(fileName))
     }
@@ -53,30 +51,35 @@ trait DVInfosFilenamesSupport {
 
   /** File name for generation file that stores a current generation number */
   protected def generationFile(docValuesId: String): String
-    = docValuesId+"."+DVInfosFilenamesSupport.DVSlicesGenExtension
+    = docValuesId+"."+DVSlicesGenExtension
+
+  /**
+   * If a given file is a generation file
+   * @param docValuesId a generation file should belong to a particular dvId
+   */
+  protected def isGenerationFile(@Nonnull docValuesId: String, @Nonnull fileName: String): Boolean
+    = generationFile(docValuesId) == fileName
 
   /**
    * Computes a full file name from base, extension and generation.
    */
   protected def fileForGeneration(@Nonnull docValuesId: String, @Nonnull gen: Long): String = {
     if (gen == SegmentInfo.WITHOUT_GEN) {
-      return docValuesId+"."+DVInfosFilenamesSupport.DVInfosExtension
+      return docValuesId+"."+DVInfosExtension
     } else {
-      return docValuesId+"."+DVInfosFilenamesSupport.DVInfosExtension+"_"+gen.toString
+      return docValuesId+"."+DVInfosExtension+"_"+gen.toString
     }
   }
 
   @inline
-  protected def isInfosFileWithId(@Nonnull fileName: String, @Nonnull docValuesId: String): Boolean = {
+  protected def isInfosFileWithId(@Nonnull docValuesId: String, @Nonnull fileName: String): Boolean = {
     val fileBase  = FilenameUtils.getBaseName(fileName)
     if (fileBase == docValuesId) {
       val extension = FilenameUtils.getExtension(fileName)
-      return extension.contains(DVInfosFilenamesSupport.DVInfosExtension) && extension != DVInfosFilenamesSupport.DVSlicesGenExtension
+      return extension.startsWith(DVInfosExtension)
     } else {
       return false
     }
   }
-
-
 
 }

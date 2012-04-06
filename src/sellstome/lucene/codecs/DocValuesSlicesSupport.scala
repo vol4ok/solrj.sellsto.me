@@ -2,7 +2,7 @@ package sellstome.lucene.codecs
 
 import org.apache.lucene.store.Directory
 import org.apache.lucene.index.DocValues.Type
-import values.{DocValuesSliceInfo, DocValuesSliceInfos}
+import values.{DVFilenamesSupport, DocValuesSliceInfo, DocValuesSliceInfos}
 
 /**
  * Adds the ability to read and to write the doc values slices
@@ -10,9 +10,7 @@ import values.{DocValuesSliceInfo, DocValuesSliceInfos}
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-trait DocValuesSlicesSupport {
-
-  val DVSegmentSuffix = "dv"
+trait DocValuesSlicesSupport extends DVFilenamesSupport {
 
   /** implementing class should make accessible the doc values id */
   protected def docValuesId(): String
@@ -29,12 +27,8 @@ trait DocValuesSlicesSupport {
 
   /** Compose a current slice file name */
   protected def currentSliceFileName(docValuesId: String): String = {
-     return docValuesId+currentSlice.name+"."+DVSegmentSuffix
+    return docValuesId+currentSlice.name+"."+DVSegmentSuffix
   }
-
-  /** Compose a slice file name */
-  protected def sliceFileName(docValuesId: String, slice: String): String
-      =  docValuesId+slice+"."+DVSegmentSuffix
 
   /** The size of fixed size dv value or -1 for the compressed storage. */
   protected def fixedSize(dvType: Type): Int = {
@@ -54,7 +48,5 @@ trait DocValuesSlicesSupport {
       case 8 => Type.FIXED_INTS_64
       case _ => throw new IllegalStateException("illegal size " + size)
   }
-
-
 
 }

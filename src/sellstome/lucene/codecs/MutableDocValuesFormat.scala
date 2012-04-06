@@ -1,8 +1,10 @@
 package sellstome.lucene.codecs
 
 import org.apache.lucene.codecs.DocValuesFormat
-import java.util.Set
+import java.{util => javautil}
 import org.apache.lucene.index.{PerDocWriteState, SegmentReadState, SegmentInfo}
+import values.{MutableDocValuesUtils, DocValuesUtils}
+import scala.collection.JavaConversions._
 
 /**
  * An attempt to build a DocValues storage that provides ability to update the doc values without re-indexing the whole
@@ -15,17 +17,18 @@ import org.apache.lucene.index.{PerDocWriteState, SegmentReadState, SegmentInfo}
  */
 class MutableDocValuesFormat extends DocValuesFormat {
 
-  val DocValuesSegmentSuffix = "dv"
+  /** a collection of utility methods for working with doc values */
+  protected val dvUtils: DocValuesUtils = MutableDocValuesUtils
 
   /** consumes doc values and saves them do a disk */
-  def docsConsumer(state: PerDocWriteState) = new MutableDocValuesPerDocConsumer(state, DocValuesSegmentSuffix)
+  def docsConsumer(state: PerDocWriteState) = new MutableDocValuesPerDocConsumer(state)
 
   /** allows reading for doc values from external storage */
   def docsProducer(segmentState: SegmentReadState) = new MutableDocValuesProducer(segmentState)
 
   /** Populates a list of files that used for a given segment */
-  def files(info: SegmentInfo, files: Set[String]) {
-    MutableDocValuesPerDocConsumer.files(info, files, DocValuesSegmentSuffix)
+  def files(info: SegmentInfo, files: javautil.Set[String]) {
+    files.addAll(dvUtils.files(info.dir, info.getFieldInfos, info.name))
   }
 
 }

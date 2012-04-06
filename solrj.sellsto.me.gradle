@@ -28,7 +28,7 @@ dependencies {
     compile        'javax.servlet:javax.servlet-api:3.0.1'
     compile        'org.slf4j:slf4j-api:1.6.1'
     compile        'org.slf4j:slf4j-jdk14:1.6.1'
-    compile        'com.google.guava:guava:r05'
+    compile        'com.google.guava:guava:11.0.2'
     compile        'commons-lang:commons-lang:2.6'
     compile        'org.apache.httpcomponents:httpcore:4.1.4'
     compile        'org.apache.httpcomponents:httpclient:4.1.3'

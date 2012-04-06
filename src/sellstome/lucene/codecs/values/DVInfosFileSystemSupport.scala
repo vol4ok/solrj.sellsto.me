@@ -141,8 +141,9 @@ trait DVInfosFileSystemSupport extends DVInfosFilenamesSupport
   }
 
   /** Extension point for other writer implementations */
-  protected def newWriter(): DocValuesSliceInfosWriter = DVSliceInfosWriterImpl
+  protected def newWriter(): DocValuesSliceInfosWriter = new DVSliceInfosWriterImpl()
+
   /** Extension point for other reader implementations */
-  protected def newReader(): DocValuesSliceInfosReader = DVSliceInfosReaderImpl
+  protected def newReader(): DocValuesSliceInfosReader = new DVSliceInfosReaderImpl()
 
 }

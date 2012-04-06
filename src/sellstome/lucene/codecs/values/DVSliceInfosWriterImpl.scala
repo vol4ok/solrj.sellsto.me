@@ -10,7 +10,7 @@ import sellstome.control.using
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-object DVSliceInfosWriterImpl extends DocValuesSliceInfosWriter {
+class DVSliceInfosWriterImpl extends DocValuesSliceInfosWriter {
 
   def writeInfos(dir: Directory, infosFileName: String,
                  infos: DocValuesSliceInfos, context: IOContext): IndexOutput = {
