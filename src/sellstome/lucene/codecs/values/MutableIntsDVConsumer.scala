@@ -6,6 +6,8 @@ import org.apache.lucene.store.{IndexOutput, IOContext, Directory}
 import org.apache.lucene.codecs.lucene40.values.Ints
 import sellstome.control.using
 import org.apache.lucene.util.{IOUtils, CodecUtil, Counter}
+import org.apache.lucene.codecs.DocValuesConsumer
+import org.apache.lucene.index.IndexableField
 
 /**
  * Stores ints packed and fixed with fixed-bit precision.
@@ -24,30 +26,36 @@ class MutableIntsDVConsumer(_dir: Directory,
                             version: Int,
                             bytesUsed: Counter,
                             context: IOContext,
-                            valueType: Type)
-  extends Ints.IntsWriter(_dir, _docValuesId, codecName, version, bytesUsed, context, valueType) with DocValuesSlicesSupport {
+                            valueType: Type) extends DocValuesConsumer
+                                             with DocValuesSlicesSupport {
 
   def this(dir: Directory, docValuesId: String, bytesUsed: Counter, context: IOContext, valueType: Type) =
     this(dir, docValuesId, Ints.CODEC_NAME, Ints.VERSION_CURRENT, bytesUsed, context, valueType)
+
+
+  override def add(docID: Int, value: IndexableField) {
+
+  }
 
   /**
    * write a processed values to a disk.
    * todo zhugrov - remove the body of this method as soon as you
    * can call a super method.
    */
-  override def finish(docCount: Int): Unit = {
-    super.finish(docCount)
+  override def finish(docCount: Int) {
     flushSlicesInfos()
   }
 
   /** Creates a output for a current writer */
-  protected override def getOrCreateDataOut(): IndexOutput = using(_dir.createOutput(currentWriteSliceFileName(_docValuesId), context)) {
+  protected def getOrCreateDataOut(): IndexOutput = using(_dir.createOutput(currentWriteSliceFileName(_docValuesId), context)) {
       out =>
         CodecUtil.writeHeader(out, codecName, version)
         out
   }
 
+  protected def getType: Type = valueType
+
   protected def docValuesId() = _docValuesId
 
-  protected def dir() = _dir
+  protected def dir()         = _dir
 }

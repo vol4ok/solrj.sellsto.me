@@ -3,7 +3,6 @@ package sellstome.lucene.io.packed.array
 import sellstome.BaseUnitTest
 import collection.mutable
 import collection.mutable.HashMap
-import sellstome.control.trysuppress
 
 /**
  * Tests the [[sellstome.lucene.io.packed.array.ConjugateArraysSorter]]
@@ -23,16 +22,11 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest {
     }
   }
 
-  test("test quicksort: duplicate detection") {
+  test("test quicksort: duplicate ords") {
     for (i <- 0 until 100) {
       val ords = createDuplicates(newOrdArray(1000))
       val values = newValuesArray[Long](1000)
-      try {
-        newSorter[Long](ords, values).quickSort()
-        fail()
-      } catch {
-        case e: IllegalStateException => {}
-      }
+      newSorter[Long](ords, values).quickSort()
     }
   }
 
@@ -56,16 +50,23 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest {
     }
   }
 
-  test("test mergesort duplicates detection") {
+  test("test mergesort: duplicate ords") {
     for (i <- 0 until 100) {
       val ords = createDuplicates(newOrdArray(1000))
       val values = newValuesArray[Long](1000)
-      try {
-        newSorter[Long](ords, values).mergeSort()
-        fail()
-      } catch {
-        case e: IllegalStateException => {}
-      }
+      newSorter[Long](ords, values).mergeSort()
+    }
+  }
+
+  test("test mergesort: preserve duplicates insertion order") {
+    val ords = Array(9, 7, 5, 5, 6, 2, 1)
+    val vals = Array(1, 1, 3, 2, 1, 1, 1)
+    newSorter[Int](ords, vals).mergeSort()
+    val fords = Array(1, 2, 5, 5, 6, 7, 9)
+    val fvals = Array(1, 1, 3, 2, 1, 1, 1)
+    for (i <- 0 until ords.length) {
+      assert(ords(i) == fords(i))
+      assert(vals(i) == fvals(i))
     }
   }
 
@@ -89,16 +90,11 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest {
     }
   }
 
-  test("test insertion sort: duplicates values") {
+  test("test insertion sort: duplicate ords") {
     for (i <- 0 until 100) {
       val ords    = createDuplicates(newOrdArray(1000))
       val values  = newValuesArray[Long](1000)
-      try {
-        newSorter[Long](ords, values).insertionSort()
-        fail()
-      } catch {
-        case e: IllegalStateException => {}
-      }
+      newSorter[Long](ords, values).insertionSort()
     }
   }
 
@@ -111,26 +107,26 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest {
     validateSorting[T](ords, values, fuse)
   }
 
-  protected def validateSorting[T](ords: Array[Int], values: Array[T], fuse: mutable.Map[Int, T]) {
+  protected def validateSorting[T](ords: Array[Int], values: Array[T], fuse: mutable.Map[Int, List[T]]) {
     assert(ords.length == values.length)
     assert(fuse.size == ords.length, s"fuseSize: ${fuse.size} and ordsSize: ${ords.length}")
 
     for (i <- 0 until ords.length) {
       if (i != 0) {
-        assert(ords(i) > ords(i - 1))
+        assert(ords(i) >= ords(i - 1))
       }
-      assert(fuse(ords(i)) == values(i))
+      assert(fuse(ords(i)).contains(values(i)))
     }
   }
 
   protected def newSorter[T](ords: Array[Int], vals: Array[T]): ConjugateArraysSorter[T]
     = new ConjugateArraysSorter[T](ords, vals)
 
-  protected def fuseArrays[T](ords: Array[Int], vals: Array[T]): mutable.Map[Int,T] = {
+  protected def fuseArrays[T](ords: Array[Int], vals: Array[T]): mutable.Map[Int,List[T]] = {
     assert(ords.length == vals.length)
-    val fusion = new HashMap[Int, T]()
+    val fusion = new HashMap[Int, List[T]]()
     for (i <- 0 until ords.length) {
-      fusion.put(ords(i), vals(i))
+        fusion.put(ords(i), fusion.getOrElse(ords(i), List()) :+ vals(i) )
     }
     return fusion
   }

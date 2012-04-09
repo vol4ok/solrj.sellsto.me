@@ -38,10 +38,18 @@ class ConjugateArraysSorter[T](ords: Array[Int], values: Array[T]) extends Sorte
 
   protected def setPivot(i: Int) { pivot = ords(i) }
 
+  /**
+   * A compare method that compares two array values correspondingly at indexes i and j
+   * In case if the two elements are equal we compare them by their indexes so later added element will follows the
+   * previously added element. We need this behaviour because we require that lately added element should override the
+   * previously added element.
+   * @param i an index of the first element
+   * @param j an index of the second element
+   */
   protected def compare(i: Int, j: Int): Int = {
     val comp = Ordering.Int.compare(ords(i), ords(j))
-    if (comp == 0 && i != j)
-      throw new IllegalStateException(s"It is likely that you have inserted a duplicate values. Comparing value at index: $i and value at index $j")
+    if (comp == 0)
+      Ordering.Int.compare(i, j)
     else
       comp
   }

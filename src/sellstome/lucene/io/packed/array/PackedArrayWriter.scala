@@ -3,6 +3,7 @@ package sellstome.lucene.io.packed.array
 import primitive.PrimitiveList
 import gnu.trove.list.array.TIntArrayList
 import org.apache.lucene.util.SorterTemplate
+import org.apache.lucene.store.IndexOutput
 
 /**
  * A generic writer for a sparse array
@@ -12,6 +13,8 @@ import org.apache.lucene.util.SorterTemplate
 class PackedArrayWriter(dataType: Type) {
   /** a type for a given value */
   private type V = dataType.Type
+  /** an number of elements in one compression block */
+  protected val BlockSize = 8
   /** stores indexes of added elements */
   protected val ords: TIntArrayList = new TIntArrayList()
   /** stores values for added elements */
@@ -23,7 +26,17 @@ class PackedArrayWriter(dataType: Type) {
     values.add(value)
   }
 
-  protected def sort() {
+  def write(out: IndexOutput) {
+
+  }
+
+  /** Writes a header that contains a information about data element size in bytes */
+  protected def writeHeader(out: IndexOutput) {
+    out.writeInt(dataType.size)
+  }
+
+  /** Writes a actual data to a stream */
+  protected def writeData(out: IndexOutput, ords: Array[Int], vals: Array[V]) {
 
   }
 
