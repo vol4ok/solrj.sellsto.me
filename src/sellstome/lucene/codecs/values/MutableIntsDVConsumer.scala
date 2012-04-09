@@ -4,8 +4,8 @@ import org.apache.lucene.index.DocValues.Type
 import sellstome.lucene.codecs.DocValuesSlicesSupport
 import org.apache.lucene.store.{IndexOutput, IOContext, Directory}
 import org.apache.lucene.codecs.lucene40.values.Ints
-import org.apache.lucene.util.{CodecUtil, Counter}
 import sellstome.control.using
+import org.apache.lucene.util.{IOUtils, CodecUtil, Counter}
 
 /**
  * Stores ints packed and fixed with fixed-bit precision.
@@ -30,17 +30,21 @@ class MutableIntsDVConsumer(_dir: Directory,
   def this(dir: Directory, docValuesId: String, bytesUsed: Counter, context: IOContext, valueType: Type) =
     this(dir, docValuesId, Ints.CODEC_NAME, Ints.VERSION_CURRENT, bytesUsed, context, valueType)
 
+  /**
+   * write a processed values to a disk.
+   * todo zhugrov - remove the body of this method as soon as you
+   * can call a super method.
+   */
+  override def finish(docCount: Int): Unit = {
+    super.finish(docCount)
+    flushSlicesInfos()
+  }
+
   /** Creates a output for a current writer */
-  protected override def getOrCreateDataOut(): IndexOutput = using(_dir.createOutput(currentSliceFileName(_docValuesId), context)) {
+  protected override def getOrCreateDataOut(): IndexOutput = using(_dir.createOutput(currentWriteSliceFileName(_docValuesId), context)) {
       out =>
         CodecUtil.writeHeader(out, codecName, version)
         out
-  }
-
-  /** write a processed values to a disk. */
-  override def finish(docCount: Int) {
-    super.finish(docCount)
-    flushSlicesInfos()
   }
 
   protected def docValuesId() = _docValuesId

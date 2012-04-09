@@ -23,7 +23,7 @@ class DocRankFieldType extends FieldType {
    * @param fieldType should be ignored here. Added for compatibility with a solr api
    */
   override protected def createField(name: String, value: String, fieldType: org.apache.lucene.document.FieldType, boost: Float): IndexableField = {
-    return new DocValuesField(name, value.toLong, DocValues.Type.VAR_INTS)
+    return new DocValuesField(name, value.toLong, DocValues.Type.FIXED_INTS_64)
   }
 
   def write(writer: TextResponseWriter, name: String, f: IndexableField) {}

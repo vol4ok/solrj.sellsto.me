@@ -27,13 +27,19 @@ trait DocValuesSlicesSupport extends DVFilenamesSupport {
   /** An current slice that being written */
   protected val currentSlice: DocValuesSliceInfo = new DocValuesSliceInfo(slicesInfos.newSliceName())
 
-  /** Compose a current slice file name */
-  protected def currentSliceFileName(docValuesId: String): String = {
+  /** Compose a current slice file name that would be used for write */
+  protected def currentWriteSliceFileName(docValuesId: String): String = {
     return docValuesId+currentSlice.name+"."+DVSegmentSuffix
+  }
+
+  /** Get a latest slice file name that would be used for read. Stop!!! you are wrong. */
+  protected def currentReadSliceFileName(docValuesId: String): Option[String] = {
+    ???
   }
 
   /** Flushed a given slices infos to a disk */
   protected def flushSlicesInfos() {
+    slicesInfos.append(currentSlice) //maybe encapsulate this changing?
     val commitable: TwoPhaseCommit[Directory] = slicesInfos
     try {
       commitable.prepareCommit(dir())

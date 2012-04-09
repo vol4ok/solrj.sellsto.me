@@ -12,6 +12,8 @@ import org.apache.lucene.codecs.lucene40.values.FixedStraightBytesImpl.DirectFix
 
 /**
  * Reads stored INTS with the fixed bit precision
+ * this class should be completely rewritten taking into account multiple slices
+ * structure
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  * @param _dir a directory is a flat list of files and operations on them
@@ -47,13 +49,9 @@ class MutableIntsDVReader(_dir: Directory,
       IOUtils.close(dataIn)
   }
 
-  protected def docValuesId(): String = _docValuesId
-
-  protected def dir(): Directory = _dir
-
   protected def getDataInput(): IndexInput = {
     if (dataIn == null) {
-      dataIn = using(_dir.openInput(currentSliceFileName(_docValuesId), context)) {
+      dataIn = using(_dir.openInput(currentWriteSliceFileName(_docValuesId), context)) {
         in =>
           CodecUtil.checkHeader(in, Ints.CODEC_NAME, Ints.VERSION_CURRENT, Ints.VERSION_CURRENT)
           in
@@ -65,5 +63,9 @@ class MutableIntsDVReader(_dir: Directory,
   /** clones a given data input */
   protected def cloneDataIn(): IndexInput
       = getDataInput().clone().asInstanceOf[IndexInput]
+
+  protected def docValuesId(): String = _docValuesId
+
+  protected def dir(): Directory = _dir
 
 }

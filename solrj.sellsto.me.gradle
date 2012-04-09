@@ -22,8 +22,9 @@ dependencies {
     compile        project(':modules:queries')
     compile        project(':modules:queryparser')
     compile        'org.json:json:20090211' //Q: do you really need this dependency?
-    compile        'net.sourceforge.findbugs:jsr305:1.3.7'
+    compile        'net.sourceforge.findbugs:jsr305:1.3.9'
     compile        'org.scala-lang:scala-library:2.10.0-M2'
+    compile        'org.scala-lang:scala-compiler:2.10.0-M2' /** for compilation debugging only */
     compile        fileTree(dir:'lib/local/compile', includes: ['reactive-core.jar'])
     compile        'javax.servlet:javax.servlet-api:3.0.1'
     compile        'org.slf4j:slf4j-api:1.6.1'
@@ -34,6 +35,7 @@ dependencies {
     compile        'org.apache.httpcomponents:httpclient:4.1.3'
     compile        'commons-io:commons-io:2.1'
     compile        'commons-codec:commons-codec:1.6'
+    compile        'net.sf.trove4j:trove4j:3.0.2'
 
     //test dependencies
     testCompile     project(path: ':solr',   configuration: 'testFramework')

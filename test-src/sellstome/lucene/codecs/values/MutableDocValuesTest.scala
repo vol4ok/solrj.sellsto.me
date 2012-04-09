@@ -6,10 +6,9 @@ import org.apache.lucene.codecs.{DocValuesConsumer, DocValuesFormat}
 import org.apache.lucene.util.{Counter, BytesRef}
 import java.io.Reader
 import org.apache.lucene.analysis.{Analyzer, TokenStream}
-import org.apache.lucene.codecs.lucene40.values.{Floats, Ints}
 import org.apache.lucene.index.DocValues.Type
 import org.apache.lucene.store.{FlushInfo, MergeInfo, IOContext, Directory}
-import java.util.{Random, Comparator}
+import java.util.Random
 import org.apache.lucene.index._
 import org.junit.Ignore
 

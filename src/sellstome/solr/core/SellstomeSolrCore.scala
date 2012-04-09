@@ -174,7 +174,7 @@ class SellstomeSolrCore(name: String, dataDir: String, config: SolrConfig, schem
       }
       if (!indexExists) {
         logger.warn(logid + "Solr index directory '" + new File(indexDir) + "' doesn't exist." + " Creating new index...")
-        var writer = new SellstomeIndexWriter("SolrCore.initIndex", indexDir, getDirectoryFactory, true, schema, solrConfig.mainIndexConfig, solrDelPolicy, codec, false)
+        var writer = new SellstomeIndexWriter("SolrCore.initIndex", indexDir, getDirectoryFactory, true, schema, solrConfig.indexConfig, solrDelPolicy, codec, false)
         writer.close()
       }
     } catch {

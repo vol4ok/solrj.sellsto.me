@@ -35,6 +35,11 @@ class LanguageFeaturesUnitTest extends BaseUnitTest {
     Console.println("do you aware of null effect: %s".format(null))
   }
 
+  test("null value and string interpolation") {
+    val test: Any = null
+    Console.println(s"Test: $test")
+  }
+
   test("overrloaded methods") {
     val testStr: String = "one"
     val testAny: Any = testStr
