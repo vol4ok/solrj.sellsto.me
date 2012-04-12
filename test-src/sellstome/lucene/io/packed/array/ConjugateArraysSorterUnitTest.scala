@@ -25,7 +25,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest {
   test("test quicksort: duplicate ords") {
     for (i <- 0 until 100) {
       val ords = createDuplicates(newOrdArray(1000))
-      val values = newValuesArray[Long](1000)
+      val values = newNumberArray[Long](1000)
       newSorter[Long](ords, values).quickSort()
     }
   }
@@ -33,7 +33,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest {
   protected def testQuickSort[T](implicit m: Manifest[T]) {
     val size    = 100 + nextInt(900)
     val ords    = newOrdArray(size)
-    val values  = newValuesArray[T](size)
+    val values  = newNumberArray[T](size)
     val fuse    = fuseArrays[T](ords, values)
     newSorter[T](ords, values).quickSort()
     validateSorting[T](ords, values, fuse)
@@ -53,7 +53,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest {
   test("test mergesort: duplicate ords") {
     for (i <- 0 until 100) {
       val ords = createDuplicates(newOrdArray(1000))
-      val values = newValuesArray[Long](1000)
+      val values = newNumberArray[Long](1000)
       newSorter[Long](ords, values).mergeSort()
     }
   }
@@ -73,7 +73,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest {
   protected def testMergeSort[T](implicit m: Manifest[T]) {
     val size    = 100 + nextInt(900)
     val ords    = newOrdArray(size)
-    val values  = newValuesArray[T](size)
+    val values  = newNumberArray[T](size)
     val fuse    = fuseArrays[T](ords, values)
     newSorter[T](ords, values).mergeSort()
     validateSorting[T](ords, values, fuse)
@@ -93,7 +93,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest {
   test("test insertion sort: duplicate ords") {
     for (i <- 0 until 100) {
       val ords    = createDuplicates(newOrdArray(1000))
-      val values  = newValuesArray[Long](1000)
+      val values  = newNumberArray[Long](1000)
       newSorter[Long](ords, values).insertionSort()
     }
   }
@@ -101,7 +101,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest {
   protected def testInsertionSort[T](implicit m: Manifest[T]) {
     val size    = 10 + nextInt(90)
     val ords    = newOrdArray(size)
-    val values  = newValuesArray[T](size)
+    val values  = newNumberArray[T](size)
     val fuse    = fuseArrays[T](ords, values)
     newSorter[T](ords, values).insertionSort()
     validateSorting[T](ords, values, fuse)
@@ -174,37 +174,6 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest {
       }
     }
     throw new IllegalStateException("should not be here.")
-  }
-
-  /** Creates a new primitive arrays */
-  protected def newValuesArray[T](size: Int)(implicit m: Manifest[T]) : Array[T] = {
-    val array = m.newArray(size)
-    if (m.erasure == classOf[Int]) {
-      for (i <- 0 until size) {
-        array.update(i, nextInt(1000).asInstanceOf[T])
-      }
-    } else if (m.erasure == classOf[Long]) {
-      for (i <- 0 until size) {
-        array.update(i, nextLong().asInstanceOf[T])
-      }
-    } else if (m.erasure == classOf[Short]) {
-      for (i <- 0 until size) {
-        array.update(i, nextInt(1000).toShort.asInstanceOf[T])
-      }
-    } else if (m.erasure == classOf[Byte]) {
-      for (i <- 0 until size) {
-        array.update(i, nextInt(100).toByte.asInstanceOf[T])
-      }
-    } else if (m.erasure == classOf[Float]) {
-      for (i <- 0 until size) {
-        array.update(i, (nextDouble() * 1000).toFloat.asInstanceOf[T])
-      }
-    } else if (m.erasure == classOf[Double]) {
-      for (i <- 0 until size) {
-        array.update(i, (nextDouble() * 1000).asInstanceOf[T])
-      }
-    }
-    return array
   }
 
 }

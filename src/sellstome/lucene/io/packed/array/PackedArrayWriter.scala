@@ -2,9 +2,9 @@ package sellstome.lucene.io.packed.array
 
 import primitive.PrimitiveList
 import org.apache.lucene.store.IndexOutput
-import org.apache.lucene.util.ArrayUtil
-import org.apache.commons.lang.ArrayUtils
 import gnu.trove.list.array.{TByteArrayList, TIntArrayList}
+import java.util.BitSet
+import gnu.trove.list.TByteList
 
 /**
  * A generic writer for a sparse array
@@ -12,7 +12,7 @@ import gnu.trove.list.array.{TByteArrayList, TIntArrayList}
  * @since 1.0
  */
 class PackedArrayWriter[V](dataType: Type[V]) {
-  /** an number of elements in one compression block */
+  /** a number of elements in one compression block */
   protected val BlockSize = 8
   /** stores indexes of added elements */
   protected val ords: TIntArrayList = new TIntArrayList()
@@ -25,28 +25,89 @@ class PackedArrayWriter[V](dataType: Type[V]) {
     values.add(value)
   }
 
+  /** Writes the accumulates values to a provided stream */
   def write(out: IndexOutput) {
-    writeHeader(out)
     val ordsRawCopy = ords.toArray()
     val valsRawCopy = values.toArray()
     getSorter(ordsRawCopy, valsRawCopy).mergeSort()
-    writeData(out, ordsRawCopy, valsRawCopy)
+    writeHeader(out, ordsRawCopy, valsRawCopy)
+    writeData(  out, ordsRawCopy, valsRawCopy)
   }
 
   /** Writes a header that contains a information about data element size in bytes */
-  protected def writeHeader(out: IndexOutput) {
+  protected def writeHeader(out: IndexOutput, ords: Array[Int], vals: Array[V]) {
     out.writeInt(dataType.size)
+    out.writeInt(ords.length)
   }
 
-  /** Writes a actual data to a stream */
+  /**
+   * Writes a actual data to a stream
+   * Q: should we filter out the duplicates on this stage or it should be implemented on read stage?
+   * @param out  an output where data is being written
+   * @param ords an ords array. We assume that ords array is sorted in asc order
+   * @param vals an values array
+   */
   protected def writeData(out: IndexOutput, ords: Array[Int], vals: Array[V]) {
-    val bytes = new TByteArrayList(dataType.size * BlockSize)
-    ords foreach { ord =>
-      bytes.reset()
-      var mask = 0.toByte
-
-
+    assert(ords.length == vals.length)
+    val currentBlockBytes = new TByteArrayList(dataType.size * BlockSize)
+    val prevEl = new {
+      var ord = -1
+      var arrayWalker = -1
     }
+    var arrayWalker = 0
+    val blockInfo = new BitSet(8)      //edge case when we finish the writing offset but not write out the value
+    while(arrayWalker < ords.length) {
+      val ord   = ords(arrayWalker)
+      val value = vals(arrayWalker)
+      val gap   = ord - prevEl.ord
+
+      if (currentBlockBytes.size == (BlockSize * dataType.size) && !(gap == 0 && (arrayWalker - prevEl.arrayWalker != 0))) {
+        writeBlock(out, currentBlockBytes, blockInfo)
+        //reset the block bytes storage and the blockInfo
+        currentBlockBytes.reset()
+        blockInfo.clear()
+      }
+
+      if (gap > 1) {
+        //then we should encode the gap value
+        currentBlockBytes.add(dataType.gapToBytes(gap))
+        prevEl.ord = ord
+        prevEl.arrayWalker = arrayWalker
+      } else if ((gap == 0 && (arrayWalker - prevEl.arrayWalker) == 0) || gap == 1) {
+        //that mean that we has written a gap and in this cycle should write a value
+        currentBlockBytes.add(dataType.valToBytes(value))
+        prevEl.ord = ord
+        prevEl.arrayWalker = arrayWalker
+        arrayWalker += 1
+        blockInfo.set((currentBlockBytes.size / dataType.size)  - 1) //mark that we have a value for a given index in the current block
+      } else if (gap == 0 && (arrayWalker - prevEl.arrayWalker) != 0) {
+        //we have a duplicate elements and should rewrite a previous value with a new one
+        var startReplaceOffset = currentBlockBytes.size - dataType.size
+        currentBlockBytes.set(startReplaceOffset, dataType.valToBytes(value))
+        prevEl.ord = ord
+        prevEl.arrayWalker = arrayWalker
+        arrayWalker += 1
+      } else {
+        throw new IllegalStateException(s"ord: $ord, value: $value, gap: $gap, arrayWalker: $arrayWalker")
+      }
+    }
+
+    if (!currentBlockBytes.isEmpty) { //we should not write final segment if it is not empty
+      writeBlock(out, currentBlockBytes, blockInfo)
+    }
+  }
+
+  /** writes a given block to a [[org.apache.lucene.store.IndexOutput]] */
+  protected def writeBlock(out: IndexOutput, blockBytes: TByteList, blockInfo: BitSet) {
+    //we should write a given block
+    val blockInfoBytes = blockInfo.toByteArray //warning: an array cloning
+    if (blockInfoBytes.length == 1)
+      out.writeByte(blockInfoBytes(0))
+    else if (blockInfoBytes.length == 0)
+      out.writeByte(0.toByte)
+    else
+      throw new IllegalStateException("byte blockInfo representation is more than one byte")
+    out.writeBytes(blockBytes.toArray, blockBytes.size)
   }
 
   /**

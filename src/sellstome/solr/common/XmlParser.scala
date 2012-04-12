@@ -7,11 +7,12 @@ import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
 import org.apache.solr.common.SolrException
 import javax.xml.xpath.{XPathExpressionException, XPathConstants, XPathFactory}
-import org.apache.solr.common.util.{DOMUtil, XMLErrorLogger}
+import org.apache.solr.common.util.XMLErrorLogger
 import org.w3c.dom.{NodeList, Node, Document}
 import collection.LinearSeq
 import collection.mutable.ListBuffer
 import runtime.NonLocalReturnControl
+import org.apache.solr.util.DOMUtil
 
 object XmlParser {
   /**Its looks like strongly advised to avoid multiple calls to this method. */

@@ -3,6 +3,7 @@ package sellstome
 import org.scalatest.FunSuite
 import scala.util.Random
 import util.Logging
+import org.junit.Assert
 
 object BaseUnitTest {
   /** a name of the random seed parameter */
@@ -60,6 +61,40 @@ abstract class BaseUnitTest extends FunSuite
     }
   }
 
+  /**
+   * Creates a new primitive arrays.
+   * May contain a duplicates values.
+   */
+  protected def newNumberArray[T](size: Int)(implicit m: Manifest[T]) : Array[T] = {
+    val array = m.newArray(size)
+    if (m.erasure == classOf[Int]) {
+      for (i <- 0 until size) {
+        array.update(i, nextInt(1000).asInstanceOf[T])
+      }
+    } else if (m.erasure == classOf[Long]) {
+      for (i <- 0 until size) {
+        array.update(i, nextLong().asInstanceOf[T])
+      }
+    } else if (m.erasure == classOf[Short]) {
+      for (i <- 0 until size) {
+        array.update(i, nextInt(1000).toShort.asInstanceOf[T])
+      }
+    } else if (m.erasure == classOf[Byte]) {
+      for (i <- 0 until size) {
+        array.update(i, nextInt(100).toByte.asInstanceOf[T])
+      }
+    } else if (m.erasure == classOf[Float]) {
+      for (i <- 0 until size) {
+        array.update(i, (nextDouble() * 1000).toFloat.asInstanceOf[T])
+      }
+    } else if (m.erasure == classOf[Double]) {
+      for (i <- 0 until size) {
+        array.update(i, (nextDouble() * 1000).asInstanceOf[T])
+      }
+    }
+    return array
+  }
+
    /** @throws NumberFormatException  if the system param value string does not parsable value */
   protected def getRandomSeed(): Long = {
     val seedStr = System.getProperty("tests.seed", "random")
@@ -72,5 +107,13 @@ abstract class BaseUnitTest extends FunSuite
 
   /** gets a generator used for generating a seed values */
   protected def getSeedGenerator(): Random = BaseUnitTest.SeedRand
+
+  protected def assertArrayEqual[T](expected: Array[T], actual: Array[T])(implicit m: Manifest[T]) {
+    if (m.erasure == classOf[Byte]) {
+      Assert.assertArrayEquals(expected.asInstanceOf[Array[Byte]], actual.asInstanceOf[Array[Byte]])
+    } else {
+      ???
+    }
+  }
 
 }
