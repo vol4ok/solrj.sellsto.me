@@ -1,18 +1,17 @@
 package sellstome.lucene.io.packed.array
 
 import primitive.PrimitiveList
-import gnu.trove.list.array.TIntArrayList
-import org.apache.lucene.util.SorterTemplate
 import org.apache.lucene.store.IndexOutput
+import org.apache.lucene.util.ArrayUtil
+import org.apache.commons.lang.ArrayUtils
+import gnu.trove.list.array.{TByteArrayList, TIntArrayList}
 
 /**
  * A generic writer for a sparse array
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class PackedArrayWriter(dataType: Type) {
-  /** a type for a given value */
-  private type V = dataType.Type
+class PackedArrayWriter[V](dataType: Type[V]) {
   /** an number of elements in one compression block */
   protected val BlockSize = 8
   /** stores indexes of added elements */
@@ -27,7 +26,11 @@ class PackedArrayWriter(dataType: Type) {
   }
 
   def write(out: IndexOutput) {
-
+    writeHeader(out)
+    val ordsRawCopy = ords.toArray()
+    val valsRawCopy = values.toArray()
+    getSorter(ordsRawCopy, valsRawCopy).mergeSort()
+    writeData(out, ordsRawCopy, valsRawCopy)
   }
 
   /** Writes a header that contains a information about data element size in bytes */
@@ -37,7 +40,13 @@ class PackedArrayWriter(dataType: Type) {
 
   /** Writes a actual data to a stream */
   protected def writeData(out: IndexOutput, ords: Array[Int], vals: Array[V]) {
+    val bytes = new TByteArrayList(dataType.size * BlockSize)
+    ords foreach { ord =>
+      bytes.reset()
+      var mask = 0.toByte
 
+
+    }
   }
 
   /**
@@ -46,7 +55,7 @@ class PackedArrayWriter(dataType: Type) {
    * @return a new sorter by ord value.
    * @throws IllegalStateException in case if duplicate ord is found
    */
-  protected def getSorter(ords: Array[Int], values: Array[V]): SorterTemplate
+  protected def getSorter(ords: Array[Int], values: Array[V]): ConjugateArraysSorter[V]
       = new ConjugateArraysSorter[V](ords, values)
 
 }

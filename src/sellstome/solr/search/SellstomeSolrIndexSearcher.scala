@@ -29,7 +29,7 @@ class SellstomeSolrIndexSearcher(core: SolrCore, schema: IndexSchema, name: Stri
   def this(core: SolrCore, path: String, schema: IndexSchema,
            config: SolrIndexConfig, name: String,
            enableCache: Boolean, directoryFactory: DirectoryFactory) = this(core, schema, name,
-                                                                            core.getIndexReaderFactory().newReader(directoryFactory.get(path, config.lockType)),
+                                                                            core.getIndexReaderFactory().newReader(directoryFactory.get(path, config.lockType), core),
                                                                             true, enableCache, false, directoryFactory)
 
   protected override def getDocListNC(qr: SolrIndexSearcher.QueryResult, cmd: SolrIndexSearcher.QueryCommand) {
