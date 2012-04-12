@@ -270,7 +270,6 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
       case FIXED_INTS_16 => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
       case FIXED_INTS_32 => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
       case FIXED_INTS_64 => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
-      case VAR_INTS      => new MutablePackedIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ)
       case _             => throw new IllegalArgumentException("Not supported doc values type: %s".format(dvType))
     }
   }

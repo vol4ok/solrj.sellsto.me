@@ -4,7 +4,7 @@ import org.apache.lucene.index.DocValues.Type
 import org.apache.lucene.util.Counter
 import org.apache.lucene.store.{IOContext, Directory}
 import org.apache.lucene.codecs.DocValuesConsumer
-import values.{MutablePackedIntsDVConsumer, MutableIntsDVConsumer}
+import values.MutableIntsDVConsumer
 
 /**
  * @author Aliaksandr Zhuhrou
@@ -29,7 +29,6 @@ object MutableDocValuesConsumerFactory extends DocValuesConsumerFactory {
       case FIXED_INTS_32  => new MutableIntsDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
       case FIXED_INTS_64  => new MutableIntsDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
       case FIXED_INTS_8   => new MutableIntsDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
-      case VAR_INTS       => new MutablePackedIntsDVConsumer(dir, docValuesId, bytesUsed, context)
       case _              => throw new IllegalArgumentException("Not supported doc values type: " + dvType)
     }
   }

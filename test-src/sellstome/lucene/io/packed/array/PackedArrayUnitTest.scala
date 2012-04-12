@@ -3,7 +3,6 @@ package sellstome.lucene.io.packed.array
 import sellstome.BaseUnitTest
 import org.apache.lucene.store.{IndexInput, IndexOutput}
 import sellstome.lucene.store.TunneledIOFactory
-import org.powermock.reflect.Whitebox
 
 /**
  * Tests the [[sellstome.lucene.io.packed.array.PackedArrayWriter]]
