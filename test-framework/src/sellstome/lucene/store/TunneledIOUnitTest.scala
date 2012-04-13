@@ -12,15 +12,15 @@ class TunneledIOUnitTest extends BaseUnitTest {
 
   test("test basic in/out") {
     for (i <- 0 until 1000) {
-      val bytes = newNumberArray[Byte](1000)
+      val bytes = numGen.newNumberArray[Byte](1000)
       val (out, in) = newFactory.newPair()
 
-      if (nextBoolean())
+      if (numGen.nextBoolean())
         writeByOneByte(out, bytes)
       else
         writeBatch(out, bytes)
 
-      val bytesRead = if (nextBoolean())
+      val bytesRead = if (numGen.nextBoolean())
         readByOne(in, bytes.length)
       else
         readBatch(in, bytes.length)

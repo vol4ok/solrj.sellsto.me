@@ -17,7 +17,7 @@ class BitSetUnitTest extends BaseUnitTest {
       bitSet.clear()
       val bitArray = new Array[Boolean](8)
       for (i <- 0 until 8) {
-        if (nextBoolean()) {
+        if (numGen.nextBoolean()) {
           bitSet.set(i)
           bitArray.update(i, true)
         }
@@ -33,7 +33,7 @@ class BitSetUnitTest extends BaseUnitTest {
 
   test("test fill method") {
     for (trial <- 0 until 10000) {
-      val byte = nextByte()
+      val byte = numGen.nextByte()
       val bitSet = new BitSet(8)
       bitSet.or(BitSet.valueOf(Array(byte)))
       val bytes = bitSet.toByteArray

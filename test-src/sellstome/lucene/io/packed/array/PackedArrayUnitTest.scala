@@ -15,6 +15,9 @@ class PackedArrayUnitTest extends BaseUnitTest {
   test("test simple duplicates case") {
     val ordsWrite = Array(1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 10, 100)
     val valsWrite = Array(3, 4, 3, 1, 3, 7, 3, 5, 2, 1, 4, 7, 1, 0,  2,   0)
+    val ords = Array(1, 2, 3, 4, 10, 100)
+    val vals = Array(3, 7, 1, 0,  2,   0)
+
     val (out, in) = newIO
     val writer = new PackedArrayWriter(IntType) {
       def testWrite(out: IndexOutput, ords: Array[Int], vals: Array[Int]) {
@@ -27,8 +30,12 @@ class PackedArrayUnitTest extends BaseUnitTest {
       def testRead(in: IndexInput): (Array[Int], Array[Int]) = readSlice(in)
     }
     val (ordsRead, valsRead) = reader.testRead(in)
-    assertArrayEqual(ordsWrite, ordsRead)
-    assertArrayEqual(valsWrite, valsRead)
+    assertArrayEqual(ords, ordsRead)
+    assertArrayEqual(vals, valsRead)
+  }
+
+  test("High load testing without duplicates") {
+
   }
 
   protected def newIO: (IndexOutput, IndexInput) = new TunneledIOFactory().newPair()

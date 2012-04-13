@@ -21,8 +21,8 @@ class TypesTest extends BaseUnitTest {
   protected def testConversionMethods[T](implicit m: Manifest[T]) {
     val uType = Type.getType[T]
     for (i <- 0 until 1000) {
-      val rndNumber = nextNumber[T]
-      val rndGap    = nextByte().toInt
+      val rndNumber = numGen.nextNumber[T]
+      val rndGap    = numGen.nextByte().toInt
       val gapBytes  = uType.gapToBytes(rndGap)
       val numBytes  = uType.valToBytes(rndNumber)
       assert(gapBytes.length == uType.size)
@@ -36,7 +36,7 @@ class TypesTest extends BaseUnitTest {
   }
 
   test("conversion double") {
-    val number = nextDouble()
+    val number = numGen.nextDouble()
     val numBytes = DoubleType.valToBytes(number)
     val numberFromBytes = DoubleType.bytesToValue(numBytes)
     assert(number == numberFromBytes)
