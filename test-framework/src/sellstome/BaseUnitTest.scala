@@ -111,6 +111,8 @@ abstract class BaseUnitTest extends FunSuite
   protected def assertArrayEqual[T](expected: Array[T], actual: Array[T])(implicit m: Manifest[T]) {
     if (m.erasure == classOf[Byte]) {
       Assert.assertArrayEquals(expected.asInstanceOf[Array[Byte]], actual.asInstanceOf[Array[Byte]])
+    } else if (m.erasure == classOf[Int]) {
+      Assert.assertArrayEquals(expected.asInstanceOf[Array[Int]], actual.asInstanceOf[Array[Int]])
     } else {
       ???
     }

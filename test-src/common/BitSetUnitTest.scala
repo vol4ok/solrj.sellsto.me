@@ -31,4 +31,19 @@ class BitSetUnitTest extends BaseUnitTest {
     }
   }
 
+  test("test fill method") {
+    for (trial <- 0 until 10000) {
+      val byte = nextByte()
+      val bitSet = new BitSet(8)
+      bitSet.or(BitSet.valueOf(Array(byte)))
+      val bytes = bitSet.toByteArray
+      if (byte == 0) {
+        assert(bytes.length == 0)
+      } else {
+        assert(bytes.length == 1)
+        assert(bytes(0) == byte)
+      }
+    }
+  }
+
 }

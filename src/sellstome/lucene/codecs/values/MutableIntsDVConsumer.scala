@@ -29,7 +29,7 @@ class MutableIntsDVConsumer(_dir: Directory,
                             version: Int,
                             bytesUsed: Counter,
                             context: IOContext,
-                            valueType: Type) extends DocValuesConsumer
+                            dvType: Type) extends DocValuesConsumer
                                              with DocValuesSlicesSupport {
 
   def this(dir: Directory, docValuesId: String, bytesUsed: Counter, context: IOContext, valueType: Type) =
@@ -44,7 +44,7 @@ class MutableIntsDVConsumer(_dir: Directory,
 
 
   override def add(docID: Int, value: IndexableField) {
-    valueType match {
+    dvType match {
       case FIXED_INTS_8  => byteWriter.add(docID,   value.numericValue().byteValue())
       case FIXED_INTS_16 => shortWriter.add(docID,  value.numericValue().shortValue())
       case FIXED_INTS_32 => intWriter.add(docID,    value.numericValue().intValue())
@@ -60,7 +60,7 @@ class MutableIntsDVConsumer(_dir: Directory,
    * can call a super method.
    */
   override def finish(docCount: Int) {
-    valueType match {
+    dvType match {
       case FIXED_INTS_8  => byteWriter.write(getOrCreateDataOut())
       case FIXED_INTS_16 => shortWriter.write(getOrCreateDataOut())
       case FIXED_INTS_32 => intWriter.write(getOrCreateDataOut())
@@ -78,7 +78,7 @@ class MutableIntsDVConsumer(_dir: Directory,
         out
   }
 
-  protected def getType: Type = valueType
+  protected def getType: Type = dvType
 
   protected def docValuesId() = _docValuesId
 

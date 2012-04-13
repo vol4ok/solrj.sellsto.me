@@ -17,7 +17,7 @@ class PackedArrayWriter[V](dataType: Type[V]) {
   /** stores indexes of added elements */
   protected val ords: TIntArrayList = new TIntArrayList()
   /** stores values for added elements */
-  private lazy val values: PrimitiveList[V] = dataType.newBuffer()
+  protected lazy val values: PrimitiveList[V] = dataType.newBuffer()
 
   /** adds a new element to a list. This operation may proceed out of order */
   def add(ord: Int, value: V) {
@@ -34,10 +34,19 @@ class PackedArrayWriter[V](dataType: Type[V]) {
     writeData(  out, ordsRawCopy, valsRawCopy)
   }
 
-  /** Writes a header that contains a information about data element size in bytes */
+  /**
+   * Writes a header that contains a information about data element size in bytes
+   * @param ords a ord array, assumes that ords array is presorted in asc order
+   */
   protected def writeHeader(out: IndexOutput, ords: Array[Int], vals: Array[V]) {
+    var duplicatesCount = 0
+    var ordWalker = 0
+    while(ordWalker < ords.length - 1) {
+      if (ords(ordWalker) == ords(ordWalker + 1)) duplicatesCount += 1
+      ordWalker += 1
+    }
     out.writeInt(dataType.size)
-    out.writeInt(ords.length)
+    out.writeInt(ords.length - duplicatesCount)
   }
 
   /**

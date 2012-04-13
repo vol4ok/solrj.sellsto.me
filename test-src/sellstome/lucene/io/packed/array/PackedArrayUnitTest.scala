@@ -13,13 +13,22 @@ import sellstome.lucene.store.TunneledIOFactory
 class PackedArrayUnitTest extends BaseUnitTest {
 
   test("test simple duplicates case") {
-    val ords = Array(1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 10, 100)
-    val vals = Array(3, 4, 3, 1, 3, 7, 3, 5, 2, 1, 4, 7, 1, 0,  2,   0)
+    val ordsWrite = Array(1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 10, 100)
+    val valsWrite = Array(3, 4, 3, 1, 3, 7, 3, 5, 2, 1, 4, 7, 1, 0,  2,   0)
     val (out, in) = newIO
     val writer = new PackedArrayWriter(IntType) {
-      def testWrite(out: IndexOutput, ords: Array[Int], vals: Array[Int]) {writeData(out, ords, vals)}
+      def testWrite(out: IndexOutput, ords: Array[Int], vals: Array[Int]) {
+        writeHeader(out, ords, vals)
+        writeData(out, ords, vals)
+      }
     }
-    writer.testWrite(out, ords, vals)
+    writer.testWrite(out, ordsWrite, valsWrite)
+    val reader = new PackedArrayReader(IntType) {
+      def testRead(in: IndexInput): (Array[Int], Array[Int]) = readSlice(in)
+    }
+    val (ordsRead, valsRead) = reader.testRead(in)
+    assertArrayEqual(ordsWrite, ordsRead)
+    assertArrayEqual(valsWrite, valsRead)
   }
 
   protected def newIO: (IndexOutput, IndexInput) = new TunneledIOFactory().newPair()
