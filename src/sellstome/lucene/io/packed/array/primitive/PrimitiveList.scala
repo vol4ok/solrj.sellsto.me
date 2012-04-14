@@ -14,6 +14,14 @@ trait PrimitiveList[T] {
   def add(value: T): Boolean
 
   /**
+   * Sets the value at the specified offset.
+   * @param offset an offset
+   * @param value a value
+   * @return The value previously at the given index.
+   */
+  def set(offset: Int, value: T): T
+
+  /**
    * Copies the contents of the list into a native array.
    * @return a native array
    */

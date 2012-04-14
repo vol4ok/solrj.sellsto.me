@@ -10,5 +10,6 @@ import gnu.trove.list.array.TLongArrayList
 class LongArrayList extends PrimitiveList[Long] {
   private[this] lazy val delegate = new TLongArrayList()
   def add(value: Long): Boolean = delegate.add(value)
+  def set(offset: Int, value: Long): Long = delegate.set(offset, value)
   def toArray(): Array[Long] = delegate.toArray()
 }

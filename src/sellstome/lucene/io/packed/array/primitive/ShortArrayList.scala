@@ -10,5 +10,6 @@ import gnu.trove.list.array.TShortArrayList
 class ShortArrayList extends PrimitiveList[Short] {
   private[this] lazy val delegate = new TShortArrayList()
   def add(value: Short): Boolean = delegate.add(value)
+  def set(offset: Int, value: Short): Short = delegate.set(offset, value)
   def toArray(): Array[Short] = delegate.toArray()
 }

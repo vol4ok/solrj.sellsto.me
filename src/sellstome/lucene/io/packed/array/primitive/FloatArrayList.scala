@@ -10,5 +10,6 @@ import gnu.trove.list.array.TFloatArrayList
 class FloatArrayList extends PrimitiveList[Float] {
   private[this] lazy val delegate = new TFloatArrayList()
   def add(value: Float): Boolean = delegate.add(value)
+  def set(offset: Int, value: Float): Float = delegate.set(offset, value)
   def toArray(): Array[Float] = delegate.toArray()
 }

@@ -10,5 +10,6 @@ import gnu.trove.list.array.TByteArrayList
 class ByteArrayList extends PrimitiveList[Byte] {
   private[this] lazy val delegate = new TByteArrayList()
   def add(value: Byte): Boolean = delegate.add(value)
+  def set(offset: Int, value: Byte): Byte = delegate.set(offset, value)
   def toArray(): Array[Byte] = delegate.toArray()
 }

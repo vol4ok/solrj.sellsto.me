@@ -10,5 +10,6 @@ import gnu.trove.list.array.TDoubleArrayList
 class DoubleArrayList extends PrimitiveList[Double] {
   private[this] lazy val delegate = new TDoubleArrayList()
   def add(value: Double): Boolean = delegate.add(value)
+  def set(offset: Int, value: Double): Double = delegate.set(offset, value)
   def toArray(): Array[Double] = delegate.toArray()
 }

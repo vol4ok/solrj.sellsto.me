@@ -30,6 +30,8 @@ trait NumberGeneratorComponent {
     def nextShort(): Short = random.nextInt(Short.MaxValue.toInt).toShort
     /** int value between 0(inclusive) and the max specified value (exclusive) */
     def nextInt(max: Int): Int = random.nextInt(max)
+    /** an int value between low(inclusive) and the max (exclusive) */
+    def nextIntInRange(low: Int, max: Int): Int = low + random.nextInt(max)
     /** int value between 0(inclusive) and the Int.MaxValue value (exclusive) */
     def nextInt(): Int = random.nextInt(Int.MaxValue)
     /** generates uniformly distributed long value */

@@ -33,10 +33,55 @@ trait ArrayGeneratorComponent {
     def newOrdGapArray(size: Int): Array[Int] = {
       val array = new Array[Int](size)
       for (i <- 0 until size) {
-        val gap = 1 + numGen.nextInt(99)
+        val gap = numGen.nextIntInRange(1, 100)
         if (i == 0) array.update(i, gap) else array.update(i, array(i - 1) + gap)
       }
       return array
+    }
+
+    /**
+     * Creates a new ord array of a given size where values are already ordered.
+     * This array may contain a duplicates of various length
+     * @param size a number of elements in a generated array
+     * @return a ord pre-sorted array with duplicates
+     */
+    def newOrdGapDuplicatesArray(size: Int): Array[Int] = {
+      val arr = new Array[Int](size)
+      var arrayWalker = 0
+
+      val dupBlockInfo = new {
+        var active = false
+        var length = 0
+        var pos = 0
+        def end: Boolean = pos >= length
+        def reset() {
+          active = false
+          length = 0
+          pos = 0
+        }
+        def activate() {
+          active = true
+          length = numGen.nextIntInRange(1, 50)
+          pos = 0
+        }
+      }
+
+      while(arrayWalker < size) {
+        if (!dupBlockInfo.active && numGen.nextInt(10) < 1) dupBlockInfo.activate()
+
+        if (dupBlockInfo.active) {
+          if (arrayWalker == 0) arr.update(arrayWalker, 0) else arr.update(arrayWalker, arr(arrayWalker - 1))
+          dupBlockInfo.pos += 1
+          if (dupBlockInfo.end) dupBlockInfo.reset()
+        } else {
+          val gap = numGen.nextIntInRange(1, 100)
+          if (arrayWalker == 0) arr.update(arrayWalker, gap) else arr.update(arrayWalker, arr(arrayWalker - 1) + gap)
+        }
+
+        arrayWalker += 1
+      }
+
+      return arr
     }
 
     /** Creates a new ord array with out of order ord ordering */
