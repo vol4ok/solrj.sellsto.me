@@ -17,7 +17,6 @@ import org.apache.solr.common.SolrException.ErrorCode
 import sellstome.lucene.PostProcessSortField
 import org.apache.lucene.search.{NumericRangeQuery, SortField, Query}
 import MoneyType._
-import javax.annotation.Nonnull
 import org.apache.solr.schema._
 
 object MoneyType {

@@ -24,7 +24,12 @@ trait ArrayGeneratorComponent {
     def newOrdArray(size: Int): Array[Int]
       = if (numGen.nextBoolean()) newOrdGapArray(size) else newOrdOutOfOrderArray(size)
 
-    /** Creates a new ord array of a given size where values are already ordered */
+    /**
+     * Creates a new ord array of a given size where values are already ordered.
+     * Do not contains a duplicate ords.
+     * @param size a number of elements in generated array
+     * @return a ord presorted array without duplicates
+     */
     def newOrdGapArray(size: Int): Array[Int] = {
       val array = new Array[Int](size)
       for (i <- 0 until size) {

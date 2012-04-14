@@ -17,8 +17,28 @@ abstract class BaseUnitTest extends FunSuite
   protected def assertArrayEqual[T](expected: Array[T], actual: Array[T])(implicit m: Manifest[T]) {
     if (m.erasure == classOf[Byte]) {
       Assert.assertArrayEquals(expected.asInstanceOf[Array[Byte]], actual.asInstanceOf[Array[Byte]])
+    } else if (m.erasure == classOf[Short]) {
+      Assert.assertArrayEquals(expected.asInstanceOf[Array[Short]], actual.asInstanceOf[Array[Short]])
     } else if (m.erasure == classOf[Int]) {
       Assert.assertArrayEquals(expected.asInstanceOf[Array[Int]], actual.asInstanceOf[Array[Int]])
+    } else if (m.erasure == classOf[Long]) {
+      Assert.assertArrayEquals(expected.asInstanceOf[Array[Long]], actual.asInstanceOf[Array[Long]])
+    } else if (m.erasure == classOf[Float]) {
+      val expectedFloat = expected.asInstanceOf[Array[Float]]
+      val actualFloat   = actual.asInstanceOf[Array[Float]]
+      Assert.assertEquals(expectedFloat.length, actualFloat.length)
+      for (i <- 0 until expectedFloat.length) {
+        Assert.assertEquals(java.lang.Float.floatToRawIntBits(expectedFloat(i)),
+                            java.lang.Float.floatToRawIntBits(actualFloat(i)))
+      }
+    } else if (m.erasure == classOf[Double]) {
+      val expectedDouble = expected.asInstanceOf[Array[Double]]
+      val actualDouble   = actual.asInstanceOf[Array[Double]]
+      Assert.assertEquals(expectedDouble.length, actualDouble.length)
+      for (i <- 0 until expectedDouble.length) {
+        Assert.assertEquals(java.lang.Double.doubleToRawLongBits(expectedDouble(i)),
+                            java.lang.Double.doubleToRawLongBits(actualDouble(i)))
+      }
     } else {
       ???
     }

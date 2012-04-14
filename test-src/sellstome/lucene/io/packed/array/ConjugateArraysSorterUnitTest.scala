@@ -13,7 +13,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest
                                     with ArrayGeneratorComponent {
 
   test("test quicksort normal case") {
-    for (i <- 0 until 10) {
+    for (i <- 0 until 1000) {
       testQuickSort[Byte]
       testQuickSort[Short]
       testQuickSort[Int]
@@ -24,7 +24,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest
   }
 
   test("test quicksort: duplicate ords") {
-    for (i <- 0 until 10) {
+    for (i <- 0 until 1000) {
       val ords = arrGen.createDuplicates()
       val values = numGen.newNumberArray[Long](1000)
       newSorter[Long](ords, values).quickSort()
@@ -41,7 +41,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest
   }
 
   test("test mergesort normal case") {
-    for (i <- 0 until 10) {
+    for (i <- 0 until 1000) {
       testMergeSort[Byte]
       testMergeSort[Short]
       testMergeSort[Int]
@@ -52,7 +52,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest
   }
 
   test("test mergesort: duplicate ords") {
-    for (i <- 0 until 10) {
+    for (i <- 0 until 1000) {
       val ords = arrGen.createDuplicates()
       val values = numGen.newNumberArray[Long](1000)
       newSorter[Long](ords, values).mergeSort()
@@ -81,7 +81,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest
   }
 
   test("test insertion sort") {
-    for (i <- 0 until 10) {
+    for (i <- 0 until 1000) {
       testInsertionSort[Byte]
       testInsertionSort[Short]
       testInsertionSort[Int]
@@ -92,7 +92,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest
   }
 
   test("test insertion sort: duplicate ords") {
-    for (i <- 0 until 10) {
+    for (i <- 0 until 1000) {
       val ords    = arrGen.createDuplicates()
       val values  = numGen.newNumberArray[Long](1000)
       newSorter[Long](ords, values).insertionSort()

@@ -89,7 +89,7 @@ class PackedArrayReader[V](dataType: Type[V]) {
         blockWalker += 1
       }
 
-      if (blockWalker == BlockSize) {
+      if (blockWalker == BlockSize && arrayWalker < size) {
         blockInfo.clear()
         currentBlockBytes.reset()
         readBlock(in, currentBlockBytes, blockInfo)

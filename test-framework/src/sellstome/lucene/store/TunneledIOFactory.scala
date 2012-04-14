@@ -48,7 +48,7 @@ class TunneledIOFactory {
 
  }
 
- protected class TunneledIndexInput(output: TunneledIndexOutput) extends IndexInput("A tunneled IndexOutput") {
+ protected class TunneledIndexInput(output: TunneledIndexOutput) extends IndexInput("A tunneled IndexInput") {
    /** the underlying data storage */
    protected val _bytes:TByteList = output.rawData
    /** the position of the element that will be read  */
@@ -56,11 +56,24 @@ class TunneledIOFactory {
 
    def readByte(): Byte = {
     _pos += 1
+    if (_pos > _bytes.size)
+      throw new IndexOutOfBoundsException(s"trying to read byte at pos: ${_pos-1} while underlying data size: ${_bytes.size}")
     return _bytes.get(_pos - 1)
    }
 
    def readBytes(b: Array[Byte], offset: Int, len: Int) {
-    _bytes.toArray(b, _pos, offset, len)
+    try {
+      _bytes.toArray(b, _pos, offset, len)
+    }
+    catch {
+      case e: Throwable => {
+        Console.println(s"offset: $offset")
+        Console.println(s"len: $len")
+        Console.println(s"_pos: ${_pos}")
+        Console.println(s"_bytes.size: ${_bytes.size}")
+        throw e
+      }
+    }
     _pos += len
    }
 

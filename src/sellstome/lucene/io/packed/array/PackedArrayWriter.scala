@@ -27,6 +27,7 @@ class PackedArrayWriter[V](dataType: Type[V]) {
 
   /** Writes the accumulates values to a provided stream */
   def write(out: IndexOutput) {
+    assert(ords.size > 0)
     val ordsRawCopy = ords.toArray()
     val valsRawCopy = values.toArray()
     getSorter(ordsRawCopy, valsRawCopy).mergeSort()
@@ -102,6 +103,8 @@ class PackedArrayWriter[V](dataType: Type[V]) {
     }
 
     if (!currentBlockBytes.isEmpty) { //we should not write final segment if it is not empty
+      val toFill = (BlockSize * dataType.size) - currentBlockBytes.size //we should fill the last bytes with zero
+      if (toFill > 0) currentBlockBytes.addAll(new Array[Byte](toFill))
       writeBlock(out, currentBlockBytes, blockInfo)
     }
   }
