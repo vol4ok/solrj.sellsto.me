@@ -1,11 +1,10 @@
 package sellstome.lucene.io.packed.array
 
-import primitive.PrimitiveList
 import org.apache.lucene.store.IndexInput
-import org.apache.lucene.index.CorruptIndexException
 import gnu.trove.list.array.{TByteArrayList, TIntArrayList}
 import java.util.BitSet
 import gnu.trove.list.TByteList
+import sellstome.collection.primitive.PrimitiveList
 
 /**
  * A generic reader for sparse array format.
@@ -25,6 +24,7 @@ import gnu.trove.list.TByteList
  * value for a given block in this sense the blocks depends on each other.
  * note: not intended for multi-threaded use
  * note: this version should support initialization from multiple sources
+ * Q: should we support the non required dv? It affects the merge operation.
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
@@ -37,7 +37,7 @@ class PackedArrayReader[V](dataType: Type[V]) {
   /** stores indexes of added elements */
   protected val ords: TIntArrayList = new TIntArrayList()
   /** stores values for added elements */
-  protected lazy val values: PrimitiveList[V] = dataType.newBuffer()
+  protected lazy val vals: PrimitiveList[V] = dataType.newBuffer()
 
   /**
    * Reads a dv data from persistent storage (may be memory too).
@@ -45,17 +45,30 @@ class PackedArrayReader[V](dataType: Type[V]) {
    * is written in asc order.
    * @param dataInputs a collection inputs for a slices in a given docValuesId
    */
-  def load(dataInputs: List[IndexInput]) {
-    ???
+  def load(dataInputs: Seq[IndexInput]) {
+    assert(dataInputs.size > 0)
+    val slicesOrds = new Array[Array[Int]](dataInputs.size)
+    val slicesVals = dataType.newArray2(dataInputs.size)
+    var slicesWalker = 0
+    while(slicesWalker < slicesOrds.length) {
+      val (ords, vals) = readSlice(dataInputs(slicesWalker))
+      slicesOrds(slicesWalker) = ords
+      slicesVals(slicesWalker) = vals
+      slicesWalker += 1
+    }
+    mergeSlices(slicesOrds, slicesVals)
   }
 
   /** @return the underlying ords array */
   def ordsArray: Array[Int] = ords.toArray
 
   /** @return the underlying values array */
-  def valsArray: Array[V] = values.toArray()
+  def valsArray: Array[V] = vals.toArray()
 
-  /** @return a pair with the first element the ords array and the second the vals array */
+  /**
+   * We assume that we have already read the input header.
+   * @return a pair with the first element the ords array and the second the vals array
+   */
   protected def readSlice(in: IndexInput): (Array[Int], Array[V]) = {
     val size = readHeader(in)
     val ords = new Array[Int](size)
@@ -117,8 +130,7 @@ class PackedArrayReader[V](dataType: Type[V]) {
    * Reads the data type size in bytes and the number of docs contained in a given slice
    * note: this method should be invoked before we actually read the data
    * @param in an input data stream
-   * @return a number of docs contained in a given slice
-   * @throws CorruptIndexException in cases when data type size written to a given stream is different
+   * @return a number of docs contained in a given slice. Should always > 0
    */
   protected def readHeader(in: IndexInput): Int = {
     assert(dataType.size == in.readInt())
@@ -127,8 +139,54 @@ class PackedArrayReader[V](dataType: Type[V]) {
     return size
   }
 
+  /**
+   * Merges a given data into internal object data structure. So this method actually has side effects.
+   * @param slicesOrds an array where an each element represents an ords array for a particular slice. Note
+   *                   that the elements with a higher index has a higher priority and should override
+   *                   the data in elements with lower index value(last write win rule).
+   * @param slicesVals an array where an each element represents a vals array for a particular slice.
+   */
+  protected def mergeSlices(slicesOrds: Array[Array[Int]], slicesVals: Array[Array[V]]) {
+    val pos = new Array[Int](slicesOrds.length)
+    val isEnd = new Array[Boolean](slicesOrds.length)
+    //we should merge all that we have read into one array
+    var isGlobalEnd = false
+    while(!isGlobalEnd) {
+      var i = 0
+      var minOrd = Int.MaxValue
+      var sliceForMinOrd = -1
+      while(i < slicesOrds.length) {
+        if (!isEnd(i) && slicesOrds(i)(pos(i)) <= minOrd) {
+          minOrd = slicesOrds(i)(pos(i))
+          sliceForMinOrd = i
+        }
+        i += 1
+      }
 
+      ords.add(minOrd)
+      vals.add(slicesVals(sliceForMinOrd)(pos(sliceForMinOrd)))
 
+      //update progress
+      i = 0
+      while (i < slicesOrds.length) {
+        if (!isEnd(i) && slicesOrds(i)(pos(i)) == minOrd) {
+          pos.update(i, pos(i)+1)
+        }
+        if (pos(i) == slicesOrds(i).length) {
+          isEnd.update(i, true)
+        }
+        i += 1
+      }
 
+      var shouldFinish = true
+      i = 0
+      while(i < slicesOrds.length) {
+        if (!isEnd(i)) shouldFinish = false
+        i += 1
+      }
+
+      isGlobalEnd = shouldFinish
+    }
+  }
 
 }

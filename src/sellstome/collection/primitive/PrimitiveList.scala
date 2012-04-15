@@ -1,4 +1,4 @@
-package sellstome.lucene.io.packed.array.primitive
+package sellstome.collection.primitive
 
 /**
  * A generic facade for trove collections

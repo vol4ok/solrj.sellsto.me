@@ -4,6 +4,8 @@ import sellstome.BaseUnitTest
 import org.apache.lucene.store.{IndexInput, IndexOutput}
 import sellstome.lucene.store.TunneledIOFactory
 import gnu.trove.list.array.TIntArrayList
+import java.util.TreeMap
+import sellstome.util.OutputComponent
 
 /**
  * Tests the [[sellstome.lucene.io.packed.array.PackedArrayWriter]]
@@ -23,6 +25,55 @@ class PackedArrayUnitTest extends BaseUnitTest
 
   protected class Reader[V](dataType: Type[V]) extends PackedArrayReader[V](dataType) {
     def testRead(in: IndexInput): (Array[Int], Array[V]) = readSlice(in)
+    def testMerge(slicesOrds: Array[Array[Int]], slicesVals: Array[Array[V]]) { mergeSlices(slicesOrds, slicesVals) }
+  }
+
+  test("test the merge function") {
+    testMerge[Byte]
+    testMerge[Short]
+    testMerge[Int]
+    testMerge[Long]
+    testMerge[Float]
+    testMerge[Double]
+  }
+
+  protected def testMerge[T](implicit m: Manifest[T]) {
+    import scala.collection.JavaConversions._
+    for (tryAttempt <- 0 until 100) {
+      val numSlices = numGen.nextIntInRange(1, 100)
+      val slicesOrds = new Array[Array[Int]](numSlices)
+      val slicesVals = new Array[Array[T]](numSlices)
+      for (i <- 0 until numSlices) {
+        val size = numGen.nextIntInRange(1, 10000)
+        slicesOrds.update(i, arrGen.newOrdGapArray(size))
+        slicesVals.update(i, numGen.newNumberArray[T](size))
+      }
+      //we should pre-merge them in order to test with output values
+      val merged = new TreeMap[Int, T]()
+      for (i <- 0 until numSlices) {
+        val ords = slicesOrds(i)
+        val vals = slicesVals(i)
+        for (j <- 0 until ords.length) {
+          merged.put(ords(j), vals(j))
+        }
+      }
+      val mergedLength = merged.navigableKeySet().size()
+      val (mergedOrds, mergedVals, size) = merged.navigableKeySet()
+                                           .foldLeft((new Array[Int](mergedLength), new Array[T](mergedLength), 0)) {
+                                              (ordsValsPos, ord) =>
+                                                 ordsValsPos._1.update(ordsValsPos._3, ord)
+                                                 ordsValsPos._2.update(ordsValsPos._3, merged.get(ord))
+                                                 (ordsValsPos._1, ordsValsPos._2, ordsValsPos._3 + 1)
+                                           }
+
+      val reader = new Reader[T](Type.getType[T])
+      reader.testMerge(slicesOrds, slicesVals)
+      val readerOrds = reader.ordsArray
+      val readerVals = reader.valsArray
+
+      assertArrayEqual[Int](mergedOrds, readerOrds)
+      assertArrayEqual[T](mergedVals, readerVals)
+    }
   }
 
   test("test simple duplicates case") {

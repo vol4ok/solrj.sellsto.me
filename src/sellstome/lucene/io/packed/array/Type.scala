@@ -1,7 +1,6 @@
 package sellstome.lucene.io.packed.array
 
-import primitive._
-
+import sellstome.collection.primitive._
 
 
 object Type {
@@ -36,6 +35,8 @@ abstract class Type[V] {
   val size: Int
   /** creates a new buffer */
   def newBuffer(): PrimitiveList[V]
+  /** used for array creation */
+  def newArray2(length: Int): Array[Array[V]]
   /** ord -> byte array */
   def gapToBytes(gap: Int): Array[Byte]
   /** value -> byte array */
@@ -52,6 +53,8 @@ object ByteType extends Type[Byte] {
 
   def newBuffer() = new ByteArrayList()
 
+  def newArray2(length: Int): Array[Array[Byte]] = new Array[Array[Byte]](length)
+
   def gapToBytes(gap: Int): Array[Byte]       = Array(gap.toByte)
 
   def valToBytes(value: Byte): Array[Byte]    = Array(value)
@@ -66,6 +69,8 @@ object ShortType extends Type[Short] {
   val size = 2
 
   def newBuffer() = new ShortArrayList()
+
+  def newArray2(length: Int): Array[Array[Short]] = new Array[Array[Short]](length)
 
   def gapToBytes(gap: Int): Array[Byte]       = Array(
                                                    (gap     ).toByte,
@@ -88,6 +93,8 @@ object IntType extends Type[Int] {
   val  size = 4
 
   def newBuffer() = new IntArrayList()
+
+  def newArray2(length: Int): Array[Array[Int]] = new Array[Array[Int]](length)
 
   def gapToBytes(gap: Int): Array[Byte]     = Array(
                                                 (gap      ).toByte,
@@ -113,6 +120,8 @@ object LongType extends Type[Long] {
   val  size = 8
 
   def newBuffer() = new LongArrayList()
+
+  def newArray2(length: Int): Array[Array[Long]] = new Array[Array[Long]](length)
 
   def gapToBytes(gap: Int): Array[Byte]       = Array(
                                                   (gap      ).toByte,
@@ -147,6 +156,8 @@ object FloatType extends Type[Float] {
 
   def newBuffer() = new FloatArrayList()
 
+  def newArray2(length: Int): Array[Array[Float]] = new Array[Array[Float]](length)
+
   def gapToBytes(gap: Int): Array[Byte]         = Array(
                                                     (gap      ).toByte,
                                                     (gap >>  8).toByte,
@@ -177,6 +188,8 @@ object DoubleType extends Type[Double] {
   val  size = 8
 
   def newBuffer() = new DoubleArrayList()
+
+  def newArray2(length: Int): Array[Array[Double]] = new Array[Array[Double]](length)
 
   def gapToBytes(gap: Int): Array[Byte]         = Array(
                                                     (gap      ).toByte,

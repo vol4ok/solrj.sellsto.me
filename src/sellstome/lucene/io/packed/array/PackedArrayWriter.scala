@@ -1,10 +1,10 @@
 package sellstome.lucene.io.packed.array
 
-import primitive.PrimitiveList
 import org.apache.lucene.store.IndexOutput
 import gnu.trove.list.array.{TByteArrayList, TIntArrayList}
 import java.util.BitSet
 import gnu.trove.list.TByteList
+import sellstome.collection.primitive.PrimitiveList
 
 /**
  * A generic writer for a sparse array

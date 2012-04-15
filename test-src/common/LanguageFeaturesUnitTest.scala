@@ -70,6 +70,11 @@ class LanguageFeaturesUnitTest extends BaseUnitTest {
     Console.println(toBinaryString((number >>  56).toInt))
   }
 
+  test("array creation") {
+    val arr = new Array[Boolean](100)
+    Console.println("yes you can")
+  }
+
   protected def toBinaryString(num: Int): String = {
     val rawStr = java.lang.Integer.toBinaryString(num)
     if (rawStr.length > 8)
