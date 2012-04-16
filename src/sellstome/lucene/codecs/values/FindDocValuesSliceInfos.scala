@@ -142,8 +142,8 @@ class FindDocValuesSliceInfos(docValuesId: String, dir: Directory) extends DVFil
     (try {
       Some(dir.openInput(generationFile(docValuesId), IOContext.READONCE))
     } catch {
-      case e: FileNotFoundException =>  { error(e); None }
-      case e: IOException =>            { error(e); None }
+      case e: FileNotFoundException =>  { error(e.getMessage); None }
+      case e: IOException =>            { error(e.getMessage); None }
     }).map[Option[Long]]( (genInput) =>
       try {
         val gen0: Long = genInput.readLong()

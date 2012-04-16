@@ -69,6 +69,7 @@ abstract class PackedArraySource(dvType: Type, dataInputs: Seq[IndexInput]) exte
   }
 
   protected def valFor(docId: Int): V = {
+    if (values == null) load()
     if (valuesPresent.get(docId)) {
       return values(docId)
     } else {

@@ -19,51 +19,43 @@ import org.junit.Ignore
  */
 class MutableDocValuesTest extends SellstomeLuceneTestCase {
 
-  /** actual indexing format */
-  private val docValuesFormat: DocValuesFormat = new MutableDocValuesFormat()
 
-  @Ignore
-  def testVariableIntsLimits() {
-
-    var minMax          = Array[Array[Long]](           Array(Long.MinValue, Long.MaxValue),
-                                                        Array(Long.MinValue + 1, 1),
-                                                        Array(-1, Long.MaxValue),
-                                                        Array(Long.MinValue, -1),
-                                                        Array(1, Long.MaxValue),
-                                                        Array(-1, Long.MaxValue - 1),
-                                                        Array(Long.MinValue + 2, 1))
-
-    var expectedTypes   = Array[DocValues.Type](        Type.FIXED_INTS_64,
-                                                        Type.FIXED_INTS_64,
-                                                        Type.FIXED_INTS_64,
-                                                        Type.FIXED_INTS_64,
-                                                        Type.VAR_INTS,
-                                                        Type.VAR_INTS,
-                                                        Type.VAR_INTS)
-
-    var valueHolder: DocValueHolder = new DocValueHolder()
-    for (i <- 0 until minMax.length) {
-      var dir: Directory = newDirectory()
-      val writer: DocValuesConsumer = getDocValuesConsumer(dir, "test", DocValues.Type.VAR_INTS)
-      valueHolder.numberValue = minMax(i)(0)
-      writer.add(0, valueHolder)
-      valueHolder.numberValue = minMax(i)(1)
-      writer.add(1, valueHolder)
-      writer.finish(2)
-      var r: DocValues = getDocValues(dir, "test", DocValues.Type.VAR_INTS)
-      var source: DocValues.Source = getSource(r)
-      assertEquals(i + " with min: " + minMax(i)(0) + " max: " + minMax(i)(1), expectedTypes(i), source.getType())
-      assertEquals(minMax(i)(0), source.getInt(0))
-      assertEquals(minMax(i)(1), source.getInt(1))
-      r.close()
-      dir.close()
-    }
-  }
-
-  @Ignore
-  def testVInts() {
-    testInts(Type.VAR_INTS, 63)
-  }
+//  def testVariableIntsLimits() {
+//
+//    var minMax          = Array[Array[Long]](           Array(Long.MinValue, Long.MaxValue),
+//                                                        Array(Long.MinValue + 1, 1),
+//                                                        Array(-1, Long.MaxValue),
+//                                                        Array(Long.MinValue, -1),
+//                                                        Array(1, Long.MaxValue),
+//                                                        Array(-1, Long.MaxValue - 1),
+//                                                        Array(Long.MinValue + 2, 1))
+//
+//    var expectedTypes   = Array[DocValues.Type](        Type.FIXED_INTS_64,
+//                                                        Type.FIXED_INTS_64,
+//                                                        Type.FIXED_INTS_64,
+//                                                        Type.FIXED_INTS_64,
+//                                                        Type.VAR_INTS,
+//                                                        Type.VAR_INTS,
+//                                                        Type.VAR_INTS)
+//
+//    var valueHolder: DocValueHolder = new DocValueHolder()
+//    for (i <- 0 until minMax.length) {
+//      var dir: Directory = newDirectory()
+//      val writer: DocValuesConsumer = getDocValuesConsumer(dir, "test", DocValues.Type.VAR_INTS)
+//      valueHolder.numberValue = minMax(i)(0)
+//      writer.add(0, valueHolder)
+//      valueHolder.numberValue = minMax(i)(1)
+//      writer.add(1, valueHolder)
+//      writer.finish(2)
+//      var r: DocValues = getDocValues(dir, "test", DocValues.Type.VAR_INTS)
+//      var source: DocValues.Source = getSource(r)
+//      assertEquals(i + " with min: " + minMax(i)(0) + " max: " + minMax(i)(1), expectedTypes(i), source.getType())
+//      assertEquals(minMax(i)(0), source.getInt(0))
+//      assertEquals(minMax(i)(1), source.getInt(1))
+//      r.close()
+//      dir.close()
+//    }
+//  }
 
   def testFixedInts() {
     testInts(Type.FIXED_INTS_64, 63)
@@ -72,97 +64,97 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     testInts(Type.FIXED_INTS_8, 7)
   }
 
-  @Ignore
-  def testGetInt8Array() {
-    val valueHolder: DocValueHolder = new DocValueHolder()
-    val sourceArray: Array[Byte] = Array[Byte](1, 2, 3)
-    val dir: Directory = newDirectory()
-    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FIXED_INTS_8)
-    for (i <- 0 until sourceArray.length) {
-      valueHolder.numberValue = sourceArray(i).asInstanceOf[Long]
-      w.add(i, valueHolder)
-    }
-    w.finish(sourceArray.length)
-    val r: DocValues = getDocValues(dir, "test", Type.FIXED_INTS_8)
-    val source: DocValues.Source = r.getSource()
-    assertTrue(source.hasArray)
-    val loaded: Array[Byte] = (source.getArray.asInstanceOf[Array[Byte]])
-    assertEquals(loaded.length, sourceArray.length)
-    for (i <- 0 until loaded.length) {
-      assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i))
-    }
-    r.close()
-    dir.close()
-  }
+//  @Ignore
+//  def testGetInt8Array() {
+//    val valueHolder: DocValueHolder = new DocValueHolder()
+//    val sourceArray: Array[Byte] = Array[Byte](1, 2, 3)
+//    val dir: Directory = newDirectory()
+//    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FIXED_INTS_8)
+//    for (i <- 0 until sourceArray.length) {
+//      valueHolder.numberValue = sourceArray(i).asInstanceOf[Long]
+//      w.add(i, valueHolder)
+//    }
+//    w.finish(sourceArray.length)
+//    val r: DocValues = getDocValues(dir, "test", Type.FIXED_INTS_8)
+//    val source: DocValues.Source = r.getSource()
+//    assertTrue(source.hasArray)
+//    val loaded: Array[Byte] = (source.getArray.asInstanceOf[Array[Byte]])
+//    assertEquals(loaded.length, sourceArray.length)
+//    for (i <- 0 until loaded.length) {
+//      assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i))
+//    }
+//    r.close()
+//    dir.close()
+//  }
 
-  @Ignore
-  def testGetInt16Array() {
-    val valueHolder: DocValueHolder = new DocValueHolder()
-    val sourceArray: Array[Short] = Array[Short](1, 2, 3)
-    val dir: Directory = newDirectory()
-    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FIXED_INTS_16)
-    for (i <- 0 until sourceArray.length) {
-      valueHolder.numberValue = sourceArray(i).asInstanceOf[Long]
-      w.add(i, valueHolder)
-    }
-    w.finish(sourceArray.length)
-    val r: DocValues = getDocValues(dir, "test", Type.FIXED_INTS_16)
-    val source: DocValues.Source = r.getSource
-    assertTrue(source.hasArray)
-    val loaded: Array[Short] = (source.getArray.asInstanceOf[Array[Short]])
-    assertEquals(loaded.length, sourceArray.length)
-    for (i <- 0 until loaded.length) {
-      assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i))
-    }
-    r.close()
-    dir.close()
-  }
-
-  @Ignore
-  def testGetInt64Array() {
-    var valueHolder: DocValueHolder = new DocValueHolder()
-    var sourceArray: Array[Long] = Array[Long](1, 2, 3)
-    var dir: Directory = newDirectory()
-    var w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FIXED_INTS_64)
-    for (i <- 0 until sourceArray.length) {
-      valueHolder.numberValue = sourceArray(i)
-      w.add(i, valueHolder)
-    }
-    w.finish(sourceArray.length)
-    var r: DocValues = getDocValues(dir, "test", Type.FIXED_INTS_64)
-    var source: DocValues.Source = r.getSource()
-    assertTrue(source.hasArray)
-    var loaded: Array[Long] = (source.getArray.asInstanceOf[Array[Long]])
-    assertEquals(loaded.length, sourceArray.length)
-    for (i <- 0 until loaded.length) {
-      assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i))
-    }
-    r.close()
-    dir.close()
-  }
-
-  @Ignore
-  def testGetInt32Array() {
-    val valueHolder: DocValueHolder = new DocValueHolder()
-    val sourceArray: Array[Int] = Array[Int](1, 2, 3)
-    val dir: Directory = newDirectory()
-    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FIXED_INTS_32)
-    for (i <- 0 until sourceArray.length) {
-      valueHolder.numberValue = sourceArray(i).asInstanceOf[Long]
-      w.add(i, valueHolder)
-    }
-    w.finish(sourceArray.length)
-    val r: DocValues = getDocValues(dir, "test", Type.FIXED_INTS_32)
-    val source: DocValues.Source = r.getSource()
-    assertTrue(source.hasArray)
-    val loaded: Array[Int] = (source.getArray.asInstanceOf[Array[Int]])
-    assertEquals(loaded.length, sourceArray.length)
-    for (i <- 0 until loaded.length) {
-      assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i))
-    }
-    r.close()
-    dir.close()
-  }
+//  @Ignore
+//  def testGetInt16Array() {
+//    val valueHolder: DocValueHolder = new DocValueHolder()
+//    val sourceArray: Array[Short] = Array[Short](1, 2, 3)
+//    val dir: Directory = newDirectory()
+//    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FIXED_INTS_16)
+//    for (i <- 0 until sourceArray.length) {
+//      valueHolder.numberValue = sourceArray(i).asInstanceOf[Long]
+//      w.add(i, valueHolder)
+//    }
+//    w.finish(sourceArray.length)
+//    val r: DocValues = getDocValues(dir, "test", Type.FIXED_INTS_16)
+//    val source: DocValues.Source = r.getSource
+//    assertTrue(source.hasArray)
+//    val loaded: Array[Short] = (source.getArray.asInstanceOf[Array[Short]])
+//    assertEquals(loaded.length, sourceArray.length)
+//    for (i <- 0 until loaded.length) {
+//      assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i))
+//    }
+//    r.close()
+//    dir.close()
+//  }
+//
+//  @Ignore
+//  def testGetInt64Array() {
+//    var valueHolder: DocValueHolder = new DocValueHolder()
+//    var sourceArray: Array[Long] = Array[Long](1, 2, 3)
+//    var dir: Directory = newDirectory()
+//    var w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FIXED_INTS_64)
+//    for (i <- 0 until sourceArray.length) {
+//      valueHolder.numberValue = sourceArray(i)
+//      w.add(i, valueHolder)
+//    }
+//    w.finish(sourceArray.length)
+//    var r: DocValues = getDocValues(dir, "test", Type.FIXED_INTS_64)
+//    var source: DocValues.Source = r.getSource()
+//    assertTrue(source.hasArray)
+//    var loaded: Array[Long] = (source.getArray.asInstanceOf[Array[Long]])
+//    assertEquals(loaded.length, sourceArray.length)
+//    for (i <- 0 until loaded.length) {
+//      assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i))
+//    }
+//    r.close()
+//    dir.close()
+//  }
+//
+//  @Ignore
+//  def testGetInt32Array() {
+//    val valueHolder: DocValueHolder = new DocValueHolder()
+//    val sourceArray: Array[Int] = Array[Int](1, 2, 3)
+//    val dir: Directory = newDirectory()
+//    val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", Type.FIXED_INTS_32)
+//    for (i <- 0 until sourceArray.length) {
+//      valueHolder.numberValue = sourceArray(i).asInstanceOf[Long]
+//      w.add(i, valueHolder)
+//    }
+//    w.finish(sourceArray.length)
+//    val r: DocValues = getDocValues(dir, "test", Type.FIXED_INTS_32)
+//    val source: DocValues.Source = r.getSource()
+//    assertTrue(source.hasArray)
+//    val loaded: Array[Int] = (source.getArray.asInstanceOf[Array[Int]])
+//    assertEquals(loaded.length, sourceArray.length)
+//    for (i <- 0 until loaded.length) {
+//      assertEquals("value didn't match at index " + i, sourceArray(i), loaded(i))
+//    }
+//    r.close()
+//    dir.close()
+//  }
 
   protected def testInts(docType: DocValues.Type, maxBit: Int)() {
     val valueHolder: DocValueHolder = new DocValueHolder()
@@ -288,7 +280,6 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
       case FIXED_INTS_16 => new MutableDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
       case FIXED_INTS_32 => new MutableDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
       case FIXED_INTS_64 => new MutableDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
-      case VAR_INTS      => ???
       case _             => throw new IllegalArgumentException("This doc values type: %s is not supported.".format(dvType))
     }
   }

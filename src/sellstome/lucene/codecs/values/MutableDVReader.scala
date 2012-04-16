@@ -8,7 +8,7 @@ import org.apache.lucene.util.{IOUtils, CodecUtil, Counter}
 import org.apache.lucene.index.DocValues.{Source, Type}
 
 /**
- * Reads stored INTS with the fixed bit precision
+ * Reads mutable doc values
  * this class should be completely rewritten taking into account multiple slices
  * structure
  * @author Aliaksandr Zhuhrou
@@ -46,7 +46,7 @@ class MutableDVReader(_dir: Directory,
 
   protected def getDataInputs(): List[IndexInput] = {
     if (dataIn == null) {
-      currentReadSlicesNames(_docValuesId).map[IndexInput, List[IndexInput]] { slice =>
+      dataIn = currentReadSlicesNames(_docValuesId).map[IndexInput, List[IndexInput]] { slice =>
         val input = _dir.openInput(slice, context)
         CodecUtil.checkHeader(input, Ints.CODEC_NAME, Ints.VERSION_CURRENT, Ints.VERSION_CURRENT)
         input
