@@ -36,6 +36,8 @@ abstract class Type[V] {
   /** creates a new buffer */
   def newBuffer(): PrimitiveList[V]
   /** used for array creation */
+  def newArray(length: Int): Array[V]
+  /** used for array creation */
   def newArray2(length: Int): Array[Array[V]]
   /** ord -> byte array */
   def gapToBytes(gap: Int): Array[Byte]
@@ -53,6 +55,8 @@ object ByteType extends Type[Byte] {
 
   def newBuffer() = new ByteArrayList()
 
+  def newArray(length: Int) = new Array[Byte](length)
+
   def newArray2(length: Int): Array[Array[Byte]] = new Array[Array[Byte]](length)
 
   def gapToBytes(gap: Int): Array[Byte]       = Array(gap.toByte)
@@ -69,6 +73,8 @@ object ShortType extends Type[Short] {
   val size = 2
 
   def newBuffer() = new ShortArrayList()
+
+  def newArray(length: Int) = new Array[Short](length)
 
   def newArray2(length: Int): Array[Array[Short]] = new Array[Array[Short]](length)
 
@@ -93,6 +99,8 @@ object IntType extends Type[Int] {
   val  size = 4
 
   def newBuffer() = new IntArrayList()
+
+  def newArray(length: Int) = new Array[Int](length)
 
   def newArray2(length: Int): Array[Array[Int]] = new Array[Array[Int]](length)
 
@@ -120,6 +128,8 @@ object LongType extends Type[Long] {
   val  size = 8
 
   def newBuffer() = new LongArrayList()
+
+  def newArray(length: Int) = new Array[Long](length)
 
   def newArray2(length: Int): Array[Array[Long]] = new Array[Array[Long]](length)
 
@@ -156,6 +166,8 @@ object FloatType extends Type[Float] {
 
   def newBuffer() = new FloatArrayList()
 
+  def newArray(length: Int) = new Array[Float](length)
+
   def newArray2(length: Int): Array[Array[Float]] = new Array[Array[Float]](length)
 
   def gapToBytes(gap: Int): Array[Byte]         = Array(
@@ -188,6 +200,8 @@ object DoubleType extends Type[Double] {
   val  size = 8
 
   def newBuffer() = new DoubleArrayList()
+
+  def newArray(length: Int) = new Array[Double](length)
 
   def newArray2(length: Int): Array[Array[Double]] = new Array[Array[Double]](length)
 

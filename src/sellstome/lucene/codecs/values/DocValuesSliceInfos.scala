@@ -34,6 +34,10 @@ class DocValuesSliceInfos(docValuesId: String) extends DVInfosFileSystemSupport 
     slices.foreach(f)
   }
 
+  /** Builds a new collection by applying a function to all elements of this arraybuffer. */
+  def map[B](f:DocValuesSliceInfo ⇒ B): mutable.ArrayBuffer[B]
+    = slices.map(f)
+
   /**
    * Generates a new slice name and increments the counter.
    * Note: this implementation is not thread safe.

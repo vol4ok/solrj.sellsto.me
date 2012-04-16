@@ -5,12 +5,10 @@ import org.apache.lucene.index.DocValues.Type._
 import sellstome.lucene.codecs.DocValuesSlicesSupport
 import org.apache.lucene.store.{IndexOutput, IOContext, Directory}
 import org.apache.lucene.codecs.lucene40.values.Ints
-import sellstome.control.using
-import org.apache.lucene.util.{CodecUtil, Counter}
 import org.apache.lucene.codecs.DocValuesConsumer
 import org.apache.lucene.index.IndexableField
-import sellstome.lucene.io.packed
-import packed.array._
+import org.apache.lucene.util.{IOUtils, CodecUtil, Counter}
+import sellstome.lucene.io.packed.array._
 
 /**
  * Stores ints packed and fixed with fixed-bit precision.
@@ -23,7 +21,7 @@ import packed.array._
  * @param bytesUsed
  * @param context io context
  */
-class MutableIntsDVConsumer(_dir: Directory,
+class MutableDVConsumer(_dir: Directory,
                             _docValuesId: String,
                             codecName: String,
                             version: Int,
@@ -41,6 +39,7 @@ class MutableIntsDVConsumer(_dir: Directory,
   protected lazy val longWriter   = new PackedArrayWriter(LongType)
   protected lazy val floatWriter  = new PackedArrayWriter(FloatType)
   protected lazy val doubleWriter = new PackedArrayWriter(DoubleType)
+  protected var dataOut: IndexOutput = null
 
 
   override def add(docID: Int, value: IndexableField) {
@@ -56,26 +55,37 @@ class MutableIntsDVConsumer(_dir: Directory,
 
   /**
    * write a processed values to a disk.
-   * todo zhugrov - remove the body of this method as soon as you
-   * can call a super method.
    */
   override def finish(docCount: Int) {
-    dvType match {
-      case FIXED_INTS_8  => byteWriter.write(getOrCreateDataOut())
-      case FIXED_INTS_16 => shortWriter.write(getOrCreateDataOut())
-      case FIXED_INTS_32 => intWriter.write(getOrCreateDataOut())
-      case FIXED_INTS_64 => longWriter.write(getOrCreateDataOut())
-      case FLOAT_32      => floatWriter.write(getOrCreateDataOut())
-      case FLOAT_64      => doubleWriter.write(getOrCreateDataOut())
+    var hasException = false
+    try {
+      dvType match {
+        case FIXED_INTS_8 => byteWriter.write(getOrCreateDataOut())
+        case FIXED_INTS_16 => shortWriter.write(getOrCreateDataOut())
+        case FIXED_INTS_32 => intWriter.write(getOrCreateDataOut())
+        case FIXED_INTS_64 => longWriter.write(getOrCreateDataOut())
+        case FLOAT_32 => floatWriter.write(getOrCreateDataOut())
+        case FLOAT_64 => doubleWriter.write(getOrCreateDataOut())
+      }
+    } catch {
+      case e: Throwable => hasException = true
+    } finally {
+      if (hasException) {
+        IOUtils.closeWhileHandlingException(dataOut)
+      } else {
+        IOUtils.close(dataOut)
+      }
     }
     flushSlicesInfos()
   }
 
   /** Creates a output for a current writer */
-  protected def getOrCreateDataOut(): IndexOutput = using(_dir.createOutput(currentWriteSliceFileName(_docValuesId), context)) {
-      out =>
-        CodecUtil.writeHeader(out, codecName, version)
-        out
+  protected def getOrCreateDataOut(): IndexOutput = {
+    if (dataOut == null) {
+      dataOut =_dir.createOutput(currentWriteSliceName(_docValuesId), context)
+      CodecUtil.writeHeader(dataOut, codecName, version)
+    }
+    return dataOut
   }
 
   protected def getType: Type = dvType

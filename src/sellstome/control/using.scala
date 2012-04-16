@@ -1,5 +1,7 @@
 package sellstome.control
 
+import java.io.Closeable
+
 /**
  * Implement control structure that similar to a C# using statement
  * @author Alexander Zhugrov
@@ -14,7 +16,7 @@ object using {
    * @tparam B type of return of closure function
    * @return a result of computation with a given resource
    */
-  def apply[A <: {def close()}, B](resource: A)(f: (A) => B): B = {
+  def apply[A <: Closeable, B](resource: A)(f: (A) => B): B = {
     try {
       f(resource)
     } finally {

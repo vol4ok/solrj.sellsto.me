@@ -8,7 +8,6 @@ import sellstome.transactional.TwoPhaseCommit
 
 /**
  * Adds the ability to read and to write the doc values slices
- * todo zhygrov a check this code
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
@@ -28,13 +27,14 @@ trait DocValuesSlicesSupport extends DVFilenamesSupport {
   protected val currentSlice: DocValuesSliceInfo = new DocValuesSliceInfo(slicesInfos.newSliceName())
 
   /** Compose a current slice file name that would be used for write */
-  protected def currentWriteSliceFileName(docValuesId: String): String = {
+  protected def currentWriteSliceName(docValuesId: String): String = {
     return docValuesId+currentSlice.name+"."+DVSegmentSuffix
   }
 
-  /** Get a latest slice file name that would be used for read. Stop!!! you are wrong. */
-  protected def currentReadSliceFileName(docValuesId: String): Option[String] = {
-    ???
+  /** Get a latest slice file names that will be used for reading. */
+  protected def currentReadSlicesNames(docValuesId: String): List[String] = {
+    assert(slicesInfos.size() > 0)
+    slicesInfos.map[String]({slice => docValuesId+slice.name+"."+DVSegmentSuffix}).toList
   }
 
   /** Flushed a given slices infos to a disk */
@@ -53,19 +53,29 @@ trait DocValuesSlicesSupport extends DVFilenamesSupport {
   protected def fixedSize(dvType: Type): Int = {
     import Type._
     return dvType match {
-      case VAR_INTS       => -1
+      case FIXED_INTS_8   =>  1
+      case FIXED_INTS_16  =>  2
+      case FIXED_INTS_32  =>  4
       case FIXED_INTS_64  =>  8
+      case FLOAT_32       =>  4
+      case FLOAT_64       =>  8
       case _              =>  throw new IllegalArgumentException("not supported doc values type: %s".format(dvType))
     }
   }
 
   /** Transforms size to a given doc values type. Inverse of the #fixedSize method. */
-  protected def sizeToType(size: Int): Type = size match {
+  protected def sizeToIntType(size: Int): Type = size match {
       case 1 => Type.FIXED_INTS_8
       case 2 => Type.FIXED_INTS_16
       case 4 => Type.FIXED_INTS_32
       case 8 => Type.FIXED_INTS_64
-      case _ => throw new IllegalStateException("illegal size " + size)
+      case _ => throw new IllegalArgumentException("illegal size "+size)
+  }
+
+  protected def sizeToFloatType(size: Int): Type = size match {
+      case 4 => Type.FLOAT_32
+      case 8 => Type.FLOAT_64
+      case _ => throw new IllegalArgumentException("illegal size "+size)
   }
 
 }

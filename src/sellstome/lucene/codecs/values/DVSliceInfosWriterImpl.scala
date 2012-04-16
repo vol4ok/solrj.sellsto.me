@@ -1,8 +1,6 @@
 package sellstome.lucene.codecs.values
 
 import org.apache.lucene.store.{ChecksumIndexOutput, IOContext, Directory, IndexOutput}
-import org.apache.lucene.util.IOUtils
-import sellstome.control.using
 
 
 /**
@@ -14,15 +12,14 @@ class DVSliceInfosWriterImpl extends DocValuesSliceInfosWriter {
 
   def writeInfos(dir: Directory, infosFileName: String,
                  infos: DocValuesSliceInfos, context: IOContext): IndexOutput = {
-    return using(createOutput(dir, infosFileName, context)) { output =>
-      output.writeLong(infos.currentGeneration())
-      output.writeInt(infos.currentCounter())
-      output.writeInt(infos.size())
-      infos.foreach((slice) => {
-        output.writeString(slice.name)
-      })
-      output
-    }
+    val output = createOutput(dir, infosFileName, context)
+    output.writeLong(infos.currentGeneration())
+    output.writeInt(infos.currentCounter())
+    output.writeInt(infos.size())
+    infos.foreach((slice) => {
+      output.writeString(slice.name)
+    })
+    return output
   }
 
   def prepareCommit(out: IndexOutput) {

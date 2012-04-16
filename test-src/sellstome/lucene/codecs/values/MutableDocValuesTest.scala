@@ -266,10 +266,10 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   protected def getDocValuesConsumer(dir: Directory, fieldId: String, dvType: DocValues.Type): DocValuesConsumer = {
     import DocValues.Type._
     return dvType match {
-      case FIXED_INTS_8  => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
-      case FIXED_INTS_16 => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
-      case FIXED_INTS_32 => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
-      case FIXED_INTS_64 => new MutableIntsDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FIXED_INTS_8  => new MutableDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FIXED_INTS_16 => new MutableDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FIXED_INTS_32 => new MutableDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FIXED_INTS_64 => new MutableDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
       case _             => throw new IllegalArgumentException("Not supported doc values type: %s".format(dvType))
     }
   }
@@ -284,10 +284,10 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   protected def getDocValues(dir: Directory, fieldId: String, dvType: DocValues.Type): DocValues = {
     import DocValues.Type._
     return dvType match {
-      case FIXED_INTS_8  => new MutableIntsDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
-      case FIXED_INTS_16 => new MutableIntsDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
-      case FIXED_INTS_32 => new MutableIntsDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
-      case FIXED_INTS_64 => new MutableIntsDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
+      case FIXED_INTS_8  => new MutableDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
+      case FIXED_INTS_16 => new MutableDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
+      case FIXED_INTS_32 => new MutableDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
+      case FIXED_INTS_64 => new MutableDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
       case VAR_INTS      => ???
       case _             => throw new IllegalArgumentException("This doc values type: %s is not supported.".format(dvType))
     }
