@@ -4,13 +4,14 @@ import sellstome.util.AssertionsForJUnit
 import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.store.MockDirectoryWrapper
 import org.apache.lucene.analysis.Analyzer
-import org.apache.lucene.util.{SmartRandom, Version, LuceneTestCase}
+import org.apache.lucene.util.{Version, LuceneTestCase}
 import org.apache.lucene.document.{DocValuesField, FieldType, Field}
-import org.apache.lucene.index.{DocValues, LogMergePolicy, IndexWriterConfig, IndexReader}
+import org.apache.lucene.index.{LogMergePolicy, IndexWriterConfig, IndexReader}
 import org.junit.BeforeClass
 import org.apache.lucene.codecs.lucene40.Lucene40Codec
 import org.apache.lucene.codecs.Codec
 import org.apache.lucene.index.DocValues.Type
+import java.util.Random
 
 /** Companion object */
 object SellstomeLuceneTestCase {
@@ -40,7 +41,7 @@ class SellstomeLuceneTestCase extends LuceneTestCase
   val TestVersionCurrent: Version = LuceneTestCase.TEST_VERSION_CURRENT
 
   /** Used for generation of random numbers */
-  protected val random: SmartRandom = LuceneTestCase.random
+  protected val random: Random = LuceneTestCase.random
 
   /**
    * create a new searcher over the reader.
