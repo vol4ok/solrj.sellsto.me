@@ -18,9 +18,9 @@ dependencies {
 
     //compile dependencies
     compile        project(':lucene')
+    compile        project(':lucene:queries')
+    compile        project(':lucene:queryparser')
     compile        project(':solr')
-    compile        project(':modules:queries')
-    compile        project(':modules:queryparser')
     compile        'org.json:json:20090211' //Q: do you really need this dependency?
     compile        'com.google.code.findbugs:jsr305:1.3.9'
     compile        'org.scala-lang:scala-library:2.10.0-M2'
@@ -47,8 +47,8 @@ dependencies {
     testCompile     'org.powermock:powermock-api-support:1.4.11'
     testCompile     'org.scalatest:scalatest_2.9.1:1.7.1'
     //check if you could remove it
-    testCompile     'com.carrotsearch.randomizedtesting:junit4-ant:1.1.0'
-    testCompile     'com.carrotsearch.randomizedtesting:randomizedtesting-runner:1.1.0'
+    testCompile     'com.carrotsearch.randomizedtesting:junit4-ant:1.3.0'
+    testCompile     'com.carrotsearch.randomizedtesting:randomizedtesting-runner:1.3.0'
 }
 
 sourceSets {
