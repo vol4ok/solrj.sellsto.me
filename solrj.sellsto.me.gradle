@@ -45,7 +45,7 @@ dependencies {
     testCompile     'org.powermock:powermock-api-easymock:1.4.11'
     testCompile     'org.powermock:powermock-module-javaagent:1.4.11'
     testCompile     'org.powermock:powermock-api-support:1.4.11'
-    testCompile     'org.scalatest:scalatest_2.9.1:1.7.1'
+    testCompile     'org.scalatest:scalatest_2.10.0-M3:1.8-SNAPSHOT'
     //check if you could remove it
     testCompile     'com.carrotsearch.randomizedtesting:junit4-ant:1.5.0'
     testCompile     'com.carrotsearch.randomizedtesting:randomizedtesting-runner:1.5.0'

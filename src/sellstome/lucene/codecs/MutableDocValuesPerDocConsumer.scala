@@ -2,10 +2,9 @@ package sellstome.lucene.codecs
 
 import scala.collection.JavaConversions._
 import org.apache.lucene.index.DocValues.Type
-import java.util.{HashSet, Set}
+import java.util.Set
 import org.apache.lucene.index._
 import org.apache.lucene.codecs.{PerDocProducerBase, DocValuesConsumer, PerDocConsumer}
-import org.apache.lucene.util.IOUtils
 import org.apache.lucene.store.Directory
 import values.{MutableDocValuesUtils, DocValuesUtils, MutableDocValuesAware}
 

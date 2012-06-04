@@ -13,6 +13,6 @@ class MutableDocValuesCodec extends Lucene40Codec {
   private val docValues: DocValuesFormat = new MutableDocValuesFormat()
 
   /** Encodes/decodes doc-values */
-  override def docValuesFormat() = docValues
+  override def docValuesFormat(): DocValuesFormat = docValues
 
 }
