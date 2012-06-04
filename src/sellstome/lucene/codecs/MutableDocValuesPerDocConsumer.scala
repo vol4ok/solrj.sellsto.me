@@ -27,15 +27,15 @@ class MutableDocValuesPerDocConsumer(state: PerDocWriteState) extends PerDocCons
    */
   def addValuesField(docValuesType: Type, field: FieldInfo): DocValuesConsumer = {
     if (!isSupportedType(docValuesType)) throw new UnsupportedOperationException("Codec doesn't support given type: "+docValuesType)
-    return consumerFactory.create(docValuesType, PerDocProducerBase.docValuesId(state.segmentName, field.number),
+    return consumerFactory.create(docValuesType, PerDocProducerBase.docValuesId(state.segmentInfo.name, field.number),
       state.directory, state.bytesUsed, state.context)
   }
 
   /** delete all files that contain a un-committed data */
   def abort() {
-    val fileSet = new HashSet[String]
-    files(state.directory, state.fieldInfos, state.segmentName, fileSet)
-    IOUtils.deleteFilesIgnoringExceptions(state.directory, fileSet.toSeq: _*)
+    //val fileSet = new HashSet[String]
+    //files(state.directory, state.fieldInfos, state.segmentName, fileSet)
+    //IOUtils.deleteFilesIgnoringExceptions(state.directory, fileSet.toSeq: _*)
   }
 
   def close() {

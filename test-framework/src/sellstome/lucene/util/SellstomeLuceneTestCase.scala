@@ -5,8 +5,8 @@ import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.store.MockDirectoryWrapper
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.util.{Version, LuceneTestCase}
-import org.apache.lucene.document.{DocValuesField, FieldType, Field}
-import org.apache.lucene.index.{LogMergePolicy, IndexWriterConfig, IndexReader}
+import org.apache.lucene.document._
+import org.apache.lucene.index.{DocValues, LogMergePolicy, IndexWriterConfig, IndexReader}
 import org.junit.BeforeClass
 import org.apache.lucene.codecs.lucene40.Lucene40Codec
 import org.apache.lucene.codecs.Codec
@@ -68,9 +68,12 @@ class SellstomeLuceneTestCase extends LuceneTestCase
 
   def newField(name: String, value: String, fieldType: FieldType): Field = LuceneTestCase.newField(name, value, fieldType)
 
-  def newDocValueField(name: String, value: Long, dvType: Type) = new DocValuesField(name, value, dvType)
-
-  /** Creates a new DocValues field for storage of long type data in the [[org.apache.lucene.index.DocValues.Type.VAR_INTS]] format */
-  def newDocValueField(name: String, value: Long): DocValuesField = new DocValuesField(name, value, Type.VAR_INTS)
+  def newDocValueField(name: String, value: Long, dvType: Type): Field = dvType match {
+    case DocValues.Type.FIXED_INTS_8 => new ByteDocValuesField(name, value.toByte)
+    case DocValues.Type.FIXED_INTS_16 => new ShortDocValuesField(name, value.toShort)
+    case DocValues.Type.FIXED_INTS_32 => new IntDocValuesField(name, value.toInt)
+    case DocValues.Type.FIXED_INTS_32 => new LongDocValuesField(name, value)
+    case _ => throw new IllegalArgumentException(s"could not create doc values for a given type ${dvType}")
+  }
 
 }

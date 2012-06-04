@@ -60,7 +60,7 @@ class MutableDocValuesProducer(segmentState: SegmentReadState) extends PerDocPro
     if (anyDocValuesFields(state.fieldInfos)) {
       return load(state.fieldInfos,
                   state.segmentInfo.name,
-                  state.segmentInfo.docCount,
+                  state.segmentInfo.getDocCount,
                   state.dir,
                   state.context)
     } else {

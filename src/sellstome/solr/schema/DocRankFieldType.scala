@@ -4,7 +4,7 @@ import org.apache.solr.schema.{SchemaField, FieldType}
 import org.apache.solr.response.TextResponseWriter
 import org.apache.lucene.search.SortField
 import org.apache.lucene.index.{DocValues, IndexableField}
-import org.apache.lucene.document.DocValuesField
+import org.apache.lucene.document.LongDocValuesField
 
 
 /**
@@ -23,7 +23,7 @@ class DocRankFieldType extends FieldType {
    * @param fieldType should be ignored here. Added for compatibility with a solr api
    */
   override protected def createField(name: String, value: String, fieldType: org.apache.lucene.document.FieldType, boost: Float): IndexableField = {
-    return new DocValuesField(name, value.toLong, DocValues.Type.FIXED_INTS_64)
+    return new LongDocValuesField(name, value.toLong)
   }
 
   def write(writer: TextResponseWriter, name: String, f: IndexableField) {}

@@ -40,7 +40,7 @@ class RankAwareSimilarityComponentTest extends SellstomeLuceneTestCase {
       val (message, rank) = values(i)
       val doc: Document = new Document
       doc.add(newField(SearchField, message, TextField.TYPE_STORED))
-      doc.add(newDocValueField(RankField, rank))
+      doc.add(newDocValueField(RankField, rank, DocValues.Type.FIXED_INTS_64))
       writer.addDocument(doc)
       i = i + 1
     }

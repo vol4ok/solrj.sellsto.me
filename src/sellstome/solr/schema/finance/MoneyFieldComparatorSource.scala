@@ -80,6 +80,8 @@ class MoneyFieldComparatorSource extends FieldComparatorSource {
 
     def value(slot: Int): Long = values(slot)
 
+    /** todo zhugrov a - investigate the implementation */
+    def compareDocToValue(doc: Int, value: Long) = ???
   }
 
 }

@@ -43,7 +43,7 @@ trait DVInfosFilenamesSupport {
   protected def generationFor(@Nonnull fileName: String): Long = {
     val extension = FilenameUtils.getExtension(fileName)
     if (extension == DVInfosExtension) {
-      return SegmentInfo.WITHOUT_GEN
+      return 0
     } else if (extension.startsWith(DVInfosExtension)) {
       return extension.substring((DVInfosExtension+"_").length()).toLong
     } else {
@@ -66,7 +66,7 @@ trait DVInfosFilenamesSupport {
    * Computes a full file name from base, extension and generation.
    */
   protected def fileForGeneration(@Nonnull docValuesId: String, @Nonnull gen: Long): String = {
-    if (gen == SegmentInfo.WITHOUT_GEN) {
+    if (gen == 0) {
       return docValuesId+"."+DVInfosExtension
     } else {
       return docValuesId+"."+DVInfosExtension+"_"+gen.toString

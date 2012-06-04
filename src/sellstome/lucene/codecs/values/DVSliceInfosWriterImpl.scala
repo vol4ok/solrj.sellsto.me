@@ -23,7 +23,7 @@ class DVSliceInfosWriterImpl extends DocValuesSliceInfosWriter {
   }
 
   def prepareCommit(out: IndexOutput) {
-    out.asInstanceOf[ChecksumIndexOutput].prepareCommit()
+    //for backward compatibility
   }
 
   def finishCommit(out: IndexOutput) {

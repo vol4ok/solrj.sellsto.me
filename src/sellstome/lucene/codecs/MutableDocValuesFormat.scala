@@ -26,9 +26,4 @@ class MutableDocValuesFormat extends DocValuesFormat {
   /** allows reading for doc values from external storage */
   def docsProducer(segmentState: SegmentReadState) = new MutableDocValuesProducer(segmentState)
 
-  /** Populates a list of files that used for a given segment */
-  def files(info: SegmentInfo, files: javautil.Set[String]) {
-    files.addAll(dvUtils.files(info.dir, info.getFieldInfos, info.name))
-  }
-
 }
