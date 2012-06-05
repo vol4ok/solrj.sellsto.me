@@ -9,7 +9,7 @@ import java.util.{TreeMap, Collection}
 import java.util.Map
 import org.apache.lucene.index.{SegmentReadState, DocValues}
 import com.google.common.collect.Maps
-import values.DocValuesFactory
+import values.{MutableDVReader, DocValuesFactory}
 
 /** factory for creating a doc values */
 object MutableDocValuesFactory extends DocValuesFactory {
@@ -21,11 +21,12 @@ object MutableDocValuesFactory extends DocValuesFactory {
                 context: IOContext): DocValues = {
     import Type._
     dvType match {
-      case FIXED_INTS_16  => ???
-      case FIXED_INTS_32  => ???
-      case FIXED_INTS_64  => ???
-      case FIXED_INTS_8   => ???
-      case VAR_INTS       => ???
+      case FIXED_INTS_8   => new MutableDVReader(dir, dvId, docCount, context, dvType)
+      case FIXED_INTS_16  => new MutableDVReader(dir, dvId, docCount, context, dvType)
+      case FIXED_INTS_32  => new MutableDVReader(dir, dvId, docCount, context, dvType)
+      case FIXED_INTS_64  => new MutableDVReader(dir, dvId, docCount, context, dvType)
+      case FLOAT_32       => new MutableDVReader(dir, dvId, docCount, context, dvType)
+      case FLOAT_64       => new MutableDVReader(dir, dvId, docCount, context, dvType)
       case _              => throw new IllegalArgumentException("Not supported doc values type: " + dvType)
     }
   }

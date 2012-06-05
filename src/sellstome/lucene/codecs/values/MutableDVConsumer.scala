@@ -1,14 +1,15 @@
 package sellstome.lucene.codecs.values
 
-import org.apache.lucene.index.DocValues.Type
+import org.apache.lucene.index.DocValues.{Source, Type}
 import org.apache.lucene.index.DocValues.Type._
 import sellstome.lucene.codecs.DocValuesSlicesSupport
 import org.apache.lucene.store.{IndexOutput, IOContext, Directory}
 import org.apache.lucene.codecs.lucene40.values.Ints
 import org.apache.lucene.codecs.DocValuesConsumer
-import org.apache.lucene.index.IndexableField
-import org.apache.lucene.util.{IOUtils, CodecUtil, Counter}
+import org.apache.lucene.index.{DocValues, IndexableField}
+import org.apache.lucene.util.{Bits, IOUtils, CodecUtil, Counter}
 import sellstome.lucene.io.packed.array._
+import org.apache.lucene.document.Field
 
 /**
  * Stores ints packed and fixed with fixed-bit precision.
@@ -21,7 +22,7 @@ import sellstome.lucene.io.packed.array._
  * @param bytesUsed
  * @param context io context
  */
-class MutableDVConsumer(_dir: Directory,
+class MutableDVConsumer(    _dir: Directory,
                             _docValuesId: String,
                             codecName: String,
                             version: Int,
@@ -42,6 +43,7 @@ class MutableDVConsumer(_dir: Directory,
   protected var dataOut: IndexOutput = null
 
 
+  //region Indexing Support
   override def add(docID: Int, value: IndexableField) {
     dvType match {
       case FIXED_INTS_8  => byteWriter.add(docID,   value.numericValue().byteValue())
@@ -50,6 +52,7 @@ class MutableDVConsumer(_dir: Directory,
       case FIXED_INTS_64 => longWriter.add(docID,   value.numericValue().longValue())
       case FLOAT_32      => floatWriter.add(docID,  value.numericValue().floatValue())
       case FLOAT_64      => doubleWriter.add(docID, value.numericValue().doubleValue())
+      case _             => throw new IllegalStateException(s"Not supported dvType: ${dvType}")
     }
   }
 
@@ -60,12 +63,13 @@ class MutableDVConsumer(_dir: Directory,
     var hasException = false
     try {
       dvType match {
-        case FIXED_INTS_8 => byteWriter.write(getOrCreateDataOut())
-        case FIXED_INTS_16 => shortWriter.write(getOrCreateDataOut())
-        case FIXED_INTS_32 => intWriter.write(getOrCreateDataOut())
-        case FIXED_INTS_64 => longWriter.write(getOrCreateDataOut())
-        case FLOAT_32 => floatWriter.write(getOrCreateDataOut())
-        case FLOAT_64 => doubleWriter.write(getOrCreateDataOut())
+        case FIXED_INTS_8   => byteWriter.write(getOrCreateDataOut())
+        case FIXED_INTS_16  => shortWriter.write(getOrCreateDataOut())
+        case FIXED_INTS_32  => intWriter.write(getOrCreateDataOut())
+        case FIXED_INTS_64  => longWriter.write(getOrCreateDataOut())
+        case FLOAT_32       => floatWriter.write(getOrCreateDataOut())
+        case FLOAT_64       => doubleWriter.write(getOrCreateDataOut())
+        case _              => throw new IllegalStateException(s"Not supported dvType: ${dvType}")
       }
     } catch {
       case e: Throwable => hasException = true
@@ -78,7 +82,37 @@ class MutableDVConsumer(_dir: Directory,
     }
     flushSlicesInfos()
   }
+  //endregion
 
+
+  //region Merge Support
+  protected override def merge(reader: DocValues, docBase: Int, docCount: Int, liveDocs: Bits) {
+    val source = reader.getDirectSource()
+    (0 until docBase).foldLeft(docBase) {(mergedDocId, oldDocId) =>
+      if (liveDocs == null || liveDocs.get(oldDocId)) {
+        dvType match {
+          case FIXED_INTS_8   => byteWriter.add(mergedDocId, source.getInt(oldDocId).toByte)
+          case FIXED_INTS_16  => shortWriter.add(mergedDocId, source.getInt(oldDocId).toShort)
+          case FIXED_INTS_32  => intWriter.add(mergedDocId, source.getInt(oldDocId).toInt)
+          case FIXED_INTS_64  => longWriter.add(mergedDocId, source.getInt(oldDocId))
+          case FLOAT_32       => floatWriter.add(mergedDocId, source.getFloat(oldDocId).toFloat)
+          case FLOAT_64       => doubleWriter.add(mergedDocId, source.getFloat(oldDocId))
+        }
+        mergedDocId+1
+      } else {
+        mergedDocId
+      }
+    }
+  }
+
+
+
+  protected override def mergeDoc(scratchField: Field, source: Source, docID: Int, sourceDoc: Int) {
+    //do nothing here. Disabling the parent functionality
+  }
+  //endregion
+
+  //region Utility Methods
   /** Creates a output for a current writer */
   protected def getOrCreateDataOut(): IndexOutput = {
     if (dataOut == null) {
@@ -93,4 +127,5 @@ class MutableDVConsumer(_dir: Directory,
   protected def docValuesId() = _docValuesId
 
   protected def dir()         = _dir
+  //endregion
 }

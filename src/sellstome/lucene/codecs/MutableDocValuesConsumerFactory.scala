@@ -25,10 +25,12 @@ object MutableDocValuesConsumerFactory extends DocValuesConsumerFactory {
              bytesUsed: Counter, context: IOContext): DocValuesConsumer = {
     import Type._
     return dvType match {
+      case FIXED_INTS_8   => new MutableDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
       case FIXED_INTS_16  => new MutableDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
       case FIXED_INTS_32  => new MutableDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
       case FIXED_INTS_64  => new MutableDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
-      case FIXED_INTS_8   => new MutableDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
+      case FLOAT_32       => new MutableDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
+      case FLOAT_64       => new MutableDVConsumer(dir, docValuesId, bytesUsed, context, dvType)
       case _              => throw new IllegalArgumentException("Not supported doc values type: " + dvType)
     }
   }

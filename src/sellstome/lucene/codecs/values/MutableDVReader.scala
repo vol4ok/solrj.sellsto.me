@@ -17,12 +17,11 @@ import org.apache.lucene.index.DocValues.{Source, Type}
  * @param _docValuesId a unique identifier per segment && field
  */
 class MutableDVReader(_dir: Directory,
-                          _docValuesId: String,
-                          bytesUsed: Counter,
-                          maxDocs: Int,
-                          context: IOContext,
-                          dvType: Type) extends DocValues
-                                        with DocValuesSlicesSupport {
+                      _docValuesId: String,
+                      maxDocs: Int,
+                      context: IOContext,
+                      dvType: Type) extends DocValues
+                                    with DocValuesSlicesSupport {
 
 
   /** Holds a reference to data */

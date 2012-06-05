@@ -11,7 +11,7 @@ trait PackedArraySourceFactory {
 }
 
 /**
- * todo zhugrov a - think on how to avoid a static state
+ * todo zhuhrov a - think on how to avoid a static state
  */
 object PackedArraySource extends PackedArraySourceFactory {
   def apply(dvType: Type, dataInputs: Seq[IndexInput]) = dvType match {
@@ -52,7 +52,7 @@ abstract class PackedArraySource(dvType: Type, dataInputs: Seq[IndexInput]) exte
   protected def load() {
     assert(values == null, "Already loaded")
     assert(valuesPresent == null, "Already loaded")
-    var reader = newReader
+    val reader = newReader
     reader.load(dataInputs)
     val ords = reader.ordsArray
     val vals = reader.valsArray

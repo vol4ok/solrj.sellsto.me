@@ -10,7 +10,12 @@ import org.apache.lucene.index.DocValues.Type
 trait MutableDocValuesAware {
 
   /** a list of doc values types that this field consumer supports. */
-  protected val SupportedTypes = List(Type.FIXED_INTS_64, Type.VAR_INTS)
+  protected val SupportedTypes = List(Type.FIXED_INTS_8,
+                                      Type.FIXED_INTS_16,
+                                      Type.FIXED_INTS_32,
+                                      Type.FIXED_INTS_64,
+                                      Type.FLOAT_32,
+                                      Type.FLOAT_64)
 
   /**
    * Checks if this codec support given [[org.apache.lucene.index.DocValues.Type]]

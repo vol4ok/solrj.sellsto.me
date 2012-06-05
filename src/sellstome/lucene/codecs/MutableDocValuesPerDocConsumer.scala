@@ -1,11 +1,8 @@
 package sellstome.lucene.codecs
 
-import scala.collection.JavaConversions._
 import org.apache.lucene.index.DocValues.Type
-import java.util.Set
 import org.apache.lucene.index._
 import org.apache.lucene.codecs.{PerDocProducerBase, DocValuesConsumer, PerDocConsumer}
-import org.apache.lucene.store.Directory
 import values.{MutableDocValuesUtils, DocValuesUtils, MutableDocValuesAware}
 
 /**
@@ -24,9 +21,9 @@ class MutableDocValuesPerDocConsumer(state: PerDocWriteState) extends PerDocCons
    * Adds a new DocValuesField
    * @throws UnsupportedOperationException in case if does not supports a given doc values type.
    */
-  def addValuesField(docValuesType: Type, field: FieldInfo): DocValuesConsumer = {
-    if (!isSupportedType(docValuesType)) throw new UnsupportedOperationException("Codec doesn't support given type: "+docValuesType)
-    return consumerFactory.create(docValuesType, PerDocProducerBase.docValuesId(state.segmentInfo.name, field.number),
+  def addValuesField(dvType: Type, field: FieldInfo): DocValuesConsumer = {
+    if (!isSupportedType(dvType)) throw new UnsupportedOperationException("Codec doesn't support a given type: "+dvType)
+    return consumerFactory.create(dvType, PerDocProducerBase.docValuesId(state.segmentInfo.name, field.number),
       state.directory, state.bytesUsed, state.context)
   }
 
@@ -35,22 +32,11 @@ class MutableDocValuesPerDocConsumer(state: PerDocWriteState) extends PerDocCons
     //val fileSet = new HashSet[String]
     //files(state.directory, state.fieldInfos, state.segmentName, fileSet)
     //IOUtils.deleteFilesIgnoringExceptions(state.directory, fileSet.toSeq: _*)
+    //todo zhugrov a - investigate should we delete files here.
   }
 
   def close() {
     //need nothing to do here
-  }
-
-  /**
-   * Calculates a set of files that used for storing docValues on the file system.
-   * todo zhugrov a - this method completely wrong
-   * @param dir abstract access to a underlying storage
-   * @param fieldInfos provides access to a FieldInfo segment's file.
-   * @param segmentName a name of a given lucene segment
-   * @param files a mutable set that being populated with files where doc values stored
-   */
-  protected def files(dir: Directory, fieldInfos: FieldInfos, segmentName: String, files: Set[String]) {
-    files.addAll(dvUtils.files(dir, fieldInfos, segmentName))
   }
 
 }

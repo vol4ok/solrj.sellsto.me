@@ -276,10 +276,10 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   protected def getDocValues(dir: Directory, fieldId: String, dvType: DocValues.Type): DocValues = {
     import DocValues.Type._
     return dvType match {
-      case FIXED_INTS_8  => new MutableDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
-      case FIXED_INTS_16 => new MutableDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
-      case FIXED_INTS_32 => new MutableDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
-      case FIXED_INTS_64 => new MutableDVReader(dir, fieldId, Counter.newCounter(), 0, IOContext.READ, dvType)
+      case FIXED_INTS_8  => new MutableDVReader(dir, fieldId, 0, IOContext.READ, dvType)
+      case FIXED_INTS_16 => new MutableDVReader(dir, fieldId, 0, IOContext.READ, dvType)
+      case FIXED_INTS_32 => new MutableDVReader(dir, fieldId, 0, IOContext.READ, dvType)
+      case FIXED_INTS_64 => new MutableDVReader(dir, fieldId, 0, IOContext.READ, dvType)
       case _             => throw new IllegalArgumentException("This doc values type: %s is not supported.".format(dvType))
     }
   }

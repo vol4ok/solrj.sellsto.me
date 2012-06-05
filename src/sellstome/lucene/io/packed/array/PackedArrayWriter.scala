@@ -42,7 +42,7 @@ class PackedArrayWriter[V](dataType: Type[V]) {
   protected def writeHeader(out: IndexOutput, ords: Array[Int], vals: Array[V]) {
     var duplicatesCount = 0
     var ordWalker = 0
-    while(ordWalker < ords.length - 1) {
+    while(ordWalker < ords.length - 1) { //todo zhugrov a - this is one of the places for optimization
       if (ords(ordWalker) == ords(ordWalker + 1)) duplicatesCount += 1
       ordWalker += 1
     }
