@@ -27,13 +27,23 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   /** Tests the merge functionality */
   def testMerge() {
     //how to determine to which segment is written
-
     ???
+  }
+
+  protected def testMergeFor[T]() (implicit arrTag: ArrayTag[T], erTag: ErasureTag[T]) {
+    val numMerge = numGen.nextIntInRange(3, 10)
+    val dir: Directory = newDirectory()
+    for (i <- 0 until numMerge) {
+      val writer = getDocValuesConsumer(dir, s"test$i", docTypeOf[T])
+      val numDoc = numGen.nextIntInRange(100, 10000)
+      for (j <- 0 until numDoc) {
+        writer.add(j, new DocValueHolder(numberOf[T](numGen.nextNumber[T])))
+      }
+    }
   }
 
   //region Utils
   protected def testInts(docType: DocValues.Type, maxBit: Int)() {
-    val valueHolder: DocValueHolder = new DocValueHolder()
     var maxV: Long = 1
     val DocCount: Int = 333 + random.nextInt(333)
     val values = new Array[Long](DocCount)
@@ -44,8 +54,7 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
       for (docIdWrite <- 0 until DocCount) {
         val value: Long = random.nextLong % (1 + maxV)
         values(docIdWrite) = value
-        valueHolder.numberValue = value
-        writer.add(docIdWrite, valueHolder)
+        writer.add(docIdWrite, new DocValueHolder(value))
       }
 
       val additionalDocs: Int = 1 + random.nextInt(9)
@@ -69,17 +78,14 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   }
 
   protected def runTestFloats(docType: DocValues.Type)() {
-    val valueHolder: DocValueHolder = new DocValueHolder
     val dir: Directory = newDirectory()
     val w: DocValuesConsumer = getDocValuesConsumer(dir, "test", docType)
     val NUM_VALUES: Int = 777 + random.nextInt(777)
     val values: Array[Double] = new Array[Double](NUM_VALUES)
     for (i <- 0 until NUM_VALUES) {
       val v: Double = if (docType eq Type.FLOAT_32) random.nextFloat else random.nextDouble
-      valueHolder.numberValue = ({
-        values(i) = v; values(i)
-      })
-      w.add(i, valueHolder)
+      values(i) = v
+      w.add(i, new DocValueHolder(v))
     }
     val additionalValues: Int = 1 + random.nextInt(10)
     w.finish(NUM_VALUES + additionalValues)
@@ -124,6 +130,42 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     return getSource(values).asSortedSource
   }
 
+  protected def docTypeOf[T](implicit erasureTag: ErasureTag[T]): Type = {
+    if (erasureTag.getClass == classOf[Byte]) {
+      return Type.FIXED_INTS_8
+    } else if (erasureTag.getClass == classOf[Short]) {
+      return Type.FIXED_INTS_16
+    } else if (erasureTag.getClass == classOf[Int]) {
+      return Type.FIXED_INTS_32
+    } else if (erasureTag.getClass == classOf[Long]) {
+      return Type.FIXED_INTS_64
+    } else if (erasureTag.getClass == classOf[Float]) {
+      return Type.FLOAT_32
+    } else if (erasureTag.getClass == classOf[Double]) {
+      return Type.FLOAT_64
+    } else {
+      throw new IllegalArgumentException(s"Not supported erasure type: ${erasureTag.erasure}")
+    }
+  }
+
+  protected def numberOf[T](of: T)(implicit erasureTag: ErasureTag[T]): Number = {
+    if (erasureTag.getClass == classOf[Byte]) {
+      return of.asInstanceOf[Byte]
+    } else if (erasureTag.getClass == classOf[Short]) {
+      return of.asInstanceOf[Short]
+    } else if (erasureTag.getClass == classOf[Int]) {
+      return of.asInstanceOf[Int]
+    } else if (erasureTag.getClass == classOf[Long]) {
+      return of.asInstanceOf[Long]
+    } else if (erasureTag.getClass == classOf[Float]) {
+      return of.asInstanceOf[Float]
+    } else if (erasureTag.getClass == classOf[Double]) {
+      return of.asInstanceOf[Double]
+    } else {
+      throw new IllegalArgumentException(s"Not supported erasure type: ${erasureTag.erasure}")
+    }
+  }
+
   /**
    * Instantiates a new doc values consumer
    * @param dir provides access to a flat list of files
@@ -161,43 +203,15 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
   }
   //endregion
 
-  class DocValueHolder extends IndexableField {
-
-    def tokenStream(a: Analyzer): TokenStream = {
-      return null
-    }
-
-    def boost: Float = {
-      return 0.0f
-    }
-
-    def name: String = {
-      return "test"
-    }
-
-    def binaryValue: BytesRef = {
-      return bytes
-    }
-
-    def numericValue: Number = {
-      return numberValue
-    }
-
-    def stringValue: String = {
-      return null
-    }
-
-    def readerValue: Reader = {
-      return null
-    }
-
-    def fieldType: IndexableFieldType = {
-      return null
-    }
-
-    var bytes: BytesRef = null
-    var numberValue: Number = null
+  class DocValueHolder(_numberValue: Number) extends IndexableField {
+    def numericValue: Number = _numberValue
+    def tokenStream(a: Analyzer): TokenStream = ???
+    def boost: Float = ???
+    def name: String = ???
+    def binaryValue: BytesRef = ???
+    def stringValue: String = ???
+    def readerValue: Reader = ???
+    def fieldType: IndexableFieldType = ???
   }
-
 
 }

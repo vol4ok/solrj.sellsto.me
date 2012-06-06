@@ -32,21 +32,21 @@ trait NumberGeneratorComponent {
     def nextBoolean(): Boolean = random.nextBoolean()
 
     /** generates a random number of a given type */
-    def nextNumber[T](implicit m: Manifest[T]): T = {
-      if (m.erasure == classOf[Byte]) {
+    def nextNumber[T](implicit erasureTag: ErasureTag[T]): T = {
+      if (erasureTag.erasure == classOf[Byte]) {
         return nextByte().asInstanceOf[T]
-      } else if (m.erasure == classOf[Short]) {
+      } else if (erasureTag.erasure == classOf[Short]) {
         return nextShort().asInstanceOf[T]
-      } else if (m.erasure == classOf[Int]) {
+      } else if (erasureTag.erasure == classOf[Int]) {
         return nextInt().asInstanceOf[T]
-      } else if (m.erasure == classOf[Long]) {
+      } else if (erasureTag.erasure == classOf[Long]) {
         return nextLong().asInstanceOf[T]
-      } else if (m.erasure == classOf[Float]) {
+      } else if (erasureTag.erasure == classOf[Float]) {
         return nextFloat().asInstanceOf[T]
-      } else if (m.erasure == classOf[Double]) {
+      } else if (erasureTag.erasure == classOf[Double]) {
         return nextDouble().asInstanceOf[T]
       } else {
-        throw new IllegalArgumentException(s"not supported erasure type: ${m.erasure}")
+        throw new IllegalArgumentException(s"not supported erasure type: ${erasureTag.erasure}")
       }
     }
 
