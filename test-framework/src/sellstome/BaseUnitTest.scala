@@ -3,6 +3,14 @@ package sellstome
 import org.scalatest.FunSuite
 import org.junit.Assert
 import util.{NumberGeneratorComponent, Logging}
+import scala.util.Random
+
+//q: do you really ready to avoid the static state
+//think on where is the best way to factor the shared state
+object NumberGeneratorComponent {
+  /** a random number generator for seed values */
+  val SeedRand = new Random()
+}
 
 /**
  * Base class that contains a common methods for writing a unit tests
@@ -13,6 +21,11 @@ import util.{NumberGeneratorComponent, Logging}
 abstract class BaseUnitTest extends FunSuite
                             with NumberGeneratorComponent
                             with Logging {
+
+  /** a seed used for random creation */
+  private[this] val _seed = randomSeed
+  /** a new random generator */
+  private[this] val _random = new java.util.Random(_seed)
 
   protected def assertArrayEqual[T](expected: Array[T], actual: Array[T])(implicit m: Manifest[T]) {
     if (m.erasure == classOf[Byte]) {
@@ -43,5 +56,21 @@ abstract class BaseUnitTest extends FunSuite
       ???
     }
   }
+
+  /** get reference to currently used random generator */
+  protected def random: java.util.Random = _random
+
+  /** @throws NumberFormatException  if the system param value string does not parsable value */
+  protected def randomSeed: Long = {
+    val seedStr = System.getProperty("tests.seed", "random")
+    return if (seedStr == "random") {
+      seedGenerator.nextLong()
+    } else {
+      seedStr.toLong
+    }
+  }
+
+  /** gets a generator used for generating a seed values */
+  protected def seedGenerator: Random = NumberGeneratorComponent.SeedRand
 
 }

@@ -1,6 +1,6 @@
 package sellstome.lucene.util
 
-import sellstome.util.AssertionsForJUnit
+import sellstome.util.{NumberGeneratorComponent, AssertionsForJUnit}
 import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.store.MockDirectoryWrapper
 import org.apache.lucene.analysis.Analyzer
@@ -33,7 +33,8 @@ object SellstomeLuceneTestCase {
  * @since 1.0
  */
 class SellstomeLuceneTestCase extends LuceneTestCase
-                              with AssertionsForJUnit {
+                              with AssertionsForJUnit
+                              with NumberGeneratorComponent {
   /**
    * Use this constant when creating Analyzers and any other version-dependent stuff.
    * <p><b>NOTE:</b> Change this when development starts for new Lucene version:
@@ -75,5 +76,7 @@ class SellstomeLuceneTestCase extends LuceneTestCase
     case DocValues.Type.FIXED_INTS_32 => new LongDocValuesField(name, value)
     case _ => throw new IllegalArgumentException(s"could not create doc values for a given type ${dvType}")
   }
+
+
 
 }

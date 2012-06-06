@@ -89,7 +89,7 @@ class PackedArrayUnitTest extends BaseUnitTest
     for (i <- 0 until numSlices) {
       val size = numGen.nextIntInRange(1, 10000)
       slicesOrds.update(i, arrGen.newOrdGapArray(size))
-      slicesVals.update(i, numGen.newNumberArray[T](size))
+      slicesVals.update(i, numGen.newNumericArray[T](size))
     }
     return (slicesOrds, slicesVals)
   }
@@ -181,7 +181,7 @@ class PackedArrayUnitTest extends BaseUnitTest
   protected def testOrdDuplicatesCase[T](implicit m: Manifest[T]) {
     val size = numGen.nextIntInRange(100, 10000)
     val ordsWrite = arrGen.newOrdGapDuplicatesArray(size)
-    val valsWrite = numGen.newNumberArray[T](size)
+    val valsWrite = numGen.newNumericArray[T](size)
     val (ordsFiltered, valsFiltered) = stripOrdDuplicated(ordsWrite, valsWrite)
     val (out, in) = newIO
     val writer = new Writer(Type.getType[T])
@@ -196,7 +196,7 @@ class PackedArrayUnitTest extends BaseUnitTest
   protected def testNoOrdDuplicatesCase[T](implicit m: Manifest[T]) {
     val size = numGen.nextIntInRange(100, 10000)
     val ords = arrGen.newOrdGapArray(size)
-    val vals = numGen.newNumberArray[T](size)
+    val vals = numGen.newNumericArray[T](size)
     val (out, in) = newIO
     val writer = new Writer(Type.getType[T])
     writer.testWrite(out, ords, vals)

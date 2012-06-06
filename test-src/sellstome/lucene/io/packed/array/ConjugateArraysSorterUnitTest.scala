@@ -26,7 +26,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest
   test("test quicksort: duplicate ords") {
     for (i <- 0 until 1000) {
       val ords = arrGen.createDuplicates()
-      val values = numGen.newNumberArray[Long](1000)
+      val values = numGen.newNumericArray[Long](1000)
       newSorter[Long](ords, values).quickSort()
     }
   }
@@ -34,7 +34,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest
   protected def testQuickSort[T](implicit m: Manifest[T]) {
     val size    = 100 + numGen.nextInt(900)
     val ords    = arrGen.newOrdArray(size)
-    val values  = numGen.newNumberArray[T](size)
+    val values  = numGen.newNumericArray[T](size)
     val fuse    = fuseArrays[T](ords, values)
     newSorter[T](ords, values).quickSort()
     validateSorting[T](ords, values, fuse)
@@ -54,7 +54,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest
   test("test mergesort: duplicate ords") {
     for (i <- 0 until 1000) {
       val ords = arrGen.createDuplicates()
-      val values = numGen.newNumberArray[Long](1000)
+      val values = numGen.newNumericArray[Long](1000)
       newSorter[Long](ords, values).mergeSort()
     }
   }
@@ -74,7 +74,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest
   protected def testMergeSort[T](implicit m: Manifest[T]) {
     val size    = 100 + numGen.nextInt(900)
     val ords    = arrGen.newOrdArray(size)
-    val values  = numGen.newNumberArray[T](size)
+    val values  = numGen.newNumericArray[T](size)
     val fuse    = fuseArrays[T](ords, values)
     newSorter[T](ords, values).mergeSort()
     validateSorting[T](ords, values, fuse)
@@ -94,7 +94,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest
   test("test insertion sort: duplicate ords") {
     for (i <- 0 until 1000) {
       val ords    = arrGen.createDuplicates()
-      val values  = numGen.newNumberArray[Long](1000)
+      val values  = numGen.newNumericArray[Long](1000)
       newSorter[Long](ords, values).insertionSort()
     }
   }
@@ -102,7 +102,7 @@ class ConjugateArraysSorterUnitTest extends BaseUnitTest
   protected def testInsertionSort[T](implicit m: Manifest[T]) {
     val size    = 10 + numGen.nextInt(90)
     val ords    = arrGen.newOrdArray(size)
-    val values  = numGen.newNumberArray[T](size)
+    val values  = numGen.newNumericArray[T](size)
     val fuse    = fuseArrays[T](ords, values)
     newSorter[T](ords, values).insertionSort()
     validateSorting[T](ords, values, fuse)

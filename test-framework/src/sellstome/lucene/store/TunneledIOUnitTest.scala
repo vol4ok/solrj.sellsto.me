@@ -12,7 +12,7 @@ class TunneledIOUnitTest extends BaseUnitTest {
 
   test("test basic in/out") {
     for (i <- 0 until 1000) {
-      val bytes = numGen.newNumberArray[Byte](1000)
+      val bytes = numGen.newNumericArray[Byte](1000)
       val (out, in) = newFactory.newPair()
 
       if (numGen.nextBoolean())

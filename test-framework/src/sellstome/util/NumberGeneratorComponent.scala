@@ -1,14 +1,5 @@
 package sellstome.util
 
-import util.Random
-
-//q: do you really ready to avoid the static state
-//think on where is the best way to factor the shared state
-object NumberGeneratorComponent {
-  /** a random number generator for seed values */
-  val SeedRand = new Random()
-}
-
 /**
  * Adds the ability to generate basic random sequences
  * @author Aliaksandr Zhuhrou
@@ -18,11 +9,7 @@ trait NumberGeneratorComponent {
 
   val numGen = new NumberGenerator()
 
-  class NumberGenerator {
-    /** a seed used for random creation */
-    val seed = randomSeed
-    /** a new random generator */
-    val random = new Random(seed)
+  class NumberGenerator() {
 
     /** generates a byte number between 0(inclusive) and Byte.MaxValue(exclusive) */
     def nextByte(): Byte = random.nextInt(Byte.MaxValue.toInt).toByte
@@ -67,7 +54,7 @@ trait NumberGeneratorComponent {
      * Creates a new primitive arrays.
      * May contain a duplicates values.
      */
-    def newNumberArray[T](size: Int)(implicit m: Manifest[T]) : Array[T] = {
+    def newNumericArray[T](size: Int)(implicit m: Manifest[T]) : Array[T] = {
       val array = m.newArray(size)
       if (m.erasure == classOf[Int]) {
         for (i <- 0 until size) {
@@ -97,19 +84,9 @@ trait NumberGeneratorComponent {
       return array
     }
 
-    /** @throws NumberFormatException  if the system param value string does not parsable value */
-    protected def randomSeed: Long = {
-      val seedStr = System.getProperty("tests.seed", "random")
-      return if (seedStr == "random") {
-        seedGenerator.nextLong()
-      } else {
-        seedStr.toLong
-      }
-    }
-
-    /** gets a generator used for generating a seed values */
-    protected def seedGenerator: Random = NumberGeneratorComponent.SeedRand
-
   }
+
+  /** get reference to currently used random generator */
+  protected def random: java.util.Random
 
 }
