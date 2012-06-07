@@ -12,11 +12,10 @@ import org.apache.lucene.index._
 import javax.annotation.Nullable
 
 /**
- * todo zhugrov a - classify a type for this test
  * @author Aliaksandr Zhuhrou
  * @since 1.0
  */
-class MutableDocValuesTest extends SellstomeLuceneTestCase {
+class MutableDocValuesComponentTest extends SellstomeLuceneTestCase {
 
   val numberTags: List[ClassTag[_]] = List(ClassTag.Byte,
                                            ClassTag.Short,
@@ -34,8 +33,10 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
 
   /** Tests the merge functionality */
   def testMerge() {
-    numberTags foreach {
-      tag => testMergeFor()(tag)
+    for (i <- 0 until 1000) {
+      numberTags foreach {
+        tag => testMergeFor()(tag)
+      }
     }
   }
 
@@ -61,6 +62,7 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
         val dvReader = getDocValues(dir, segName, docTypeOf[T])
         val (liveDocs, numDel) = newLiveDocs(maxDoc)
         merger.mergeFromSegment(dvReader, totalDocs, maxDoc, liveDocs)
+        dvReader.close()
         (totalDocs + (maxDoc - numDel), dataAndLiveDocs:+(data, liveDocs))
     }
     merger.finish(totalDocs)
@@ -83,7 +85,9 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
         assertEquals(merged(i).asInstanceOf[Double], verifierSource.getFloat(i), 0.001d)
       }
     }
-
+    //Q: what about the failed test case
+    verifier.close()
+    dir.close()
   }
 
   //region Utils
@@ -100,11 +104,8 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
         values(docIdWrite) = value
         writer.add(docIdWrite, new DocValueHolder(value))
       }
-
       val additionalDocs: Int = 1 + random.nextInt(9)
       writer.finish(DocCount + additionalDocs)
-
-
       val reader: DocValues = getDocValues(dir, "test", docType)
       for (readIteration <- 0 until 2) {
         val source: DocValues.Source = getSource(reader)
@@ -174,39 +175,39 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     return getSource(values).asSortedSource
   }
 
-  protected def docTypeOf[T](implicit erasureTag: ErasureTag[T]): Type = {
-    if (erasureTag.getClass == classOf[Byte]) {
+  protected def docTypeOf[T](implicit classTag: ErasureTag[T]): Type = {
+    if (classTag.erasure == classOf[Byte]) {
       return Type.FIXED_INTS_8
-    } else if (erasureTag.getClass == classOf[Short]) {
+    } else if (classTag.erasure == classOf[Short]) {
       return Type.FIXED_INTS_16
-    } else if (erasureTag.getClass == classOf[Int]) {
+    } else if (classTag.erasure == classOf[Int]) {
       return Type.FIXED_INTS_32
-    } else if (erasureTag.getClass == classOf[Long]) {
+    } else if (classTag.erasure == classOf[Long]) {
       return Type.FIXED_INTS_64
-    } else if (erasureTag.getClass == classOf[Float]) {
+    } else if (classTag.erasure == classOf[Float]) {
       return Type.FLOAT_32
-    } else if (erasureTag.getClass == classOf[Double]) {
+    } else if (classTag.erasure == classOf[Double]) {
       return Type.FLOAT_64
     } else {
-      throw new IllegalArgumentException(s"Not supported erasure type: ${erasureTag.erasure}")
+      throw new IllegalArgumentException(s"Not supported erasure type: ${classTag.erasure}")
     }
   }
 
-  protected def numberOf[T](of: T)(implicit erasureTag: ErasureTag[T]): Number = {
-    if (erasureTag.getClass == classOf[Byte]) {
+  protected def numberOf[T](of: T)(implicit classTag: ErasureTag[T]): Number = {
+    if (classTag.erasure == classOf[Byte]) {
       return of.asInstanceOf[Byte]
-    } else if (erasureTag.getClass == classOf[Short]) {
+    } else if (classTag.erasure == classOf[Short]) {
       return of.asInstanceOf[Short]
-    } else if (erasureTag.getClass == classOf[Int]) {
+    } else if (classTag.erasure == classOf[Int]) {
       return of.asInstanceOf[Int]
-    } else if (erasureTag.getClass == classOf[Long]) {
+    } else if (classTag.erasure == classOf[Long]) {
       return of.asInstanceOf[Long]
-    } else if (erasureTag.getClass == classOf[Float]) {
+    } else if (classTag.erasure == classOf[Float]) {
       return of.asInstanceOf[Float]
-    } else if (erasureTag.getClass == classOf[Double]) {
+    } else if (classTag.erasure == classOf[Double]) {
       return of.asInstanceOf[Double]
     } else {
-      throw new IllegalArgumentException(s"Not supported erasure type: ${erasureTag.erasure}")
+      throw new IllegalArgumentException(s"Not supported erasure type: ${classTag.erasure}")
     }
   }
 
@@ -257,6 +258,8 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
       case FIXED_INTS_16 => new MutableDVReader(dir, fieldId, 0, IOContext.READ, dvType)
       case FIXED_INTS_32 => new MutableDVReader(dir, fieldId, 0, IOContext.READ, dvType)
       case FIXED_INTS_64 => new MutableDVReader(dir, fieldId, 0, IOContext.READ, dvType)
+      case FLOAT_32      => new MutableDVReader(dir, fieldId, 0, IOContext.READ, dvType)
+      case FLOAT_64      => new MutableDVReader(dir, fieldId, 0, IOContext.READ, dvType)
       case _             => throw new IllegalArgumentException("This doc values type: %s is not supported.".format(dvType))
     }
   }

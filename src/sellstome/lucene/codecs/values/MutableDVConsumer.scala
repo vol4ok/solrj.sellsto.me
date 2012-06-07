@@ -88,7 +88,7 @@ class MutableDVConsumer(    _dir: Directory,
   //region Merge Support
   protected override def merge(reader: DocValues, docBase: Int, docCount: Int, liveDocs: Bits) {
     val source = reader.getDirectSource()
-    (0 until docBase).foldLeft(docBase) {(mergedDocId, oldDocId) =>
+    (0 until docCount).foldLeft(docBase) {(mergedDocId, oldDocId) =>
       if (liveDocs == null || liveDocs.get(oldDocId)) {
         dvType match {
           case FIXED_INTS_8   => byteWriter.add(mergedDocId, source.getInt(oldDocId).toByte)
