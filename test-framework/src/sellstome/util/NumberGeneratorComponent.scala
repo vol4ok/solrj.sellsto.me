@@ -54,7 +54,7 @@ trait NumberGeneratorComponent {
      * Creates a new primitive arrays.
      * May contain a duplicates values.
      */
-    def newNumericArray[T](size: Int)(implicit m: Manifest[T]) : Array[T] = {
+    def newNumericArray[T](size: Int)(implicit m: ClassTag[T]) : Array[T] = {
       val array = m.newArray(size)
       if (m.erasure == classOf[Int]) {
         for (i <- 0 until size) {

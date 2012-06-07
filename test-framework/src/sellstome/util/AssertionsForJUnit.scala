@@ -33,6 +33,8 @@ trait AssertionsForJUnit {
 
   def assertEquals(message: String, expected: Long, actual: Long) = Assert.assertEquals(message, expected, actual)
 
+  def assertEquals(expected: Float, actual: Float, delta: Float) = Assert.assertEquals(expected, actual, delta)
+
   def assertEquals(expected: Double, actual: Double, delta: Double) = Assert.assertEquals(expected, actual, delta)
 
   def assertNotNull(message: String, obj: AnyRef) = Assert.assertNotNull(message, obj)

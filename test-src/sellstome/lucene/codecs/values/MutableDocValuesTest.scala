@@ -2,13 +2,14 @@ package sellstome.lucene.codecs.values
 
 import sellstome.lucene.util.SellstomeLuceneTestCase
 import org.apache.lucene.codecs.DocValuesConsumer
-import org.apache.lucene.util.{Counter, BytesRef}
+import org.apache.lucene.util.{Bits, OpenBitSet, Counter, BytesRef}
 import java.io.Reader
 import org.apache.lucene.analysis.{Analyzer, TokenStream}
 import org.apache.lucene.index.DocValues.Type
 import org.apache.lucene.store.{FlushInfo, MergeInfo, IOContext, Directory}
 import java.util.Random
 import org.apache.lucene.index._
+import javax.annotation.Nullable
 
 /**
  * todo zhugrov a - classify a type for this test
@@ -16,6 +17,13 @@ import org.apache.lucene.index._
  * @since 1.0
  */
 class MutableDocValuesTest extends SellstomeLuceneTestCase {
+
+  val numberTags: List[ClassTag[_]] = List(ClassTag.Byte,
+                                           ClassTag.Short,
+                                           ClassTag.Int,
+                                           ClassTag.Long,
+                                           ClassTag.Float,
+                                           ClassTag.Double)
 
   def testFixedInts() {
     testInts(Type.FIXED_INTS_64, 63)
@@ -26,20 +34,56 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
 
   /** Tests the merge functionality */
   def testMerge() {
-    //how to determine to which segment is written
-    ???
+    numberTags foreach {
+      tag => testMergeFor()(tag)
+    }
   }
 
-  protected def testMergeFor[T]() (implicit arrTag: ArrayTag[T], erTag: ErasureTag[T]) {
+  protected def testMergeFor[T]() (implicit tag: ClassTag[T]) {
     val numMerge = numGen.nextIntInRange(3, 10)
     val dir: Directory = newDirectory()
-    for (i <- 0 until numMerge) {
-      val writer = getDocValuesConsumer(dir, s"test$i", docTypeOf[T])
-      val numDoc = numGen.nextIntInRange(100, 10000)
-      for (j <- 0 until numDoc) {
-        writer.add(j, new DocValueHolder(numberOf[T](numGen.nextNumber[T])))
+    val merger = getMergeRefinedConsumer(dir, "merger", docTypeOf[T])
+    val (totalDocs, dataAndLiveDocs) = (0 until numMerge).foldLeft(List[(String, Int, Array[T])]()) {
+      (segmentsAndMaxDocs, i) =>
+        val segment = s"test$i"
+        val writer = getDocValuesConsumer(dir, segment, docTypeOf[T])
+        val maxDoc = numGen.nextIntInRange(100, 10000)
+        val data = numGen.newNumericArray[T](maxDoc)
+        for (j <- 0 until maxDoc) {
+          writer.add(j, new DocValueHolder(numberOf[T](data(j))))
+        }
+        writer.finish(maxDoc)
+        segmentsAndMaxDocs:+(segment, maxDoc, data)
+    }.foldLeft((0, List[(Array[T], Bits)]())) {
+      (totalDocsAndDataAndLiveDocs, segmentNameAndMaxDocAndData) =>
+        val (segName, maxDoc, data) = segmentNameAndMaxDocAndData
+        val (totalDocs, dataAndLiveDocs) = totalDocsAndDataAndLiveDocs
+        val dvReader = getDocValues(dir, segName, docTypeOf[T])
+        val (liveDocs, numDel) = newLiveDocs(maxDoc)
+        merger.mergeFromSegment(dvReader, totalDocs, maxDoc, liveDocs)
+        (totalDocs + (maxDoc - numDel), dataAndLiveDocs:+(data, liveDocs))
+    }
+    merger.finish(totalDocs)
+    //verification
+    val verifier = getDocValues(dir, "merger", docTypeOf[T])
+    val merged = rawMergeData[T](dataAndLiveDocs)
+    val verifierSource = getSource(verifier)
+    for (i <- 0 until merged.length) {
+      if (tag.erasure == classOf[Byte]) {
+        assertEquals(merged(i).asInstanceOf[Byte].toLong, verifierSource.getInt(i))
+      } else if (tag.erasure == classOf[Short]) {
+        assertEquals(merged(i).asInstanceOf[Short].toLong, verifierSource.getInt(i))
+      } else if (tag.erasure == classOf[Int]) {
+        assertEquals(merged(i).asInstanceOf[Int].toLong, verifierSource.getInt(i))
+      } else if (tag.erasure == classOf[Long]) {
+        assertEquals(merged(i).asInstanceOf[Long], verifierSource.getInt(i))
+      } else if (tag.erasure == classOf[Float]) {
+        assertEquals(merged(i).asInstanceOf[Float].toDouble, verifierSource.getFloat(i), 0.001f)
+      } else if (tag.erasure == classOf[Double]) {
+        assertEquals(merged(i).asInstanceOf[Double], verifierSource.getFloat(i), 0.001d)
       }
     }
+
   }
 
   //region Utils
@@ -180,6 +224,21 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
       case FIXED_INTS_16 => new MutableDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
       case FIXED_INTS_32 => new MutableDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
       case FIXED_INTS_64 => new MutableDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FLOAT_32      => new MutableDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FLOAT_64      => new MutableDVConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case _             => throw new IllegalArgumentException("Not supported doc values type: %s".format(dvType))
+    }
+  }
+
+  protected def getMergeRefinedConsumer(dir: Directory, fieldId: String, dvType: DocValues.Type): MergeRefinedMutableDocValuesConsumer = {
+    import DocValues.Type._
+    return dvType match {
+      case FIXED_INTS_8  => new MergeRefinedMutableDocValuesConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FIXED_INTS_16 => new MergeRefinedMutableDocValuesConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FIXED_INTS_32 => new MergeRefinedMutableDocValuesConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FIXED_INTS_64 => new MergeRefinedMutableDocValuesConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FLOAT_32      => new MergeRefinedMutableDocValuesConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
+      case FLOAT_64      => new MergeRefinedMutableDocValuesConsumer(dir, fieldId, Counter.newCounter(), IOContext.READ, dvType)
       case _             => throw new IllegalArgumentException("Not supported doc values type: %s".format(dvType))
     }
   }
@@ -201,6 +260,44 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
       case _             => throw new IllegalArgumentException("This doc values type: %s is not supported.".format(dvType))
     }
   }
+
+  /** @return a BITSET with the information regarding the live docs with bit set indicating that a given doc at the given position is live
+   *          also returns the number of deleted docs */
+  @Nullable
+  protected def newLiveDocs(maxDoc: Int): (Bits, Int) = {
+    if (numGen.nextBoolean()) {
+      (0 until maxDoc).foldLeft((new OpenBitSet(maxDoc), 0)) {
+        (bitsAndNumDel, i) =>
+          val (bits, numDel) = bitsAndNumDel
+          //by default we expect more bit being set
+          if (numGen.nextInt(10) > 2) {
+            bits.set(i)
+            (bits, numDel)
+          } else {
+            (bits, numDel + 1)
+          }
+      }
+    } else {
+      (null, 0)
+    }
+  }
+
+  /**
+   * Performs a merge operation like the one we do in the [[org.apache.lucene.codecs.DocValuesConsumer]]
+   * @param dataAndLiveDocsList
+   * @tparam T the numeric type of a given doc values
+   * @return
+   */
+  protected def rawMergeData[T: ClassTag](dataAndLiveDocsList: List[(Array[T], Bits)]):Array[T] = {
+    dataAndLiveDocsList.foldLeft(List[T]()) {
+      (merged, dataAndLiveDocs) =>
+        val (data, liveDocs) = dataAndLiveDocs
+        val filterDeletes = for (i <- 0 until data.length if liveDocs == null || liveDocs.get(i))
+                            yield data(i)
+        merged ++ filterDeletes
+    }.toArray
+  }
+
   //endregion
 
   class DocValueHolder(_numberValue: Number) extends IndexableField {
@@ -212,6 +309,15 @@ class MutableDocValuesTest extends SellstomeLuceneTestCase {
     def stringValue: String = ???
     def readerValue: Reader = ???
     def fieldType: IndexableFieldType = ???
+  }
+
+  class MergeRefinedMutableDocValuesConsumer(dir: Directory, docValuesId: String, bytesUsed: Counter, context: IOContext, valueType: Type)
+    extends MutableDVConsumer(dir, docValuesId, bytesUsed, context, valueType) {
+
+    def mergeFromSegment(reader: DocValues, docBase: Int, docCount: Int, liveDocs: Bits) {
+      merge(reader, docBase, docCount, liveDocs)
+    }
+
   }
 
 }
