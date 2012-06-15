@@ -10,6 +10,7 @@ import org.apache.lucene.store.{FlushInfo, MergeInfo, IOContext, Directory}
 import java.util.Random
 import org.apache.lucene.index._
 import javax.annotation.Nullable
+import reflect.ClassTag
 
 /**
  * @author Aliaksandr Zhuhrou
@@ -71,17 +72,17 @@ class MutableDocValuesComponentTest extends SellstomeLuceneTestCase {
     val merged = rawMergeData[T](dataAndLiveDocs)
     val verifierSource = getSource(verifier)
     for (i <- 0 until merged.length) {
-      if (tag.erasure == classOf[Byte]) {
+      if (tag.runtimeClass == classOf[Byte]) {
         assertEquals(merged(i).asInstanceOf[Byte].toLong, verifierSource.getInt(i))
-      } else if (tag.erasure == classOf[Short]) {
+      } else if (tag.runtimeClass == classOf[Short]) {
         assertEquals(merged(i).asInstanceOf[Short].toLong, verifierSource.getInt(i))
-      } else if (tag.erasure == classOf[Int]) {
+      } else if (tag.runtimeClass == classOf[Int]) {
         assertEquals(merged(i).asInstanceOf[Int].toLong, verifierSource.getInt(i))
-      } else if (tag.erasure == classOf[Long]) {
+      } else if (tag.runtimeClass == classOf[Long]) {
         assertEquals(merged(i).asInstanceOf[Long], verifierSource.getInt(i))
-      } else if (tag.erasure == classOf[Float]) {
+      } else if (tag.runtimeClass == classOf[Float]) {
         assertEquals(merged(i).asInstanceOf[Float].toDouble, verifierSource.getFloat(i), 0.001f)
-      } else if (tag.erasure == classOf[Double]) {
+      } else if (tag.runtimeClass == classOf[Double]) {
         assertEquals(merged(i).asInstanceOf[Double], verifierSource.getFloat(i), 0.001d)
       }
     }
@@ -175,39 +176,39 @@ class MutableDocValuesComponentTest extends SellstomeLuceneTestCase {
     return getSource(values).asSortedSource
   }
 
-  protected def docTypeOf[T](implicit classTag: ErasureTag[T]): Type = {
-    if (classTag.erasure == classOf[Byte]) {
+  protected def docTypeOf[T](implicit classTag: ClassTag[T]): Type = {
+    if (classTag.runtimeClass == classOf[Byte]) {
       return Type.FIXED_INTS_8
-    } else if (classTag.erasure == classOf[Short]) {
+    } else if (classTag.runtimeClass == classOf[Short]) {
       return Type.FIXED_INTS_16
-    } else if (classTag.erasure == classOf[Int]) {
+    } else if (classTag.runtimeClass == classOf[Int]) {
       return Type.FIXED_INTS_32
-    } else if (classTag.erasure == classOf[Long]) {
+    } else if (classTag.runtimeClass == classOf[Long]) {
       return Type.FIXED_INTS_64
-    } else if (classTag.erasure == classOf[Float]) {
+    } else if (classTag.runtimeClass == classOf[Float]) {
       return Type.FLOAT_32
-    } else if (classTag.erasure == classOf[Double]) {
+    } else if (classTag.runtimeClass == classOf[Double]) {
       return Type.FLOAT_64
     } else {
-      throw new IllegalArgumentException(s"Not supported erasure type: ${classTag.erasure}")
+      throw new IllegalArgumentException(s"Not supported erasure type: ${classTag.runtimeClass}")
     }
   }
 
-  protected def numberOf[T](of: T)(implicit classTag: ErasureTag[T]): Number = {
-    if (classTag.erasure == classOf[Byte]) {
+  protected def numberOf[T](of: T)(implicit classTag: ClassTag[T]): Number = {
+    if (classTag.runtimeClass == classOf[Byte]) {
       return of.asInstanceOf[Byte]
-    } else if (classTag.erasure == classOf[Short]) {
+    } else if (classTag.runtimeClass == classOf[Short]) {
       return of.asInstanceOf[Short]
-    } else if (classTag.erasure == classOf[Int]) {
+    } else if (classTag.runtimeClass == classOf[Int]) {
       return of.asInstanceOf[Int]
-    } else if (classTag.erasure == classOf[Long]) {
+    } else if (classTag.runtimeClass == classOf[Long]) {
       return of.asInstanceOf[Long]
-    } else if (classTag.erasure == classOf[Float]) {
+    } else if (classTag.runtimeClass == classOf[Float]) {
       return of.asInstanceOf[Float]
-    } else if (classTag.erasure == classOf[Double]) {
+    } else if (classTag.runtimeClass == classOf[Double]) {
       return of.asInstanceOf[Double]
     } else {
-      throw new IllegalArgumentException(s"Not supported erasure type: ${classTag.erasure}")
+      throw new IllegalArgumentException(s"Not supported erasure type: ${classTag.runtimeClass}")
     }
   }
 

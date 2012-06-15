@@ -19,7 +19,7 @@ import org.apache.lucene.document.Field
  * @param _docValuesId an unique identifier for a given doc value field
  * @param codecName a name of a given codec
  * @param version a current codec version
- * @param bytesUsed
+ * @param bytesUsed used for an index size estimation
  * @param context io context
  */
 class MutableDVConsumer(    _dir: Directory,
@@ -82,8 +82,10 @@ class MutableDVConsumer(    _dir: Directory,
     }
     flushSlicesInfos()
   }
-  //endregion
 
+  //todo zhugrov a - check that this implementation conforms LUCENE-4087
+  def getValueSize = fixedSize(dvType)
+  //endregion
 
   //region Merge Support
   protected override def merge(reader: DocValues, docBase: Int, docCount: Int, liveDocs: Bits) {

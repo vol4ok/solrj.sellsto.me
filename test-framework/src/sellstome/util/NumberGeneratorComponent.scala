@@ -1,5 +1,7 @@
 package sellstome.util
 
+import reflect.ClassTag
+
 /**
  * Adds the ability to generate basic random sequences
  * @author Aliaksandr Zhuhrou
@@ -32,21 +34,21 @@ trait NumberGeneratorComponent {
     def nextBoolean(): Boolean = random.nextBoolean()
 
     /** generates a random number of a given type */
-    def nextNumber[T](implicit erasureTag: ErasureTag[T]): T = {
-      if (erasureTag.erasure == classOf[Byte]) {
+    def nextNumber[T](implicit erasureTag: ClassTag[T]): T = {
+      if (erasureTag.runtimeClass == classOf[Byte]) {
         return nextByte().asInstanceOf[T]
-      } else if (erasureTag.erasure == classOf[Short]) {
+      } else if (erasureTag.runtimeClass == classOf[Short]) {
         return nextShort().asInstanceOf[T]
-      } else if (erasureTag.erasure == classOf[Int]) {
+      } else if (erasureTag.runtimeClass == classOf[Int]) {
         return nextInt().asInstanceOf[T]
-      } else if (erasureTag.erasure == classOf[Long]) {
+      } else if (erasureTag.runtimeClass == classOf[Long]) {
         return nextLong().asInstanceOf[T]
-      } else if (erasureTag.erasure == classOf[Float]) {
+      } else if (erasureTag.runtimeClass == classOf[Float]) {
         return nextFloat().asInstanceOf[T]
-      } else if (erasureTag.erasure == classOf[Double]) {
+      } else if (erasureTag.runtimeClass == classOf[Double]) {
         return nextDouble().asInstanceOf[T]
       } else {
-        throw new IllegalArgumentException(s"not supported erasure type: ${erasureTag.erasure}")
+        throw new IllegalArgumentException(s"not supported erasure type: ${erasureTag.runtimeClass}")
       }
     }
 
@@ -54,29 +56,29 @@ trait NumberGeneratorComponent {
      * Creates a new primitive arrays.
      * May contain a duplicates values.
      */
-    def newNumericArray[T](size: Int)(implicit m: ClassTag[T]) : Array[T] = {
-      val array = m.newArray(size)
-      if (m.erasure == classOf[Int]) {
+    def newNumericArray[T](size: Int)(implicit classTag: ClassTag[T]) : Array[T] = {
+      val array = classTag.newArray(size)
+      if (classTag.runtimeClass == classOf[Int]) {
         for (i <- 0 until size) {
           array.update(i, nextInt(1000).asInstanceOf[T])
         }
-      } else if (m.erasure == classOf[Long]) {
+      } else if (classTag.runtimeClass == classOf[Long]) {
         for (i <- 0 until size) {
           array.update(i, nextLong().asInstanceOf[T])
         }
-      } else if (m.erasure == classOf[Short]) {
+      } else if (classTag.runtimeClass == classOf[Short]) {
         for (i <- 0 until size) {
           array.update(i, nextInt(1000).toShort.asInstanceOf[T])
         }
-      } else if (m.erasure == classOf[Byte]) {
+      } else if (classTag.runtimeClass == classOf[Byte]) {
         for (i <- 0 until size) {
           array.update(i, nextInt(100).toByte.asInstanceOf[T])
         }
-      } else if (m.erasure == classOf[Float]) {
+      } else if (classTag.runtimeClass == classOf[Float]) {
         for (i <- 0 until size) {
           array.update(i, (nextDouble() * 1000).toFloat.asInstanceOf[T])
         }
-      } else if (m.erasure == classOf[Double]) {
+      } else if (classTag.runtimeClass == classOf[Double]) {
         for (i <- 0 until size) {
           array.update(i, (nextDouble() * 1000).asInstanceOf[T])
         }

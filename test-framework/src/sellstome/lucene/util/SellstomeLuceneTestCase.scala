@@ -73,7 +73,7 @@ class SellstomeLuceneTestCase extends LuceneTestCase
     case DocValues.Type.FIXED_INTS_8 => new ByteDocValuesField(name, value.toByte)
     case DocValues.Type.FIXED_INTS_16 => new ShortDocValuesField(name, value.toShort)
     case DocValues.Type.FIXED_INTS_32 => new IntDocValuesField(name, value.toInt)
-    case DocValues.Type.FIXED_INTS_32 => new LongDocValuesField(name, value)
+    case DocValues.Type.FIXED_INTS_64 => new LongDocValuesField(name, value)
     case _ => throw new IllegalArgumentException(s"could not create doc values for a given type ${dvType}")
   }
 
