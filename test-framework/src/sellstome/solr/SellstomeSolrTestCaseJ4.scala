@@ -66,7 +66,7 @@ with Logging {
   }
 
   def createCore() {
-    SolrTestCaseJ4.solrConfig = TestHarness.createConfig(SolrTestCaseJ4.getSolrConfigFile())
+    SolrTestCaseJ4.solrConfig = TestHarness.createConfig(SolrTestCaseJ4.testSolrHome, SolrTestCaseJ4.getSolrConfigFile())
     testHelper = new SolrTestHelper(SolrTestCaseJ4.dataDir.getAbsolutePath, SolrTestCaseJ4.solrConfig, SolrTestCaseJ4.getSchemaFile())
     SolrTestCaseJ4.h = testHelper
     SolrTestCaseJ4.lrf = testHelper.getRequestFactory("standard", 0, 20, CommonParams.VERSION, "2.2")

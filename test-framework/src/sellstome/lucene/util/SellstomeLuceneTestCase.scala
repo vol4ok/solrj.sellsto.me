@@ -2,7 +2,7 @@ package sellstome.lucene.util
 
 import sellstome.util.{NumberGeneratorComponent, AssertionsForJUnit}
 import org.apache.lucene.search.IndexSearcher
-import org.apache.lucene.store.MockDirectoryWrapper
+import org.apache.lucene.store.{BaseDirectoryWrapper, MockDirectoryWrapper}
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.util.{Version, LuceneTestCase}
 import org.apache.lucene.document._
@@ -54,13 +54,13 @@ class SellstomeLuceneTestCase extends LuceneTestCase
    * Returns a new Directory instance. Use this when the test does not
    * care about the specific Directory implementation (most tests).
    * <p>
-   * The Directory is wrapped with [[org.apache.lucene.store.MockDirectoryWrapper]].
+   * The Directory is wrapped with [[org.apache.lucene.store.BaseDirectoryWrapper]].
    * By default this means it will be picky, such as ensuring that you
    * properly close it and all open files in your test. It will emulate
    * some features of Windows, such as not allowing open files to be
    * overwritten.
    */
-  def newDirectory(): MockDirectoryWrapper = LuceneTestCase.newDirectory()
+  def newDirectory(): BaseDirectoryWrapper = LuceneTestCase.newDirectory()
 
   /** Create a new index writer config with random defaults */
   def newIndexWriterConfig(v: Version, a: Analyzer): IndexWriterConfig = LuceneTestCase.newIndexWriterConfig(v, a)

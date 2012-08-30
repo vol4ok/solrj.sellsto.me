@@ -4,8 +4,9 @@ import org.apache.lucene.index.DocValues
 import org.apache.lucene.store.{IndexInput, IOContext, Directory}
 import sellstome.lucene.codecs.DocValuesSlicesSupport
 import org.apache.lucene.codecs.lucene40.values.Ints
-import org.apache.lucene.util.{IOUtils, CodecUtil, Counter}
+import org.apache.lucene.util.IOUtils
 import org.apache.lucene.index.DocValues.{Source, Type}
+import org.apache.lucene.codecs.CodecUtil
 
 /**
  * Reads mutable doc values

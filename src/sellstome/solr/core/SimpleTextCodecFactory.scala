@@ -11,7 +11,8 @@ import org.apache.lucene.codecs.Codec
  * @since 1.0
  */
 class SimpleTextCodecFactory extends CodecFactory {
+
   /** @return a codec instance */
-  def create(Schema: IndexSchema):Codec = new SimpleTextCodec()
+  override def getCodec():Codec = new SimpleTextCodec()
 
 }

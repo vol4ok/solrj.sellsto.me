@@ -13,8 +13,8 @@ compileJava.classpath = new UnionFileCollection(new SimpleFileCollection(compile
 
 dependencies {
     //scala plugin dependencies
-    scalaTools     'org.scala-lang:scala-compiler:2.10.0-M4'
-    scalaTools     'org.scala-lang:scala-library:2.10.0-M4'
+    scalaTools     'org.scala-lang:scala-compiler:2.10.0-M7'
+    scalaTools     'org.scala-lang:scala-library:2.10.0-M7'
 
     //compile dependencies
     compile        project(':lucene')
@@ -23,8 +23,8 @@ dependencies {
     compile        project(':solr')
     compile        'org.json:json:20090211' //Q: do you really need this dependency?
     compile        'com.google.code.findbugs:jsr305:1.3.9'
-    compile        'org.scala-lang:scala-library:2.10.0-M4'
-    compile        'org.scala-lang:scala-compiler:2.10.0-M4' /** for compilation debugging only */
+    compile        'org.scala-lang:scala-library:2.10.0-M7'
+    compile        'org.scala-lang:scala-compiler:2.10.0-M7' /** for compilation debugging only */
     compile        fileTree(dir:'lib/local/compile', includes: ['reactive-core.jar'])
     compile        'javax.servlet:javax.servlet-api:3.0.1'
     compile        'org.slf4j:slf4j-api:1.6.1'
@@ -45,10 +45,10 @@ dependencies {
     testCompile     'org.powermock:powermock-api-easymock:1.4.11'
     testCompile     'org.powermock:powermock-module-javaagent:1.4.11'
     testCompile     'org.powermock:powermock-api-support:1.4.11'
-    testCompile     'org.scalatest:scalatest_2.10.0-M4:1.8-SNAPSHOT'
+    testCompile     'org.scalatest:scalatest_2.10.0-M7:1.9-2.10.0-M7-B1'
     //check if you could remove it
-    testCompile     'com.carrotsearch.randomizedtesting:junit4-ant:1.5.0'
-    testCompile     'com.carrotsearch.randomizedtesting:randomizedtesting-runner:1.5.0'
+    testCompile     'com.carrotsearch.randomizedtesting:junit4-ant:2.0.0.rc5'
+    testCompile     'com.carrotsearch.randomizedtesting:randomizedtesting-runner:2.0.0.rc5'
 }
 
 sourceSets {

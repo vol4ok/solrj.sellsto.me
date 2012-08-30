@@ -16,10 +16,9 @@ class SellstomeSolrCoreState(directoryFactory: DirectoryFactory)
   /** Creates a new [[org.apache.lucene.index.IndexWriter]] instance */
   protected override def createMainIndexWriter(core: SolrCore,
                                                name: String,
-                                               removeAllExisting: Boolean,
                                                forceNewDirectory: Boolean) = new SellstomeIndexWriter(name, core.getNewIndexDir(),
                                                                                                       core.getDirectoryFactory(),
-                                                                                                      removeAllExisting, core.getSchema(),
+                                                                                                      false, core.getSchema(),
                                                                                                       core.getSolrConfig().indexConfig,
                                                                                                       core.getDeletionPolicy(),
                                                                                                       core.getCodec(),

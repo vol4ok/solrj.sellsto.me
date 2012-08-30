@@ -33,8 +33,9 @@ object SellstomeSolrCore {
  * @param schema a solr schema instance
  * @param updateHandler
  */
-class SellstomeSolrCore(name: String, dataDir: String, config: SolrConfig, schema: IndexSchema, cd: CoreDescriptor, updateHandler: UpdateHandler)
-      extends SolrCore(name, dataDir, config, schema, cd, updateHandler) {
+class SellstomeSolrCore(name: String, dataDir: String, config: SolrConfig, schema: IndexSchema,
+                        cd: CoreDescriptor, updateHandler: UpdateHandler, prev: SolrCore)
+      extends SolrCore(name, dataDir, config, schema, cd, updateHandler, prev) {
 
   /**
    * Creates a new core and register it in the list of cores.
@@ -48,7 +49,7 @@ class SellstomeSolrCore(name: String, dataDir: String, config: SolrConfig, schem
    * @since solr 1.3
    */
   def this(name: String, dataDir: String, config: SolrConfig, schema: IndexSchema, cd: CoreDescriptor) =
-      this(name, dataDir, config, schema, cd, null)
+      this(name, dataDir, config, schema, cd, null, null)
 
   /**
    * Opens a new searcher and returns a RefCounted<SolrIndexSearcher> with it's reference incremented.
@@ -86,14 +87,19 @@ class SellstomeSolrCore(name: String, dataDir: String, config: SolrConfig, schem
       }
 
       if (newestSearcher != null && solrConfig.reopenReaders
-          && (nrt || (indexDirFile == newIndexDirFile))) {
+          && (nrt || (indexDirFile.equals(newIndexDirFile)))) {
 
         var newReader: DirectoryReader = null
-        val currentReader: DirectoryReader = newestSearcher.get.getIndexReader
+        val currentReader: DirectoryReader = newestSearcher.get().getIndexReader()
 
         if (updateHandlerReopens) {
-          val writer: IndexWriter = getUpdateHandler().getSolrCoreState().getIndexWriter(this)
-          newReader = DirectoryReader.openIfChanged(currentReader, writer, true)
+          val writerRef = getUpdateHandler().getSolrCoreState().getIndexWriter(this)
+          try {
+            newReader = DirectoryReader.openIfChanged(currentReader, writerRef.get(), true)
+          }
+          finally {
+            writerRef.decref()
+          }
         } else {
           newReader = DirectoryReader.openIfChanged(currentReader)
         }
@@ -108,10 +114,25 @@ class SellstomeSolrCore(name: String, dataDir: String, config: SolrConfig, schem
           newReader = currentReader
         }
 
+        // for now, turn off caches if this is for a realtime reader (caches take a little while to instantiate)
         tmp = new SellstomeSolrIndexSearcher(this, schema, (if (realtime) "realtime" else "main"), newReader, true, !realtime, true, directoryFactory)
 
       } else {
-        tmp = new SellstomeSolrIndexSearcher(this, newIndexDir, schema, getSolrConfig.indexConfig, "main", true, directoryFactory)
+        // newestSearcher == null at this point
+
+        if (newReaderCreator != null) {
+          // this is set in the constructor if there is a currently open index writer
+          // so that we pick up any uncommitted changes and so we don't go backwards
+          // in time on a core reload
+          val newReader = newReaderCreator.call()
+          val searcherName = if (realtime) "realtime" else "main"
+          tmp = new SolrIndexSearcher(this, schema, searcherName, newReader, true, !realtime, true, directoryFactory)
+        } else {
+          // normal open that happens at startup
+          // verbose("non-reopen START:");
+          tmp = new SolrIndexSearcher(this, newIndexDir, schema, getSolrConfig().indexConfig, "main", true, directoryFactory)
+          // verbose("non-reopen DONE: searcher=",tmp);
+        }
       }
 
       val searcherList = if (realtime) _realtimeSearchers else _searchers

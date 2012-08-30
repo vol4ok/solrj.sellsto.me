@@ -5,9 +5,9 @@ import org.apache.lucene.index.DocValues.Type._
 import sellstome.lucene.codecs.DocValuesSlicesSupport
 import org.apache.lucene.store.{IndexOutput, IOContext, Directory}
 import org.apache.lucene.codecs.lucene40.values.Ints
-import org.apache.lucene.codecs.DocValuesConsumer
+import org.apache.lucene.codecs.{CodecUtil, DocValuesConsumer}
 import org.apache.lucene.index.{DocValues, IndexableField}
-import org.apache.lucene.util.{Bits, IOUtils, CodecUtil, Counter}
+import org.apache.lucene.util.{Bits, IOUtils, Counter}
 import sellstome.lucene.io.packed.array._
 import org.apache.lucene.document.Field
 

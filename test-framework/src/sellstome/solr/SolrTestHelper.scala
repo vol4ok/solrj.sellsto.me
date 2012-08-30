@@ -54,7 +54,7 @@ class SolrTestHelper(coreName: String, init: CoreContainer.Initializer)
    * @param indexSchema schema instance
    */
   def this(dataDirectory: String, solrConfig: SolrConfig, indexSchema: IndexSchema) =
-    this("", new SolrTestHelper.Initializer("", dataDirectory, solrConfig, indexSchema))
+    this(null, new SolrTestHelper.Initializer(null, dataDirectory, solrConfig, indexSchema))
 
   /**
    * @param dataDirectory path for index data, will not be cleaned up
@@ -63,32 +63,5 @@ class SolrTestHelper(coreName: String, init: CoreContainer.Initializer)
    */
   def this(dataDirectory: String, solrConfig: SolrConfig, schemaFile: String) =
     this(dataDirectory, solrConfig, new IndexSchema(solrConfig, schemaFile, null))
-
-  /**
-   * @param dataDirectory path for index data, will not be cleaned up
-   * @param configFile solrconfig filename
-   * @param schemaFile schema filename
-   */
-  def this(dataDirectory: String, configFile: String, schemaFile: String) =
-    this(dataDirectory, TestHarness.createConfig(configFile), schemaFile)
-
-  /**
-   * Assumes "solrconfig.xml" is the config file to use.
-   *
-   * @param dataDirectory path for index data, will not be cleaned up
-   * @param schemaFile path of schema file
-   */
-  def this(dataDirectory: String, schemaFile: String) =
-    this(dataDirectory, "solrconfig.xml", schemaFile)
-
-  /**
-   * Assumes "solrconfig.xml" is the config file to use, and
-   * "schema.xml" is the schema path to use.
-   *
-   * @param dataDirectory path for index data, will not be cleaned up
-   */
-  def this(dataDirectory: String) =
-    this(dataDirectory, "schema.xml")
-
 
 }
